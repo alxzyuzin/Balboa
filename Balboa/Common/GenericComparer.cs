@@ -13,17 +13,18 @@ using System.Reflection;
 
 namespace Balboa.Common
 {
+    public enum SortOrder {[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Asc")] Asc, [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Desc")] Desc };
     public class GenericComparer<T> : IComparer<T>
     {
-        public enum SortOrder { Ascending, Descending };
+        
 
         private string      _sortColumn;
-        private SortOrder   _sortingOrder;
+        private SortOrder   _sortOrder;
   
-        public GenericComparer(string sortcolumn, SortOrder sortingorder)
+        public GenericComparer(string sortColumn, SortOrder sortOrder)
         {
-            _sortColumn = sortcolumn;
-            _sortingOrder = sortingorder;
+            _sortColumn = sortColumn;
+            _sortOrder = sortOrder;
         }
   
 
@@ -41,7 +42,7 @@ namespace Balboa.Common
         /// </summary> 
         public SortOrder SortingOrder
         {
-            get { return _sortingOrder; }
+            get { return _sortOrder; }
         }
         #endregion
 
@@ -54,11 +55,14 @@ namespace Balboa.Common
                 /// <returns>int</returns> 
         public int Compare(T x, T y)
         {
-            
+            //To do
+            // Проверить что obj1 и obj2 не null 
+            // иначе говоря в типе Т присутствует поле _sortColumn 
+
             PropertyInfo propertyInfo = typeof(T).GetRuntimeProperty(_sortColumn);
             IComparable obj1 = (IComparable)propertyInfo.GetValue(x, null);
             IComparable obj2 = (IComparable)propertyInfo.GetValue(y, null);
-            if (_sortingOrder == SortOrder.Ascending)
+            if (_sortOrder == SortOrder.Asc)
             {
                 return (obj1.CompareTo(obj2));
             }

@@ -1,27 +1,36 @@
-﻿using System;
+﻿/*-----------------------------------------------------------------------
+ * Copyright 2017 Alexandr Zyuzin.
+ *
+ * This file is part of MPD client Balboa.
+ *
+ * Класс для хранения настроек приложения
+ *
+  --------------------------------------------------------------------------*/
+
+
+using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Popups;
 
 namespace Balboa
 {
-    public class AppSettings
+    public class AppSettings: INotifyPropertyChanged
     {
-        private bool   _initialSetupDone = false;
-        private string _server = "";
-        private string _port = "";
-        private int    _viewUpdateInterval = 500;
-        private string _password = "";
-      
-        private string _musicCollectionFolder = "";
-        private string _musicCollectionFolderToken = "";
-        private string _albumCoverFileName = "";
-        private bool   _displayFolderPictures = false;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         private bool _settingsChanged = false;
         private bool _serverNameChanged = false;
         private bool _musicCollectionFolderTokenChanged = false;
 
+        private bool _initialSetupDone = false;
         public bool   InitialSetupDone
         {
             get
@@ -37,6 +46,7 @@ namespace Balboa
             }
         }
 
+        private string _server = "localhost";
         public string Server
         {
             get
@@ -50,10 +60,12 @@ namespace Balboa
                     _server = value;
                     _settingsChanged = true;
                     _serverNameChanged = true;
+                    NotifyPropertyChanged("Server");
                 }
              }
         }
 
+        private string _port = "6600";
         public string Port
         {
             get
@@ -66,10 +78,12 @@ namespace Balboa
                 {
                     _port = value;
                     _settingsChanged = true;
+                    NotifyPropertyChanged("Port");
                 }
             }
         }
-        
+
+        private string _musicCollectionFolder = "";
         public string MusicCollectionFolder
         {
             get
@@ -82,10 +96,12 @@ namespace Balboa
                 {
                     _musicCollectionFolder = value;
                     _settingsChanged = true;
+                    NotifyPropertyChanged("MusicCollectionFolder");
                 }
             }
         }
 
+        private string _musicCollectionFolderToken = "";
         public string MusicCollectionFolderToken
         {
             get
@@ -99,11 +115,13 @@ namespace Balboa
                     _musicCollectionFolderToken = value;
                     _settingsChanged = true;
                     _musicCollectionFolderTokenChanged=true;
+                    NotifyPropertyChanged("MusicCollectionFolderToken");
                 }
             }
         }
 
-        public int      ViewUpdateInterval
+        private string _viewUpdateInterval = "500";
+        public  string   ViewUpdateInterval
         {
             get
             {
@@ -115,9 +133,12 @@ namespace Balboa
                 {
                     _viewUpdateInterval = value;
                     _settingsChanged = true;
+                    NotifyPropertyChanged("ViewUpdateInterval");
                 }
             }
         }
+
+        private string _password = "";
         public string   Password
         {
             get
@@ -130,11 +151,13 @@ namespace Balboa
                 {
                     _password = value;
                     _settingsChanged = true;
+                    NotifyPropertyChanged("Password");
                 }
             }
         }
 
-        public bool DisplayFolderPictures
+        private bool? _displayFolderPictures = false;
+        public bool? DisplayFolderPictures
         {
             get
             {
@@ -146,10 +169,12 @@ namespace Balboa
                 {
                     _displayFolderPictures = value;
                     _settingsChanged = true;
+                    NotifyPropertyChanged("DisplayFolderPictures");
                 }
             }
         }
 
+        private string _albumCoverFileName = "folder.jpg;cover.jpg";
         public string AlbumCoverFileName
         {
             get
@@ -162,6 +187,7 @@ namespace Balboa
                 {
                     _albumCoverFileName = value;
                     _settingsChanged = true;
+                    NotifyPropertyChanged("AlbumCoverFileName");
                 }
             }
         }
@@ -177,24 +203,29 @@ namespace Balboa
             ApplicationDataContainer LocalSettings = ApplicationData.Current.LocalSettings;
 
             value = LocalSettings.Values["InitialSetupDone"];
-            if ( value != null ) InitialSetupDone = (bool)value;
+            InitialSetupDone = (value != null ) ? (bool)value : false;
 
-                value = LocalSettings.Values["Server"];
+            if (!InitialSetupDone)
+                return;
+
+            value = LocalSettings.Values["Server"];
             if (value != null) Server = (string)value;
 
             value = LocalSettings.Values["Port"];
             if (value != null) Port = (string)value;
 
             value = LocalSettings.Values["ViewUpdateInterval"];
-            if (value != null) ViewUpdateInterval = (int)value;
+            if (value != null) ViewUpdateInterval = (string)value.ToString();
 
             value = LocalSettings.Values["Password"];
             if (value != null) Password = (string)value;
 
             value = LocalSettings.Values["MusicCollectionFolder"];
             if (value != null)     MusicCollectionFolder = (string)value;
+
             value = LocalSettings.Values["MusicCollectionFolderToken"];
             if (value != null)     MusicCollectionFolderToken = (string)value;
+
             value = LocalSettings.Values["AlbumCoverFileName"];
             if (value != null)     AlbumCoverFileName = (string)value;
 
@@ -212,38 +243,31 @@ namespace Balboa
             LocalSettings.Values["Port"] = Port;
             LocalSettings.Values["ViewUpdateInterval"] = ViewUpdateInterval;
             LocalSettings.Values["Password"] = Password;
-
             LocalSettings.Values["MusicCollectionFolder"]= MusicCollectionFolder;
             LocalSettings.Values["MusicCollectionFolderToken"] = MusicCollectionFolderToken;
             LocalSettings.Values["AlbumCoverFileName"] = AlbumCoverFileName;
-
             LocalSettings.Values["DisplayFolderPictures"] = DisplayFolderPictures;
 
-            if (Server != null && Port != null)
-                    InitialSetupDone = true;
-            LocalSettings.Values["InitialSetupDone"] = InitialSetupDone;
+            if (Server != null & Port != null & ViewUpdateInterval!=null)
+                LocalSettings.Values["InitialSetupDone"] = InitialSetupDone = true;
 
             _settingsChanged = false;
             _serverNameChanged = false;
             _musicCollectionFolderTokenChanged = false;
         }
 
-        public void Prepare()
-        {
-           _settingsChanged = false;
-           _serverNameChanged = false;
-           _musicCollectionFolderTokenChanged = false;
-        }
 
-    public void SetDefault()
+        public void SetDefault()
         {
             InitialSetupDone = false;
+            Server = "localhost";
             Port = "6600";
-            ViewUpdateInterval = 500;
+            ViewUpdateInterval = "500" ;
+            AlbumCoverFileName = "folder.jpg;cover.jpg";
             Password = "";
             DisplayFolderPictures = false;
      }
-
+        /*
         private enum MessageBoxButtons { OK, Cancel, Continue, Retry, OK_Cancel }
 
         private async Task<MessageBoxButtons> MessageBox(string title, string message, MessageBoxButtons buttons)
@@ -273,5 +297,6 @@ namespace Balboa
             UICommand selected = (UICommand)await md.ShowAsync();
             return (MessageBoxButtons)selected.Id;
         }
+        */
      }
 }

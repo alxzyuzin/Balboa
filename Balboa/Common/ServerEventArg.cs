@@ -1,38 +1,62 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Balboa.Common
 {
-    public class ServerEventArgs : EventArgs
+    public enum EventType
     {
-        public ServerEventArgs()
-        {
-
-        }
-        public ServerEventArgs(string m)
-        {
-            Message = m;
-        }
-        public string Message { get; set; }
+        NoEvent,
+        Error,
+        CriticalError,
+        ConnectionStatusChanged,
+        ServerStatusChanged,
+        CommandCompleted
     }
 
-    public class ServerCommandCompletionEventArgs : ServerEventArgs
+    internal class ServerEventArgs : EventArgs
     {
-        public string Command { get; set; }
-        public string Result { get; set; }
-       
+        public EventType EventType { get; set; } = EventType.NoEvent;
+        public string Command { get; set; } = string.Empty;
+        public string Result { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public ConnectionStatus ConnectionStatus { get; set; }
 
-    }
-
-    public class ServerConnectionStatusEventArgs : ServerEventArgs
-    {
-        public ServerConnectionStatusEventArgs(ConnectionStatus status)
+        public ServerEventArgs() {}
+        public ServerEventArgs(EventType eventType, string command,string result, string message)
         {
-            Status = status;
+            EventType = eventType;
+            Message = message;
+            Command = command;
+            Result = result;
         }
-        public ConnectionStatus Status { get; set; }
+
+        public ServerEventArgs(EventType eventType, ConnectionStatus status, string message)
+        {
+            EventType = eventType;
+            Message = message;
+            ConnectionStatus = status;
+        }
+
+        public ServerEventArgs(EventType eventType, string message)
+        {
+            EventType = eventType;
+            Message = message;
+        }
+
     }
+    /*
+        public class ServerCommandCompletionEventArgs : ServerEventArgs
+        {
+            public string Command { get; set; }
+            public string Result { get; set; }
+         }
+
+        public class ServerConnectionStatusEventArgs : ServerEventArgs
+        {
+            public ServerConnectionStatusEventArgs(ConnectionStatus status)
+            {
+                Status = status;
+            }
+            public ConnectionStatus Status { get; set; }
+        }
+        */
 }

@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media;
 
 namespace Balboa.Common
 {
-    public class ListviewExtended : ListView
+    internal class ListViewExtended : ListView
     {
                
         public int Count
@@ -23,7 +23,7 @@ namespace Balboa.Common
             get { return Items.Count; }
         }
 
-        public static readonly DependencyProperty ItemBackgroundProperty = DependencyProperty.Register("ItemBackground", typeof(Brush), typeof(ListviewExtended), null);
+        public static DependencyProperty ItemBackgroundProperty = DependencyProperty.Register("ItemBackground", typeof(Brush), typeof(ListViewExtended), null);
 
         public Brush ItemBackground
         {
@@ -38,15 +38,9 @@ namespace Balboa.Common
             base.PrepareContainerForItemOverride(element, item);
             var listViewItem = element as ListViewItem;
 
-  //          Binding binding = new Binding();
-  //          binding.Mode = BindingMode.TwoWay;
-  //          binding.Source = item;
-  //          binding.Path = new PropertyPath("IsSelected");
-
             if (listViewItem != null)
             {
                 listViewItem.Background = ItemBackground;
-//                listViewItem.SetBinding(ListViewItem.IsSelectedProperty, binding);
             }
         }
 

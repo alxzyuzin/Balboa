@@ -13,7 +13,7 @@ using Windows.UI.Core;
 
 namespace Balboa.Common
 {
-    public sealed class CurrentSong : INotifyPropertyChanged
+    internal sealed class CurrentSong : INotifyPropertyChanged
     {
         #region
 
@@ -30,22 +30,7 @@ namespace Balboa.Common
         #endregion
 
         private MainPage _mainPage;
-
         private string _file;
-        private string _lastModified;
-        private float  _time;
-        private string _artist;
-        private string _title;
-        private string _album;
-        private string _date;
-        private string _track;
-        private string _genre;
-        private string _composer;
-        private string _albumArtist;
-        private string _disc;
-        private string _pos;
-        private int    _id;
-
         public string File
         {
             get { return _file; }
@@ -58,6 +43,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _lastModified;
         public string LastModified
         {
             get { return _lastModified; }
@@ -70,6 +57,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private float _time;
         public float Duration
         {
             get { return _time; }
@@ -82,6 +71,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _artist;
         public string Artist
         {
             get { return _artist; }
@@ -94,6 +85,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _title;
         public string Title
         {
             get { return _title; }
@@ -106,6 +99,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _album;
         public string Album
         {
             get { return _album; }
@@ -118,6 +113,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _date;
         public string Date
         {
             get { return _date; }
@@ -130,6 +127,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _track;
         public string Track
         {
             get { return _track; }
@@ -142,6 +141,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _genre;
         public string Genre
         {
             get { return _genre; }
@@ -154,6 +155,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _composer;
         public string Composer
         {
             get { return _composer; }
@@ -166,6 +169,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _albumArtist;
         public string AlbumArtist
         {
             get { return _albumArtist; }
@@ -178,6 +183,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private string _disc;
         public string Disc
         {
             get { return _disc; }
@@ -190,18 +197,22 @@ namespace Balboa.Common
                 }
             }
         }
-        public string Pos
+
+        private string _position;
+        public string Position
         {
-            get { return _pos; }
+            get { return _position; }
             set
             {
-                if (_pos != value)
+                if (_position != value)
                 {
-                    _pos = value;
-                    NotifyPropertyChanged("Pos");
+                    _position = value;
+                    NotifyPropertyChanged("Position");
                 }
             }
         }
+
+        private int _id;
         public int    Id
         {
             get { return _id; }
@@ -215,17 +226,18 @@ namespace Balboa.Common
             }
         }
 
-        public CurrentSong(MainPage mainpage)
+        public CurrentSong(MainPage mainPage)
         {
-            _mainPage = mainpage;
+            _mainPage = mainPage;
         }
 
-        public void Update(MPDResponce currentsonginfo)
+        public void Update(MpdResponseCollection currentSongInfo)
         {
-            Parse(currentsonginfo);
+            Parse(currentSongInfo);
         }
 
-        private void Parse(MPDResponce currentsonginfo)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+        private void Parse(MpdResponseCollection currentsonginfo)
         {
 
             // Заполним пустые параметры значениями по умолчанию
@@ -245,7 +257,7 @@ namespace Balboa.Common
                 {
                     case "file":          File = tagvalue; break;
                     case "Last-Modified": LastModified = tagvalue; break;
-                    case "Time":          Duration = float.Parse(tagvalue); break;
+                    case "Time":          Duration = float.Parse(tagvalue,System.Globalization.CultureInfo.InvariantCulture); break;
                     case "Artist":        Artist = tagvalue; break;
                     case "Title":         Title = tagvalue; break;
                     case "Album":         Album = tagvalue; break;
@@ -255,13 +267,13 @@ namespace Balboa.Common
                     case "Composer":      Composer = tagvalue; break;
                     case "AlbumArtist":   AlbumArtist = tagvalue; break;
                     case "Disc":          Disc = tagvalue; break;
-                    case "Pos":           Pos = tagvalue; break;
-                    case "Id":            Id = int.Parse(tagvalue); break;
+                    case "Pos":           Position = tagvalue; break;
+                    case "Id":            Id = int.Parse(tagvalue, System.Globalization.CultureInfo.InvariantCulture); break;
                 }
             }
 
             // Заполним пустые параметры значениями по умолчанию
-            if (Title.Length == 0) Title = Utils.ExtractFileName(File ?? "", true);
+            if (Title.Length == 0) Title = Utilities.ExtractFileName(File ?? "", true);
             if (Artist.Length == 0) Artist = " Unknown artist";
             if (Album.Length == 0) Album = " Unknown album";
             if (Date.Length == 0) Date = " Unknown year";

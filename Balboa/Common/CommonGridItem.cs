@@ -13,6 +13,8 @@ namespace Balboa.Common
 {
     public sealed class CommonGridItem: INotifyPropertyChanged, IUpdatable
     {
+        private const string _fileName = "CommonGridItem.cs";
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void NotyfyPropertyChanged(string propertyname)
@@ -36,14 +38,19 @@ namespace Balboa.Common
             }
         }
 
-        public void Update(MPDResponce responce)
+        public void Update(MpdResponseCollection response)
         {
-           string[] items = responce[0].Split(':');
+            if (response == null)
+            {
+                throw new BalboaException(_fileName, this.GetType().FullName,"Update","43","Parameter 'response' is null");
+            }
+
+           string[] items = response[0].Split(':');
             if (items.Length > 1)
                 Name = items[1].Trim();
             else
                 Name = "Undefined";
-           responce.RemoveAt(0);
+           response.RemoveAt(0);
         }
     }
 }

@@ -10,7 +10,7 @@
 <Page
     x:Name="pageRoot"
     x:Class="Balboa.MainPage"
-    DataContext="{Binding Sever, RelativeSource={RelativeSource Self}}"
+    DataContext="{Binding Server, RelativeSource={RelativeSource Self}}"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Balboa"
@@ -165,7 +165,6 @@
 
         <Style x:Key="InformationGridStyle" TargetType="Grid">
             <Setter Property="Margin" Value="0,100,0,20"/>
-            <!--Setter Property="Background" Value="{StaticResource InformationPanelBackgroundBrush}"/-->
             <Setter Property="Background" Value="{StaticResource MainBackgroundBrush}"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
             <Setter Property="Visibility" Value="Collapsed"/>
@@ -218,13 +217,10 @@
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
 
-
     </Page.Resources>
     <Page.Background>
         <StaticResource ResourceKey="ListViewItemSelectedBackgroundThemeBrush"/>
     </Page.Background>
-
-
 
     <!--
         This grid acts as a root panel for the page that defines two rows:
@@ -249,13 +245,10 @@
             <ColumnDefinition Width="20"/>
         </Grid.ColumnDefinitions>
 
-
-
         <!--  PЗАГОЛОВОК ОКНА-->
         <StackPanel x:Name="stackpanel_PageHeader" Orientation="Horizontal"  Height="70" Margin="20,0,20,0" VerticalAlignment="Top" Visibility="Collapsed">
             <TextBlock x:Name="textblock_MainMenu" Text="&#xE14C;"  FontSize="50" FontFamily="Segoe UI Symbol"  Tapped="textblock_MainMenu_Tapped" />
-            <TextBlock x:Name="textbox_CurrentMode" Text="Current playlist" FontSize="25" FontWeight="ExtraLight" VerticalAlignment="Top" Margin="50,10,0,0"/>
-            <!--TextBlock x:Name="textbox_WindowWidth" Text="Current playlist" FontSize="20" VerticalAlignment="Top" Margin="150,10,0,0"/-->
+            <TextBlock x:Name="textbox_CurrentMode" x:Uid="cp" Text="" FontSize="25" FontWeight="ExtraLight" VerticalAlignment="Top" Margin="70,10,0,0"/>
         </StackPanel>
 
         <!-- Главное окно-->
@@ -302,8 +295,9 @@
                                     Style="{StaticResource  CurrentTrackTextBlockStyle}"  FontSize="35" Margin="40,0,0,0"  
                                     TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Height="45"/>
                         
-                        <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Grid.Row="1">
-                        <TextBlock Text="Artist :"  FontSize="15" Margin="10,0,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Grid.Row="1">
+                            <TextBlock x:Uid="Artist"  Text="" FontSize="15" Margin="10,0,0,0"/>
+                        <!--TextBlock Text="Artist :"  FontSize="15" Margin="10,0,0,0"/-->
                         <TextBlock Text="{Binding Artist}" FontSize="15" Margin="10,0,0,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Grid.Row="2">
@@ -317,7 +311,7 @@
 
             <!--   CURRENT TRACK
          -->
-            <Grid  x:Name="gr_CurrentTrack" Style="{StaticResource InformationGridStyle}" Visibility="Visible" Margin="0,0,0,10">
+            <Grid  x:Name="gr_CurrentTrack" Style="{StaticResource InformationGridStyle}" Visibility="Visible" Margin="0,0,0,10" d:IsHidden="True">
 
                 <Grid.Resources>
                     <Storyboard x:Name="gr_CurrentTrackShowStoryboard">
@@ -336,19 +330,15 @@
                                           Storyboard.TargetProperty="Opacity"
                                           From="0.0" To="1.0" Duration="0:0:1"/>
                     </Storyboard>
-
                 </Grid.Resources>
-
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="3*"/>
                     <RowDefinition Height="2*"/>
-              
-                </Grid.RowDefinitions>
+                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="4*" />
                     <ColumnDefinition Width="3*" />
-         
                 </Grid.ColumnDefinitions>
                 <Image x:Name="image_AlbumCover" Grid.Row="0" Grid.Column="0" Margin="40" Grid.RowSpan="2">
                     <Image.RenderTransform>
@@ -357,7 +347,8 @@
                 </Image>
                 <TextBlock x:Name="textblock_Title" Text="{Binding Title}"    Grid.Row="0"   Grid.ColumnSpan="3"  
                        Style="{StaticResource  CurrentTrackTextBlockStyle}"  FontSize="35" Margin="0,30,10,0" 
-                           Height="90" TextWrapping="WrapWholeWords" Tapped="textblock_Title_Tapped" Grid.RowSpan="2" Grid.Column="1" VerticalAlignment="Top" />
+                           Height="90" TextWrapping="WrapWholeWords" Grid.RowSpan="2" Grid.Column="1" 
+                           VerticalAlignment="Top" />
                 <Grid x:Name="grid_CurrentTrackData" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="40,120,0,0" d:IsHidden="True" >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*" />
@@ -390,11 +381,9 @@
                     <TextBlock Text="{Binding Genre}"        Style="{StaticResource  CurrentTrackTextBlockStyle}"/>
                     <TextBlock Text="{Binding File}"         Style="{StaticResource  CurrentTrackTextBlockStyle}" Height="60" TextWrapping="WrapWholeWords"/>
                     <!--TextBlock Text="{Binding LastModified}" Style="{StaticResource  CurrentTrackTextBlockStyle}"/-->
- 
                 </StackPanel>
                 </Grid>
             </Grid>
-
 
             <!--   CURRENT PLAYLIST
         -->
@@ -412,9 +401,7 @@
                     <RowDefinition Height="85"/>
                 </Grid.RowDefinitions>
 
-               
-
-                <common:ListviewExtended x:Name="lv_PlayList"  Grid.Row="0"  VerticalContentAlignment="Stretch"  
+                <common:ListViewExtended x:Name="lv_PlayList"  Grid.Row="0"  VerticalContentAlignment="Stretch"  
                                            ItemBackground="#10F0F0F0" 
                                            ItemTemplate="{StaticResource PlaylistItemTemplate}" 
                                            ItemContainerStyleSelector="{StaticResource PlaylistItemStyleSelector}" 
@@ -422,7 +409,7 @@
                                            SelectionMode="Multiple"  
                                            DoubleTapped="lv_PlayList_DoubleTapped"
                                            GotFocus="lv_PlayList_GotFocus">
-                </common:ListviewExtended>
+                </common:ListViewExtended>
                 <TextBlock x:Name="textblock_PlaylistContent" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" 
                        HorizontalAlignment="Center" FontSize="25" Text=""/>
                 <StackPanel  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="1" HorizontalAlignment="Stretch"  
@@ -466,13 +453,13 @@
                 <GridView x:Name="gr_FileSystemContent" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                       SelectionMode="Multiple" 
                       ItemTemplate="{StaticResource FileSystemItemTemplate}" 
-                      
                       ItemContainerStyleSelector="{StaticResource FileItemStyleSelector}" 
                       DoubleTapped="gr_FileSystemContent_DoubleTapped"
                       GotFocus="gr_FileSystemContent_GotFocus">
-
                 </GridView>
-
+                <TextBlock x:Name="textblock_FileSystemContent" Grid.Row="0" Grid.Column="1" 
+                           VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" Text=""
+                           TextWrapping="WrapWholeWords"/>
                 <StackPanel  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"  
                          Margin="5,0,5,5" Background="{StaticResource MainBackgroundBrush}"/>
                 <AppBarButton x:Name="appbtn_Up" Grid.Row="1" Grid.Column="0" Icon="Up" Label="Up" HorizontalAlignment="Left" Tapped="appbtn_Up_Tapped"/>
@@ -546,14 +533,14 @@
                 <TextBlock Text="Artist albums" Grid.Row="1" Grid.Column="1" FontSize="22" Foreground="Orange" HorizontalAlignment="Center"  VerticalAlignment="Top" Margin="15"/>
                 <TextBlock Text="Album tracks" Grid.Row="0" Grid.Column="2" FontSize="22" Foreground="Orange" HorizontalAlignment="Center"  VerticalAlignment="Top"/>
 
-                <common:ListviewExtended x:Name="listview_Genres"  Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Stretch"  
+                <common:ListViewExtended x:Name="listview_Genres"  Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Stretch"  
                                      Margin="10,35,0,0"                                       
                                      ItemBackground="#10F0F0F0"      
                                      ItemTemplate="{StaticResource CommonListItemTemplate}" 
                                      SelectionMode="Single"
                                      Grid.RowSpan="2"
                                      Tapped="listview_Genres_Tapped"/>
-                <common:ListviewExtended x:Name="listview_GenreArists"  Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Stretch"  
+                <common:ListViewExtended x:Name="listview_GenreArists"  Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Stretch"  
                                      Margin="10,35,0,0"
                                           ItemBackground="#10F0F0F0" 
                                           ItemTemplate="{StaticResource CommonListItemTemplate}" 
@@ -561,14 +548,14 @@
                                     
                                           Tapped="listview_Arists_Tapped"/>
 
-                <common:ListviewExtended x:Name="listview_GenreAlbums"  Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Stretch"  
+                <common:ListViewExtended x:Name="listview_GenreAlbums"  Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Stretch"  
                                      Margin="10,50,0,0"
                                      ItemBackground="#10F0F0F0"      
                                      ItemTemplate="{StaticResource CommonListItemTemplate}" 
                                           SelectionMode="Single"
                                           Tapped="listview_Albums_Tapped"/>
 
-                <common:ListviewExtended x:Name="listview_GenreTracks"  Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Stretch"  
+                <common:ListViewExtended x:Name="listview_GenreTracks"  Grid.Row="0" Grid.Column="2" VerticalContentAlignment="Stretch"  
                                     Margin="10,35,0,0"
                                      ItemBackground="#10F0F0F0"      
                                      ItemTemplate="{StaticResource TrackListItemTemplate}" 
@@ -617,21 +604,21 @@
                 <TextBlock Text="Artists" Grid.Row="0" Grid.Column="0" FontSize="22" Foreground="Orange" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <TextBlock Text="Artist albums" Grid.Row="0" Grid.Column="1" FontSize="22" Foreground="Orange" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
                 <TextBlock Text="Album tracks" Grid.Row="0" Grid.Column="2" FontSize="22" Foreground="Orange" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
-                <common:ListviewExtended x:Name="listview_Arists"  Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Stretch"  
+                <common:ListViewExtended x:Name="listview_Arists"  Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Stretch"  
                                      Margin="10,0,0,0"
                                           ItemBackground="#10F0F0F0" 
                                           ItemTemplate="{StaticResource CommonListItemTemplate}" 
                                           SelectionMode="Single"
                                           Tapped="listview_Arists_Tapped"/>
 
-                <common:ListviewExtended x:Name="listview_Albums"  Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Stretch"  
+                <common:ListViewExtended x:Name="listview_Albums"  Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Stretch"  
                                      Margin="10,0,0,0"
                                      ItemBackground="#10F0F0F0"      
                                      ItemTemplate="{StaticResource CommonListItemTemplate}" 
                                           SelectionMode="Single"
                                           Tapped="listview_Albums_Tapped"/>
 
-                <common:ListviewExtended x:Name="listview_Tracks"  Grid.Row="1" Grid.Column="2" VerticalContentAlignment="Stretch"  
+                <common:ListViewExtended x:Name="listview_Tracks"  Grid.Row="1" Grid.Column="2" VerticalContentAlignment="Stretch"  
                                      Margin="10,0,0,0" 
                                      ItemBackground="#10F0F0F0"      
                                      ItemTemplate="{StaticResource TrackListItemTemplate}" 
@@ -675,7 +662,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <common:ListviewExtended x:Name="listview_Search"  Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Stretch"  
+                <common:ListViewExtended x:Name="listview_Search"  Grid.Row="0" Grid.Column="0" VerticalContentAlignment="Stretch"  
                                           ItemBackground="#10F0F0F0" 
                                           ItemTemplate="{StaticResource PlaylistItemTemplate}" 
                                           ItemContainerStyleSelector="{StaticResource PlaylistItemStyleSelector}" 
@@ -684,7 +671,7 @@
                                           GotFocus="listview_Search_GotFocus"
                                           DoubleTapped="listview_Search_DoubleTapped"/>
                 <TextBlock x:Name="textblock_SearchResult" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" 
-                       HorizontalAlignment="Center" FontSize="25" Text=""/>
+                       HorizontalAlignment="Center" FontSize="25" Text="" TextWrapping="WrapWholeWords"/>
                 <StackPanel  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
                          Margin="5,0,5,5" Background="{StaticResource MainBackgroundBrush}"  Orientation="Horizontal"  FlowDirection="LeftToRight" >
                     <TextBlock x:Name="textblock_Search"  Grid.Row="2" Grid.Column="1" Text="Search" 
@@ -731,8 +718,8 @@
                     <TextBlock Text="{Binding Albums}" Style="{StaticResource  StatisticDataTextBlockStyle}" />
                     <TextBlock Text="{Binding Songs}"  Style="{StaticResource  StatisticDataTextBlockStyle}"/>
                     <TextBlock Text="{Binding Uptime, Converter={StaticResource TimeConverter}}" Style="{StaticResource  StatisticDataTextBlockStyle}" />
-                    <TextBlock Text="{Binding DB_Playtime , Converter={StaticResource TimeConverter}}"  Style="{StaticResource  StatisticDataTextBlockStyle}"/>
-                    <TextBlock Text="{Binding DB_UpdateDT}"  Style="{StaticResource  StatisticDataTextBlockStyle}"/>
+                    <TextBlock Text="{Binding DbPlaytime , Converter={StaticResource TimeConverter}}"  Style="{StaticResource  StatisticDataTextBlockStyle}"/>
+                    <TextBlock Text="{Binding DbUpdateDT}"  Style="{StaticResource  StatisticDataTextBlockStyle}"/>
                     <TextBlock Text="{Binding Playtime , Converter={StaticResource TimeConverter}}"  Style="{StaticResource  StatisticDataTextBlockStyle}"/>
                 </StackPanel>
             </Grid>
@@ -775,26 +762,34 @@
                     </Storyboard>
                 </Grid.Resources>
 
-                <TextBlock                      Text="Server"    Grid.Row="2" Grid.Column="1"  Style="{StaticResource  SettingsTextBlockStyle}"/>
-                <TextBox   x:Name="tbx_Server"  Text="localhost" Grid.Row="2" Grid.Column="2" Width="150" Style="{StaticResource  SettingsTextBoxStyle }"/>
+                <TextBlock                      Text="Server"    Grid.Row="2" Grid.Column="1"  
+                                                Style="{StaticResource  SettingsTextBlockStyle}"/>
+                <TextBox   x:Name="tbx_Server"  Grid.Row="2" Grid.Column="2" Width="150" 
+                           Style="{StaticResource  SettingsTextBoxStyle }"
+                           Text="{Binding Server, Mode=TwoWay}"/>
 
                 <TextBlock                   Text="Port" Grid.Row="3" Grid.Column="1"  Style="{StaticResource SettingsTextBlockStyle}"/>
-                <TextBox   x:Name="tbx_Port" Text="6600" Grid.Row="3" Grid.Column="2"  Width="80" Style="{StaticResource  SettingsTextBoxStyle }"/>
+                <TextBox   x:Name="tbx_Port" Text="{Binding Port, Mode=TwoWay}" Grid.Row="3" Grid.Column="2"  Width="80" Style="{StaticResource  SettingsTextBoxStyle }"/>
                 <TextBlock Text="(1 - 6553 typicaly 6600)" Grid.Row="3" Grid.Column="3"  Grid.ColumnSpan="2"
                            Style="{StaticResource  SettingsTextBlockStyle}" Margin="15,0,0,0"/>
 
                 <TextBlock                   Text="Password"    Grid.Row="4" Grid.Column="1"  Style="{StaticResource SettingsTextBlockStyle}"/>
-                <TextBox   x:Name="tbx_Password"                Grid.Row="4" Grid.Column="2" Width="150"  Style="{StaticResource  SettingsTextBoxStyle }"/>
+                <TextBox   x:Name="tbx_Password"                Grid.Row="4" Grid.Column="2" Width="150"  
+                           Text="{Binding Password, Mode=TwoWay}"
+                           Style="{StaticResource  SettingsTextBoxStyle }"/>
                 <TextBlock                   Text="(optional)"  Grid.Row="4" Grid.Column="3"  Style="{StaticResource SettingsTextBlockStyle}" Margin="15,0,0,0"/>
 
-                <TextBlock Text="View update interval" Grid.Row="6" Grid.Column="1"   Grid.RowSpan="2" Style="{StaticResource SettingsTextBlockStyle}"
+                <TextBlock Text="View update interval" Grid.Row="6" Grid.Column="1"   Grid.RowSpan="2" 
+                           Style="{StaticResource SettingsTextBlockStyle}"
                            TextWrapping="WrapWholeWords" Height="70" />
-                <TextBox   x:Name="tbx_ViewUpdateInterval" Text="100"  Grid.Row="6" Grid.Column="2"   Width="80" Style="{StaticResource  SettingsTextBoxStyle }"/>
+                <TextBox   Text="{Binding ViewUpdateInterval, Mode=TwoWay}"  Grid.Row="6" Grid.Column="2"   Width="80" 
+                           Style="{StaticResource  SettingsTextBoxStyle }"/>
                 <TextBlock  Text="(milliseconds)" Grid.Row="6" Grid.Column="3"  Style="{StaticResource SettingsTextBlockStyle}" Margin="15,0,0,0"/>
 
                 <TextBlock Text="Path to music collection" Grid.Row="8" Grid.Column="1"  Grid.RowSpan="2" Style="{StaticResource SettingsTextBlockStyle}" 
                            TextWrapping="WrapWholeWords" Height="70"/>
                 <TextBox   x:Name="tbx_MusicCollectionPath" Grid.Row="8" Grid.Column="2" 
+                           Text="{Binding MusicCollectionFolder, Mode=TwoWay}"
                            HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }"  
                            Background="#FFF4F4F4" IsEnabled="False"
                            Grid.RowSpan="2" VerticalAlignment="Top"
@@ -808,7 +803,7 @@
 
                 <TextBlock Text="Album cover file name" Grid.Row="10" Grid.Column="1"  Grid.RowSpan="2" 
                            Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
-                <TextBox   x:Name="tbx_AlbumCoverFileName" Text="Cover.jpg"  Grid.Row="10" Grid.Column="2" 
+                <TextBox   x:Name="tbx_AlbumCoverFileName" Text="{Binding AlbumCoverFileName, Mode=TwoWay}"  Grid.Row="10" Grid.Column="2" 
                            HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }" Grid.RowSpan="2" VerticalAlignment="Top"/>
                 <TextBlock Text="File names separated with semicolon" Grid.Row="10" Grid.Column="3"  
                            Style="{StaticResource SettingsTextBlockStyle}" Margin="15,0,0,0" TextWrapping="WrapWholeWords"
@@ -816,7 +811,7 @@
 
                 <TextBlock Text="Display pictures for folders" Grid.Row="12" Grid.Column="1"  Grid.RowSpan="2" Grid.ColumnSpan="2"
                            Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
-                <CheckBox   x:Name="checkbox_DisplayFolderPictures" IsChecked="False"  Grid.Row="12" Grid.Column="2" 
+                <CheckBox   x:Name="checkbox_DisplayFolderPictures" IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"  Grid.Row="12" Grid.Column="2" 
                            HorizontalAlignment="Right" Grid.RowSpan="2" VerticalAlignment="Top"/>
 
                 <TextBlock Text="Outputs" Grid.Row="1" Grid.Column="5" FontWeight="Bold"  Margin="70,0,0,0" Style="{StaticResource  SettingsTextBlockStyle}"/>
@@ -824,6 +819,9 @@
                 <StackPanel x:Name="stp_Outputs" Grid.Row="2" Grid.Column="5" Grid.RowSpan="10" Margin="70,0,0,0" />
 
                 <StackPanel  Grid.Row="14" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right"  Grid.ColumnSpan="5">
+                    <AppBarButton x:Name="appbtn_StartSession" Icon="Preview" Label="Start session" Tapped="appbtn_StartSession_Tapped"  HorizontalAlignment="Right" Visibility="Collapsed"/>
+                    <AppBarButton x:Name="appbtn_StopSession" Icon="Preview" Label="Stop session"  Tapped="appbtn_StopSession_Tapped" HorizontalAlignment="Right" Visibility="Collapsed"/>
+                    <AppBarSeparator Visibility="Collapsed"/>
                     <AppBarButton x:Name="appbtn_TestConnection" Icon="Preview" Label="Test connection" Tapped="appbtn_TestConnection_Tapped" HorizontalAlignment="Right"/>
                     <AppBarSeparator/>
                     <AppBarButton x:Name="appbtn_SaveSettings" Icon="Save" Label="Save" Tapped="appbtn_SaveSettings_Tapped" />
@@ -833,7 +831,7 @@
             <!-- Панель управления проигрыванием -->
             <StackPanel x:Name="stp_ServerStatus" Grid.Row="2" Grid.Column="0" Margin="0,-25,0,0">
 
-                <Grid  x:Name="gd_SongTimes" Margin="0,0,0,20">
+                <Grid  x:Name="gr_SongTimes" Margin="0,0,0,20">
                     <!-- Длительность трека и время от начала воспроизведения трека-->
 
                     <Grid.ColumnDefinitions>

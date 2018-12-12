@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="17505Sirocco.Balboa" Publisher="CN=A5DE46CF-F134-453E-92D1-F8D7D83A2EAD" Version="1.2.0.9" />
+  <Identity Name="17505Sirocco.Balboa" Publisher="CN=A5DE46CF-F134-453E-92D1-F8D7D83A2EAD" Version="1.4.0.15" />
   <Properties>
     <DisplayName>Balboa</DisplayName>
     <PublisherDisplayName>Sirocco</PublisherDisplayName>
@@ -36,5 +36,6 @@
   </Applications>
   <Capabilities>
     <Capability Name="privateNetworkClientServer" />
+    <Capability Name="internetClient" />
   </Capabilities>
 </Package>

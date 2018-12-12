@@ -6,12 +6,14 @@
  * Класс инкапсулирует команды MPD.
  *
  --------------------------------------------------------------------------*/
+using System.Globalization;
 
 namespace Balboa.Common
 {
-    public class MPDCommand
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Mpd")]
+    public class MpdCommand
     {
-        public MPDCommand(string op)
+        public MpdCommand(string op)
         {
             Op = op;
             Argument1 = null;
@@ -20,7 +22,7 @@ namespace Balboa.Common
             FullSyntax = op;
         }
 
-        public MPDCommand(string op, string argument1, string argument2, string argument3)
+        public MpdCommand(string op, string argument1, string argument2, string argument3)
         {
             Op = op;
             Argument1 = argument1;
@@ -29,7 +31,7 @@ namespace Balboa.Common
             FullSyntax = op + " " + Quote(argument1) + " " + Quote(argument2) + " " + Quote(argument3);
         }
 
-        public MPDCommand(string op, string argument1)
+        public MpdCommand(string op, string argument1)
         {
             Op = op;
             Argument1 = argument1;
@@ -37,15 +39,15 @@ namespace Balboa.Common
             FullSyntax = op + " " + Quote(argument1);
         }
 
-        public MPDCommand(string op, int argument1)
+        public MpdCommand(string op, int argument1)
         {
             Op = op;
-            Argument1 = argument1.ToString();
+            Argument1 = argument1.ToString(CultureInfo.InvariantCulture);
             Argument2 = null;
             FullSyntax = op + " " + Quote(argument1);
         }
 
-        public MPDCommand(string op, bool argument1)
+        public MpdCommand(string op, bool argument1)
         {
             Op = op;
             Argument1 = argument1 ? "1" : "0";
@@ -53,7 +55,7 @@ namespace Balboa.Common
             FullSyntax = op + " " + Quote(Argument1);
         }
 
-        public MPDCommand(string op, string argument1, string argument2)
+        public MpdCommand(string op, string argument1, string argument2)
         {
             Op = op;
             Argument1 = argument1;
@@ -61,36 +63,36 @@ namespace Balboa.Common
             FullSyntax = op + " " + Quote(argument1) + " " + Quote(argument2);
         }
 
-        public MPDCommand(string op, string argument1, int argument2)
+        public MpdCommand(string op, string argument1, int argument2)
         {
             Op = op;
             Argument1 = argument1;
-            Argument2 = argument2.ToString();
+            Argument2 = argument2.ToString(CultureInfo.InvariantCulture);
             FullSyntax = op + " " + Quote(argument1) + " " + Quote(argument2);
         }
 
-        public MPDCommand(string op, int argument1, int argument2)
+        public MpdCommand(string op, int argument1, int argument2)
         {
             Op = op;
-            Argument1 = argument1.ToString();
-            Argument2 = argument2.ToString();
+            Argument1 = argument1.ToString(CultureInfo.InvariantCulture);
+            Argument2 = argument2.ToString(CultureInfo.InvariantCulture);
             FullSyntax = op + " " + Quote(argument1) + " " + Quote(argument2);
         }
 
-        public string Op        { get; private set; }
+        public string Op        { get; set; }
 
-        public string Argument1  { get; private set; }
+        public string Argument1  { get; set; }
 
-        public string Argument2  { get; private set; }
+        public string Argument2  { get; set; }
 
-        public string Argument3  { get; private set; }
+        public string Argument3  { get; set; }
 
-        public string FullSyntax { get; private set; }
+        public string FullSyntax { get; set; }
 
 
         private static string Quote(int i)
         {
-            return "\"" + i.ToString() + "\"";
+            return "\"" + i.ToString(CultureInfo.InvariantCulture) + "\"";
         }
 
         private static string Quote(string s)

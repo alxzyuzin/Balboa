@@ -8,14 +8,16 @@
   --------------------------------------------------------------------------*/
 
 using System;
+using System.Globalization;
 using System.ComponentModel;
 using Windows.UI.Core;
 
 namespace Balboa.Common
 {
     
-    public class Statistic : INotifyPropertyChanged
+    internal class Statistic : INotifyPropertyChanged
     {
+        private const string _modName = "Statistic.cs";
         #region
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -32,16 +34,7 @@ namespace Balboa.Common
 
         private MainPage _mainPage;
 
-        private int     _artists = 0;   // artists: number of artists
-        private int     _albums = 0;    // albums: number of albums
-        private int     _songs = 0;     // songs: number of songs
-        private int     _uptime = 0;    // uptime: daemon uptime in seconds
-        private int     _db_Playtime = 0; // db_playtime: sum of all song times in the db
-        private int     _db_Update = 0; // db_update: last db update in UNIX time
-        private DateTime _db_UpdateDT; // last db update in Date Time
-        private int     _playtime = 0;  // playtime: time length of music played
-
-
+        private int _artists = 0;   // artists: number of artists
         public int Artists // artists: number of artists
         {
             get { return _artists; }
@@ -53,8 +46,9 @@ namespace Balboa.Common
                     NotifyPropertyChanged("Artists");
                 }
             }
-        } 
+        }
 
+        private int _albums=0;
         public int Albums // albums: number of albums
         {
             get { return _albums; }
@@ -66,8 +60,9 @@ namespace Balboa.Common
                     NotifyPropertyChanged("Albums");
                 }
             }
-        } 
+        }
 
+        private int _songs = 0;     // songs: number of songs
         public int Songs // songs: number of songs
         {
             get { return _songs; }
@@ -79,8 +74,9 @@ namespace Balboa.Common
                     NotifyPropertyChanged("Songs");
                 }
             }
-        } 
+        }
 
+        private int _uptime = 0;    // uptime: daemon uptime in seconds
         public int Uptime  // uptime: daemon uptime in seconds
         {
             get { return _uptime; }
@@ -92,48 +88,51 @@ namespace Balboa.Common
                     NotifyPropertyChanged("Uptime");
                 }
             }
-        } 
+        }
 
-        public int DB_Playtime  // db_playtime: sum of all song times in the db
+        private int _dbPlaytime = 0; // db_playtime: sum of all song times in the db
+        public int DbPlaytime  // db_playtime: sum of all song times in the db
         {
-            get { return _db_Playtime; }
+            get { return _dbPlaytime; }
             private set
             {
-                if (_db_Playtime != value)
+                if (_dbPlaytime != value)
                 {
-                    _db_Playtime = value;
-                    NotifyPropertyChanged("DB_Playtime");
+                    _dbPlaytime = value;
+                    NotifyPropertyChanged("DbPlaytime");
                 }
             }
         }
 
-        public int DB_Update  // db_update: last db update in UNIX time
+        private int _dbUpdate = 0; // db_update: last db update in UNIX time
+        public int DbUpdate  // db_update: last db update in UNIX time
         {
-            get { return _db_Update; }
+            get { return _dbUpdate; }
             private set
             {
-                if (_db_Update != value)
+                if (_dbUpdate != value)
                 {
-                    _db_Update = value;
-                    NotifyPropertyChanged("DB_Update");
+                    _dbUpdate = value;
+                    NotifyPropertyChanged("DbUpdate");
                 }
             }
         }
 
-        public DateTime DB_UpdateDT
+        private DateTime _dbUpdateDT; // last db update in Date Time
+        public DateTime DbUpdateDT
         {
-            get { return _db_UpdateDT; }
+            get { return _dbUpdateDT; }
             private set
             {
-                if (_db_UpdateDT != value)
+                if (_dbUpdateDT != value)
                 {
-                    _db_UpdateDT = value;
-                    NotifyPropertyChanged("DB_UpdateDT");
+                    _dbUpdateDT = value;
+                    NotifyPropertyChanged("DbUpdateDT");
                 }
             }
         }
 
-
+        private int _playtime = 0;  // playtime: time length of music played
         public int Playtime  // playtime: time length of music played
         {
             get { return _playtime; }
@@ -148,30 +147,34 @@ namespace Balboa.Common
 
         }
         
-        public Statistic(MainPage mainpage)
+        public Statistic(MainPage mainPage)
         {
-            _mainPage = mainpage;
+            _mainPage = mainPage;
         }
   
-        public void Update(MPDResponce statsinfo)
+        public void Update(MpdResponseCollection statsInfo)
         {
-            foreach (string item in statsinfo)
+            if (statsInfo == null)
+                throw new BalboaNullValueException(_modName, "Update", "158", "statsinfo");
+
+
+            foreach (string item in statsInfo)
             {
                 string[] statsitem = item.Split(':');
                 switch (statsitem[0])
                 {
-                  case "artists": Artists = int.Parse(statsitem[1]); break;
-                  case "albums": Albums = int.Parse(statsitem[1]); break;
-                  case "songs": Songs = int.Parse(statsitem[1]); break;
-                  case "uptime": Uptime = int.Parse(statsitem[1]); break;
-                  case "db_playtime": DB_Playtime = int.Parse(statsitem[1]); break;
+                  case "artists": Artists = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                  case "albums": Albums = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                  case "songs": Songs = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                  case "uptime": Uptime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                  case "db_playtime": DbPlaytime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
                   case "db_update":
-                          DB_Update = int.Parse(statsitem[1]);
+                          DbUpdate = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture);
                             // Unix timestamp is seconds past epoch
-                            DateTime db_update_dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                            DB_UpdateDT = db_update_dt.AddSeconds(DB_Update).ToLocalTime();
-                            break;
-                  case "playtime": Playtime = int.Parse(statsitem[1]); break;
+                          DateTime db_update_dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                          DbUpdateDT = db_update_dt.AddSeconds(DbUpdate).ToLocalTime();
+                          break;
+                  case "playtime": Playtime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
                  }
              }
         }

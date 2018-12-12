@@ -1,6 +1,4 @@
-﻿using System;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
+﻿using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -22,9 +20,10 @@ namespace Balboa
         public App()
         {
             InitializeComponent();
-            this.Suspending += OnSuspending;
+//            this.Suspending += OnSuspending;
+            //this.OnLaunched += OnLaunched; 
 
-         //   this.Resuming += OnResuming;
+            //this.Resuming += OnResuming;
 
         }
 
@@ -33,7 +32,8 @@ namespace Balboa
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
-        protected override async void OnLaunched(LaunchActivatedEventArgs e)
+
+        protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
 
 #if DEBUG
@@ -61,10 +61,8 @@ namespace Balboa
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
-                   
                         //TODO: Load state from previously suspended application
     //                    await SuspensionManager.RestoreAsync();
-
                 }
 
                 // Place the frame in the current Window
@@ -81,7 +79,7 @@ namespace Balboa
             // Ensure the current window is active
             Window.Current.Activate();
         }
-
+        
         /// <summary>
         /// Invoked when Navigation to a certain page fails
         /// </summary>
@@ -89,7 +87,7 @@ namespace Balboa
         /// <param name="e">Details about the navigation failure</param>
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+            throw new BalboaException("App.xaml.cs","App", "OnNavigationFailed","92","Failed to load Page " + e.SourcePageType.FullName);
         }
 
         /// <summary>
@@ -99,16 +97,14 @@ namespace Balboa
         /// </summary>
         /// <param name="sender">The source of the suspend request.</param>
         /// <param name="e">Details about the suspend request.</param>
-        private async void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
-            await SuspensionManager.SaveAsync();
-            
 
-
-            deferral.Complete();
-        }
+//        private async void OnSuspending(object sender, SuspendingEventArgs e)
+//        {
+//            var deferral = e.SuspendingOperation.GetDeferral();
+//            //TODO: Save application state and stop any background activity
+//            await SuspensionManager.SaveAsync();
+//            deferral.Complete();
+//        }
 
     
     }

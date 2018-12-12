@@ -11,6 +11,7 @@
 
 
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -21,13 +22,12 @@ using Windows.UI.Core;
 
 namespace Balboa.Common
 {
-    public class ObsevableObjectCollection<T>: ObservableCollection<T>
+    internal class ObservableObjectCollection<T>: ObservableCollection<T>
         where T : INotifyPropertyChanged, IUpdatable
     {
+        private const string _modName = "ObservableObjectCollection.cs";
+
         private MainPage    _mainPage;
-       // private MethodInfo  _method;
-       // private EventInfo   _event;
-       // private object[]    _parseinputparameters = new object[1];
         //
         // Summary:
         //     Occurs when the collection changes.
@@ -42,19 +42,19 @@ namespace Balboa.Common
                 await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset)); });
             }
         }
-  
 
-        public ObsevableObjectCollection(MainPage mainpage)
+        public ObservableObjectCollection(MainPage mainPage)
         {
-            _mainPage = mainpage;
-
+            _mainPage = mainPage;
         }
 
-        public void Update(MPDResponce responcedata)
+        public void Update(MpdResponseCollection responseData)
         {
+           if (responseData == null)
+                return;
             Clear();
-            if(responcedata.Count > 0)
-                Parse(responcedata);
+            if(responseData.Count > 0)
+                Parse(responseData);
             NotifyCollectionChanged();
         }
 
@@ -66,16 +66,18 @@ namespace Balboa.Common
         /// Остаток данных возвращается для обработки следующим элементом
         /// </summary>
         /// <param name="responce"></param>
-        public void Parse(MPDResponce responce)
+        public void Parse(MpdResponseCollection response)
         {
+            if (response == null)
+                return;
            do
            {
                 T collectionitem = (T)Activator.CreateInstance(typeof(T));
                 collectionitem.PropertyChanged += ItemPropertyChanged;
-                collectionitem.Update(responce);
+                collectionitem.Update(response);
                 Add(collectionitem);
             }
-           while (responce.Count > 0);
+           while (response.Count > 0);
         }
 
         private void ItemPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -84,18 +86,18 @@ namespace Balboa.Common
                 NotifyCollectionChanged();
         }
 
-
         public void ClearAndNotify()
         {
             base.Clear();
             NotifyCollectionChanged();
         }
-
         
         public void Sort(GenericComparer<T> comparer)
         {
-            bool unsorted = false;
+            if (comparer == null)
+                throw new BalboaNullValueException(_modName, "Sort", "96", "comparer");
 
+            bool unsorted = false;
             do
             {
                 unsorted = false;
@@ -121,13 +123,18 @@ namespace Balboa.Common
         /// Возвращает отсортированный список уникальных значений заданного поля коллекции
         /// </summary>
         /// <returns></returns>
-        public List<string> GetFieldValues(string fieldname)
+        public List<string> GetFieldValues(string fieldName)
         {
             List<string> values = new List<string>();
             Type type = typeof(T); 
-            PropertyInfo propertyInfo = type.GetRuntimeProperty(fieldname);
+            PropertyInfo propertyInfo = type.GetRuntimeProperty(fieldName);
+            if (propertyInfo == null)
+            {
+                string message = string.Format(CultureInfo.InvariantCulture,"Not found property {0} in type {1}", fieldName, type.Name);
+                throw new BalboaException(_modName, "GetFieldValues", "135", message);
+            }
 
-            for (int i=0; i<this.Count; i++)
+            for (int i=0; i<Count; i++)
             {
                 string value = (string)propertyInfo.GetValue(this[i]);
                 if (!values.Contains(value))
@@ -138,14 +145,20 @@ namespace Balboa.Common
             return values;  
         }
 
-        public bool Contains(string fieldname, object fieldvalue)
+        public bool Contains(string fieldName, object fieldValue)
         {
+            if (fieldValue == null)
+                throw new BalboaNullValueException(_modName, "Contains", "150", "fieldValue");
+
             Type type = typeof(T);
-            PropertyInfo propertyInfo = type.GetRuntimeProperty(fieldname);
+            PropertyInfo propertyInfo = type.GetRuntimeProperty(fieldName);
+            if (propertyInfo == null)
+                throw new BalboaNullValueException(_modName, "Contains", "156", "propertyInfo");
+
             for (int i = 0; i < this.Count; i++)
             {
                 object value = propertyInfo.GetValue(this[i]);
-                if (value.ToString() == fieldvalue.ToString())
+                if (value.ToString() == fieldValue.ToString())
                     return true;
             }
             return false;

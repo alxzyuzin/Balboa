@@ -16,13 +16,13 @@ namespace Balboa.Common
 {
     public class TimeConverter: IValueConverter
     {
-        public object Convert(object value, System.Type type, object parameter, string language)
+        public object Convert(object value, Type targetType, object parameter, string language)
         {
-            string s = Utils.SecTo_hh_mm_ss(value);
+            string s = Utilities.SecToHHMMSS(value);
             return s;
         }
 
-        public object ConvertBack(object value, System.Type type, object parameter, string language)
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException();
         }

@@ -256,8 +256,8 @@ namespace Balboa.Common
         {
         }
 
-        public SuspensionManagerException(Exception e)
-            : base("SuspensionManager failed", e)
+        public SuspensionManagerException(Exception exception)
+            : base("SuspensionManager failed", exception)
         {
 
         }

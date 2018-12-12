@@ -14,9 +14,9 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Balboa.Common
 {
-    public enum FileType { File, Directory, Playlist }
+    internal enum FileNature { File, Directory, Playlist }
 
-    public class File: IComparable, INotifyPropertyChanged, IUpdatable
+    internal class File: IComparable, INotifyPropertyChanged, IUpdatable
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -26,13 +26,7 @@ namespace Balboa.Common
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private string      _name = string.Empty;
-        private FileType    _type = FileType.File;
-        private string      _lastModifyed = string.Empty;
-        private string      _icon = string.Empty;
-        private bool        _justclosed = false;
-        private BitmapImage _imagesource = null;
-
+        private string _name = string.Empty;
         public string   Name
         {
             get { return _name; }
@@ -45,31 +39,37 @@ namespace Balboa.Common
                 }
             }
         }
-        public FileType Type
+
+        private FileNature _nature = FileNature.File;
+        public FileNature Nature
         {
-            get { return _type; }
+            get { return _nature; }
             set
             {
-                if (_type != value)
+                if (_nature != value)
                 {
-                    _type = value;
-                    NotifyPropertyChanged("Type");
+                    _nature = value;
+                    NotifyPropertyChanged("Nature");
                 }
             }
 
         }
-        public string   LastModifyed
+
+        private string _lastModified = string.Empty;
+        public string   LastModified
         {
-            get { return _lastModifyed; }
+            get { return _lastModified; }
             set
             {
-                if (_lastModifyed != value)
+                if (_lastModified != value)
                 {
-                    _lastModifyed = value;
-                    NotifyPropertyChanged("LastModifyed");
+                    _lastModified = value;
+                    NotifyPropertyChanged("LastModified");
                 }
             }
         }
+
+        private string _icon = string.Empty;
         public string   Icon
         {
             get { return _icon; }
@@ -82,6 +82,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private bool _justclosed = false;
         public bool     JustClosed
         {
             get { return _justclosed; }
@@ -94,6 +96,8 @@ namespace Balboa.Common
                 }
             }
         }
+
+        private BitmapImage _imagesource = null;
         public BitmapImage ImageSource
         {
             get { return _imagesource; }
@@ -107,34 +111,38 @@ namespace Balboa.Common
             }
         }
 
-        public void Update(MPDResponce responce)
+        public void Update(MpdResponseCollection response)
         {
             int i = 0;
+            if (response == null)
+                return;
             do
             {
-                string[] items = responce[i].Split(':');
+                string[] items = response[i].Split(':');
                 string tagname = items[0].ToLower();
                 string tagvalue = items[1].Trim();
                
                 switch (tagname)
                 {
                    case "file":
-                       Name = Utils.ExtractFileName(tagvalue, false);
-                       Type = FileType.File;
+                       Name = Utilities.ExtractFileName(tagvalue, false);
+                       Nature = FileNature.File;
                        Icon += '\xE189';
                        break;           // 57737     // E189
                    case "directory":
-                        Name = Utils.ExtractFileName(tagvalue, false);
-                        Type = FileType.Directory;
+                        Name = Utilities.ExtractFileName(tagvalue, false);
+                        Nature = FileNature.Directory;
                         Icon += '\xE188';
                         break; // 57736    // E188
-                   case "playlist": Name = tagvalue; Type = FileType.Playlist; break;
-                   case "Last-Modified": LastModifyed = tagvalue; break;
+                   case "playlist": Name = tagvalue; Nature = FileNature.Playlist; break;
+                   case "Last-Modified": LastModified = tagvalue; break;
                  }
                     i++;
              }
-             while ((i < responce.Count) && (!responce[i].StartsWith("file")) && (!responce[i].StartsWith("playlist")) && (!responce[i].StartsWith("directory")));
-            responce.RemoveRange(0, i);
+             while ((i < response.Count) && (!response[i].StartsWith("file",StringComparison.OrdinalIgnoreCase)) && 
+                (!response[i].StartsWith("playlist", StringComparison.OrdinalIgnoreCase)) &&
+                (!response[i].StartsWith("directory", StringComparison.OrdinalIgnoreCase)));
+             response.RemoveRange(0, i);
         }
  
         /// <summary>
@@ -150,29 +158,64 @@ namespace Balboa.Common
         ///  1 - если текущий объект больше переданного
         /// </returns>
 
-        public int CompareTo(object item)
+        public int CompareTo(object obj)
         {
-            File fitem = item as File;
-            if (this.Type == FileType.Directory && fitem.Type == FileType.Directory)
+            File fitem = obj as File;
+            if (this.Nature == FileNature.Directory && fitem.Nature == FileNature.Directory)
                 {
                     return string.Compare(this.Name, fitem.Name, StringComparison.Ordinal);
                 }
 
-            if (this.Type == FileType.Directory && fitem.Type == FileType.File)
+            if (this.Nature == FileNature.Directory && fitem.Nature == FileNature.File)
                 {
                     return -1;
                 }
 
-            if (this.Type == FileType.File && fitem.Type == FileType.Directory)
+            if (this.Nature == FileNature.File && fitem.Nature == FileNature.Directory)
                 {
                     return 1;
                 }
 
-            if (this.Type == FileType.File && fitem.Type == FileType.File)
+            if (this.Nature == FileNature.File && fitem.Nature == FileNature.File)
                 {
                     return string.Compare(this.Name, fitem.Name, StringComparison.Ordinal);
                 }
             return 0;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (object.ReferenceEquals(obj, null))
+            {
+                return false;
+            }
+            return this.CompareTo(obj) == 0;
+        }
+
+        public override int GetHashCode()
+        {
+            char[] c = this.Name.ToCharArray();
+            return (int) c[0];
+        }
+
+
+        public static bool operator ==(File left, File right)
+        {
+            if (object.ReferenceEquals(left, null))
+            {
+                return object.ReferenceEquals(right, null);
+            }
+            
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(File left, File right)
+        {
+            if (object.ReferenceEquals(left, null))
+            {
+                return object.ReferenceEquals(right, null);
+            }
+            return left.Equals(right);
         }
     }
 }

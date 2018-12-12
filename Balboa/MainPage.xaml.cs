@@ -3,14 +3,13 @@
  *
  * This file is part of MPD client Balboa.
  *
- *
- *
  * Главная страница приложения
  *
  --------------------------------------------------------------------------*/
 
 using Balboa.Common;
 using System;
+using System.Globalization;
 using System.Text;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -23,7 +22,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
@@ -32,67 +30,54 @@ using Windows.Foundation;
 using Windows.UI.Input;
 using Windows.Graphics.Display;
 using System.Text.RegularExpressions;
-
+using Windows.ApplicationModel.Resources;
 
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
+[assembly: CLSCompliant(true)]
 
 namespace Balboa
 {
-    /// <summary>
-    /// A basic page that provides characteristics common to most applications.
-    /// </summary>
-    public sealed partial class MainPage : Page
+
+    // Change the current culture to the French culture,
+    // and parsing the same string yields a different value.
+    //  Thread.CurrentThread.CurrentCulture = new CultureInfo("Fr-fr", true);
+    //  myDateTime = DateTime.Parse(dt);
+
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+    internal partial class MainPage : Page, IDisposable
     {
         private enum NewPlaylistNameRequestMode { SaveNewPlaylist, RenamePlaylist };
 
-        private NavigationHelper navigationHelper;
-  
-         /// <summary>
-        /// NavigationHelper is used on each page to aid in navigation and 
-        /// process lifetime management
-        /// </summary>
-        public NavigationHelper NavigationHelper
-        {
-            get { return this.navigationHelper; }
-        }
+        ResourceLoader _resldr = new ResourceLoader();
 
-        public AppSettings      AppSettings
-        {
-            get { return this._appSettings; }
-        }
-
+        private AppSettings _appSettings = new AppSettings();
         private ListViewItem    _listViewItemGotFocus;
         private GridViewItem    _gridViewItemGotFocus;
         private List<string>    _currentFilePath = new List<string>();
         private string          _parentfolder = "";
-        private string          _currentPlaylistName = "New playlist";
+        private string          _currentPlaylistName = string.Empty;
         private string          _oldPlaylistName;
         private string          _newPlaylistName;
 
         NewPlaylistNameRequestMode _requestNewPlaylistNameMode;
-
-        private AppSettings     _appSettings = new AppSettings();
   
         private Server Server;
 
         private enum DataPanelState {CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings} 
-        private enum ApplicationStates { Default, Filled, Narrow }
 
-//        private ApplicationStates _applicationState = ApplicationStates.Default;
-      
-        // Конструктор
         public MainPage()
         {
             this.InitializeComponent();
-            this.navigationHelper = new NavigationHelper(this);
-            this.navigationHelper.LoadState += navigationHelper_LoadState;
-            this.navigationHelper.SaveState += navigationHelper_SaveState;
+
+            _currentPlaylistName = _resldr.GetString("NewPlaylist");
+
             this.SizeChanged += MainPage_SizeChanged;
            
-            Application.Current.Suspending += new SuspendingEventHandler(OnSuspending);
-            Application.Current.Resuming += new EventHandler<Object>(OnResuming);
-                     
+            Application.Current.Suspending += OnSuspending;
+            Application.Current.Resuming += OnResuming;
+
             Server = new Server(this);
             Server.ConnectionStatusChanged += OnServerConnectionStatusChanged;
             Server.Error += OnServerError;
@@ -101,31 +86,29 @@ namespace Balboa
             Server.CurrentSongData.PropertyChanged += OnCurrentSongDataPropertyChanged;
             Server.CommandCompleted += OnCommandCompleted;
             Server.OutputsData.CollectionChanged += OnOutputsCollectionChanged;
-
             Server.DirectoryData.CollectionChanged += OnFilelistChanged;
 
             // Установка контекстов для databinding
-
             stp_ServerStatus.DataContext = Server.StatusData;
-            stackpanel_MainPanelHeader.DataContext = Server.CurrentSongData;
-            tb_ServerStatus.DataContext = Server.StatusData;
-
-            tb_ConnectionStatus.DataContext = Server;
-            tb_Remain.DataContext = Server.StatusData;
             stp_MainMenu.DataContext = Server.StatusData;
 
+            stackpanel_MainPanelHeader.DataContext = Server.CurrentSongData;
+
+
+            tb_ConnectionStatus.DataContext = Server;
+
+            gr_CurrentTrack.DataContext = Server.CurrentSongData;
             gr_Stats.DataContext            = Server.StatisticData;
-            gr_CurrentTrack.DataContext     = Server.CurrentSongData;
+            gr_Settings.DataContext         = _appSettings;
+
             lv_PlayList.ItemsSource         = Server.PlaylistData;
             gr_FileSystemContent.ItemsSource = Server.DirectoryData;
             gr_SavedPlaylistsContent.ItemsSource = Server.SavedPlaylistsData;
 
             listview_Genres.ItemsSource = Server.Genres;
-
             listview_Arists.ItemsSource = Server.Artists;
             listview_Albums.ItemsSource = Server.Albums;
             listview_Tracks.ItemsSource = Server.Tracks;
-
             listview_GenreArists.ItemsSource = Server.Artists;
             listview_GenreAlbums.ItemsSource = Server.Albums;
             listview_GenreTracks.ItemsSource = Server.Tracks;
@@ -138,37 +121,29 @@ namespace Balboa
                 Server.Host                     = _appSettings.Server;
                 Server.Port                     = _appSettings.Port;
                 Server.Password                 = _appSettings.Password;
-                Server.ViewUpdateInterval       = _appSettings.ViewUpdateInterval;
+                Server.ViewUpdateInterval       = int.Parse(_appSettings.ViewUpdateInterval, System.Globalization.CultureInfo.InvariantCulture);
                 Server.MusicCollectionFolder    = _appSettings.MusicCollectionFolder;
                 Server.AlbumCoverFileNames      = _appSettings.AlbumCoverFileName;
-                Server.DisplayFolderPictures    = _appSettings.DisplayFolderPictures;
-       
-              
-       
-
-        Server.Start();         // Запускаем сеанс взаимодействия с MPD
+                Server.DisplayFolderPictures    = (bool)_appSettings.DisplayFolderPictures;
+ 
+                Server.Start();         // Запускаем сеанс взаимодействия с MPD
 
                 SwitchDataPanelsTo(DataPanelState.CurrentPlaylist);
              }
             else
             {
                 SwitchDataPanelsTo(DataPanelState.Settings);
-             }
-
- 
+            }
         }
 
-     
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var displayinformation = DisplayInformation.GetForCurrentView();
 
             if (displayinformation.CurrentOrientation == DisplayOrientations.Landscape || displayinformation.CurrentOrientation == DisplayOrientations.LandscapeFlipped)
             {
-                //textbox_WindowWidth.Text = e.NewSize.Width.ToString();
                 if (e.NewSize.Width >= 1100)
                 {
-//                    _applicationState = ApplicationStates.Default;
                     VisualStateManager.GoToState(this, "Default", true);
                 }
 
@@ -178,19 +153,16 @@ namespace Balboa
                     // Показываем кнопку регулятора громкости
                     // Меняем размер колонки 1 в панели управления воспроизведения grid_PlayControls.ColumnDefinitions[1];
                     // (меняем 300 на 20*
-//                    _applicationState = ApplicationStates.Filled;
                     VisualStateManager.GoToState(this, "Filled", true);
                 }
 
                 if (e.NewSize.Width < 900)
                 {
-//                    _applicationState = ApplicationStates.Narrow;
                     VisualStateManager.GoToState(this, "Narrow", true);
                 }
 
                 if (e.NewSize.Width < 620)
                 {
-//                    _applicationState = ApplicationStates.Narrow;
                     VisualStateManager.GoToState(this, "SuperNarrow", true);
                 }
             }
@@ -199,8 +171,6 @@ namespace Balboa
             {
                 VisualStateManager.GoToState(this, "Portrait", true); 
             }
-
-      
         }
 
         private async void OnSuspending(object sender, SuspendingEventArgs e)
@@ -217,50 +187,39 @@ namespace Balboa
 
         private void OnStatusDataPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-
-            if (e.PropertyName=="TimeElapsed" && !_seekBarIsBeingDragged)
-            { 
-                pb_Progress.Value = Server.StatusData.TimeElapsed;
-                
-            }
-            if (e.PropertyName == "SongId") // Произошёл переход к следующему треку
-            { 
-                // Запрашиваем у сервера данные проигрываемого трека
-                Server.CurrentSong();
-            }
-            
-            if (e.PropertyName == "PlaylistId")  // Изменился PlaylistId, читаем заново Playlist  
+            switch (e.PropertyName)
             {
-                Server.PlaylistInfo();
+                case "TimeElapsed":
+                    if(!_seekBarIsBeingDragged)
+                        pb_Progress.Value = Server.StatusData.TimeElapsed;
+                    break;
+                case "SongId": Server.CurrentSong();break;
+                case "PlaylistId": Server.PlaylistInfo(); break;
+                case "State": // "&#xE102;" - Play, "&#xE103;" - Pause
+                    appbtn_PlayPause.Content = (Server.StatusData.State == "play") ? '\xE103' : '\xE102';
+                    
+                    if (Server.StatusData.State == "stop")
+                    {
+                        if (stackpanel_MainPanelHeader.Opacity != 0)
+                            stackpanel_MainPanelHeaderHideStoryboard.Begin();
+                    }
+                    else
+                    {
+                        if (stackpanel_MainPanelHeader.Opacity == 0)
+                            stackpanel_MainPanelHeaderShowStoryboard.Begin();
+                    }
+                    break;
+                case "Volume":
+                    _volumeChangedByStatus = true;
+                    sl_Volume.Value = Server.StatusData.Volume;
+                    sl_VerticalVolume.Value = Server.StatusData.Volume;
+                    break;
             }
-
-            if (e.PropertyName == "State")
-            {
-                SetPlaybuttonPicture(Server.StatusData.State);
-                if (Server.StatusData.State == "stop")
-                {
-                    if (stackpanel_MainPanelHeader.Opacity != 0)
-                        stackpanel_MainPanelHeaderHideStoryboard.Begin();
-                }
-                else
-                {
-                    if (stackpanel_MainPanelHeader.Opacity == 0)
-                        stackpanel_MainPanelHeaderShowStoryboard.Begin();
-                }
-            }
-
-            if (e.PropertyName == "Volume")
-            {
-                volumechangedbystatus = true;
-                sl_Volume.Value = Server.StatusData.Volume;
-                sl_VerticalVolume.Value = Server.StatusData.Volume;
-            }
-
         }
 
         /// <summary>
         /// Устанавливает свойство IsPlaying для текущего проигрываемого трека равным true
-        ///  и для предыдущего трка равным false
+        /// и для предыдущего трека равным false
         /// В зависимости от значения свойства устанавливается стиль отображения трека в Playlist
         /// </summary>
         /// <param name="sender"></param>
@@ -276,40 +235,63 @@ namespace Balboa
                 if (_appSettings.MusicCollectionFolderToken.Length == 0)
                     return;
                 
-                 string s = Utils.ExtractFilePath(Server.CurrentSongData.File);
-
-                image_AlbumCover.Source = image_AlbumCoverSmall.Source = await Utils.GetFolderImage(_appSettings.MusicCollectionFolder,s, _appSettings.AlbumCoverFileName);
+                string s = Utilities.ExtractFilePath(Server.CurrentSongData.File);
+                try
+                {
+                    image_AlbumCover.Source = image_AlbumCoverSmall.Source = await Utilities.GetFolderImage(_appSettings.MusicCollectionFolder, s, _appSettings.AlbumCoverFileName);
+                }
+                catch (UnauthorizedAccessException )
+                {
+                    string message = string.Format(_resldr.GetString("CheckDirectoryAvailability"), _appSettings.MusicCollectionFolder);
+                    switch (await MessageBox(_resldr.GetString("UnauthorizedAccessError"), message, MsgBoxButtons.GoToSettings | MsgBoxButtons.Exit))
+                    {
+                        case MsgBoxButtons.Exit: Application.Current.Exit(); break;
+                        case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings); ; break;
+                    }
+                }
+                catch (Exception ee)
+                {
+                    MsgBoxButtons responce = await MessageBox(_resldr.GetString("Error"), string.Format(_resldr.GetString("Exception"),ee.GetType().ToString(),ee.Message), MsgBoxButtons.Continue);
+                    switch (responce)
+                    {
+                        case MsgBoxButtons.Exit: Application.Current.Exit(); break;
+                        case MsgBoxButtons.Continue: Server.Restart(); break;
+                    }
+                }
             }
         }
 
-        private       void OnCommandCompleted(object sender, ServerCommandCompletionEventArgs args)
+        private       void OnCommandCompleted(object sender, EventArgs eventArgs)
         {
+            ServerEventArgs args = eventArgs as ServerEventArgs;
             switch (args.Command)
             {
                 case "load":
                     if (args.Result == "OK")
                     { 
                     tbk_PlaylistName.Text = _currentPlaylistName;
-                    NotifyUser("Load playlist", "Playlist " + _currentPlaylistName + " loaded succesfully");
+                        NotifyUser(_resldr.GetString("PlaylistLoading"),
+                           string.Format(CultureInfo.CurrentCulture, _resldr.GetString("PlaylistLoaded"), _currentPlaylistName));
                     }
                     else
                     {
-                        NotifyUser("", "Error loading playlist" + _currentPlaylistName + "\n"+ args.Message);
+                        NotifyUser(_resldr.GetString("Error"), 
+                           string.Format(CultureInfo.CurrentCulture, _resldr.GetString("PlaylistError"), _currentPlaylistName, args.Message));
                     }
-                    break;
+                    break; 
                 case "search":
                     if (Server.Tracks.Count == 0)
-                        textblock_SearchResult.Text = "Serching complete.\n\nNothing found.";
+                          textblock_SearchResult.Text = _resldr.GetString("SearchComplete");
                     else
                         textblock_SearchResult.Text = "";
                     break;
 
                 case "playlistinfo":
                     if (Server.PlaylistData.Count == 0)
-                        textblock_PlaylistContent.Text = "Playlist is empty";
+                        textblock_PlaylistContent.Text = _resldr.GetString("PlaylistIsEmpty");
                     else
                     { 
-                        textblock_PlaylistContent.Text = "";
+                        textblock_PlaylistContent.Text = string.Empty;
                         if (playlastaddedtrack)
                         {
                             var track = lv_PlayList.Items[lv_PlayList.Items.Count-1] as Track;
@@ -318,11 +300,14 @@ namespace Balboa
                         }
                         HightlightCurrentPlaingTrack();
                     }
-                    
                     break;
-                 default: break;
+                case "lsinfo":
+                    textblock_FileSystemContent.Text = Server.DirectoryData.Count == 0? 
+                        string.Format(CultureInfo.CurrentCulture, _resldr.GetString("NoAudioFilesInFolder"),
+                                        Utilities.BuildFilePath(_currentFilePath))
+                        :string.Empty;
+                    break;
             }
-
         }
 
         private       void OnOutputsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -334,7 +319,7 @@ namespace Balboa
                 ToggleSwitch ts = new ToggleSwitch();
                 ts.Style = Resources["ToggleSwitchStyle"] as Style;
                 
-                ts.Name = output.ID.ToString();
+                ts.Name = output.Id.ToString(CultureInfo.CurrentCulture);
                 ts.Header = output.Name;
                 ts.IsOn = output.Enabled;
                 ts.Width = 300;
@@ -346,15 +331,9 @@ namespace Balboa
 
         private       void OnFilelistChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            string currentpath = Utils.BuildFilePath(_currentFilePath);
-
-            StringBuilder foldername = new StringBuilder(Utils.BuildFilePath(_currentFilePath));
-            if (foldername.Length > 0)
-                foldername.Append("\\");
- 
-            string[] AlbumCoverFileNames = _appSettings.AlbumCoverFileName.Split(';');
             // При переходе на уровень вверх по файловой системе подсветим 
             //последний открывавшийся фолдер и прокрутим Grid так чтобы он был виден
+
             foreach (File item in Server.DirectoryData)
             {
                 if (item.Name.ToLower() == _parentfolder.ToLower())
@@ -366,50 +345,33 @@ namespace Balboa
             }
         }
 
-        private async void OnServerError(object sender, ServerEventArgs e)
+        private async void OnServerError(object sender, EventArgs eventArgs)
         {
             await Server.Halt();
-
-            MessageBoxButtons responce = await MessageBox("Error", e.Message, MessageBoxButtons.GoToSettings_Retry_Exit);
-            if (responce == MessageBoxButtons.Exit)
+            switch(await MessageBox(_resldr.GetString("Error"),((ServerEventArgs) eventArgs).Message, MsgBoxButtons.GoToSettings | MsgBoxButtons.Retry | MsgBoxButtons.Exit))
             {
-                 Application.Current.Exit();
+                case MsgBoxButtons.Exit: Application.Current.Exit(); break;
+                case MsgBoxButtons.Retry: Server.Start(); break;
+                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
             }
-            if (responce == MessageBoxButtons.Continue)
-            {
-                 Server.Start();
-            }
-            if (responce == MessageBoxButtons.GoToSettings)
-            {
-                SwitchDataPanelsTo(DataPanelState.Settings);
-             }
         }
 
-        private async void OnServerCriticalError(object sender, ServerEventArgs e)
+        private async void OnServerCriticalError(object sender, EventArgs eventArgs)
         {
-            MessageBoxButtons responce = await MessageBox("Error", e.Message, MessageBoxButtons.GoToSettings_Retry_Exit);
-                if (responce == MessageBoxButtons.Exit)
+            await Server.Halt();
+            MsgBoxButtons responce = await MessageBox(_resldr.GetString("CriticalError"), ((ServerEventArgs)eventArgs).Message, MsgBoxButtons.GoToSettings | MsgBoxButtons.CloseApplication);
+            switch (responce)
             {
-                await Server.Halt();
-                Application.Current.Exit();
+                case MsgBoxButtons.CloseApplication: Application.Current.Exit();break;
+                case MsgBoxButtons.Retry: Server.Restart();break;
+                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
             }
-            if (responce == MessageBoxButtons.Continue)
-            {
-               await Server.Restart();
-            }
-            if (responce == MessageBoxButtons.GoToSettings)
-            {
-                SwitchDataPanelsTo(DataPanelState.Settings);
-                //await Server.Restart();
-            }
-
         }
 
-        private       void OnServerConnectionStatusChanged(object sender, ServerConnectionStatusEventArgs e)
+        private       void OnServerConnectionStatusChanged(object sender, EventArgs eventArgs)
         {
-            if(e.Status == ConnectionStatus.Connected)
+            if(((ServerEventArgs)eventArgs).ConnectionStatus == ConnectionStatus.Connected)
                 Server.PlaylistInfo();
-            
         }
 
         #endregion
@@ -417,73 +379,12 @@ namespace Balboa
         private async void NotifyUser(string title, string message)
         {
             object cmdid= new object();
-            MessageDialog md = new Windows.UI.Popups.MessageDialog(message, title);
-            //md.Commands.Add(new UICommand("Continue (not recommended)",null, 1));
-            md.Commands.Add(new UICommand("Close", null, 2));
+            MessageDialog md = new MessageDialog(message, title);
+            md.Commands.Add(new UICommand(_resldr.GetString("Close"), null, 2));
             var selected = await md.ShowAsync();
             return;
         }
-
-    
-        #region Navigation helpers
-
-        /// <summary>
-        /// Populates the page with content passed during navigation. Any saved state is also
-        /// provided when recreating a page from a prior session.
-        /// </summary>
-        /// <param name="sender">
-        /// The source of the event; typically <see cref="Common.NavigationHelper"/>
-        /// </param>
-        /// <param name="e">Event data that provides both the navigation parameter passed to
-        /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested and
-        /// a dictionary of state preserved by this page during an earlier
-        /// session. The state will be null the first time a page is visited.</param>
-        private void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
-        {
-
-            
-
-
-        }
-
-        /// <summary>
-        /// Preserves state associated with this page in case the application is suspended or the
-        /// page is discarded from the navigation cache.  Values must conform to the serialization
-        /// requirements of <see cref="Common.SuspensionManager.SessionState"/>.
-        /// </summary>
-        /// <param name="sender">The source of the event; typically <see cref="Common.NavigationHelper"/></param>
-        /// <param name="e">Event data that provides an empty dictionary to be populated with
-        /// serializable state.</param>
-        private void navigationHelper_SaveState(object sender, SaveStateEventArgs e)
-        {
-            
-        }
-
-        #region NavigationHelper registration
-
-        /// The methods provided in this section are simply used to allow
-        /// NavigationHelper to respond to the page's navigation methods.
-        /// 
-        /// Page specific logic should be placed in event handlers for the  
-        /// <see cref="Common.NavigationHelper.LoadState"/>
-        /// and <see cref="Common.NavigationHelper.SaveState"/>.
-        /// The navigation parameter is available in the LoadState method 
-        /// in addition to page state preserved during an earlier session.
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            navigationHelper.OnNavigatedTo(e);
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            navigationHelper.OnNavigatedFrom(e);
-        }
-
-        #endregion
-        #endregion
-
-
+ 
         #region Seek bar
         private bool _seekBarIsBeingDragged = false;
         private double _currentTrackPosition = 0;
@@ -493,17 +394,15 @@ namespace Balboa
             _seekBarIsBeingDragged = true;
             var sl = sender as Slider;
             _currentTrackPosition = sl.Value;
-  
-        }
+         }
 
         private void pb_Progress_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-             
             var sl = sender as Slider;
             double offset = sl.Value - _currentTrackPosition;
 
-            string soffset = offset.ToString();
-            if (offset >0)
+            string soffset = offset.ToString(CultureInfo.InvariantCulture);
+            if (offset > 0)
                  soffset = "+"+soffset;
             Server.SeekCurrent(soffset);
             _seekBarIsBeingDragged = false;
@@ -514,10 +413,6 @@ namespace Balboa
         #region Обработка событий интерфейса
 
         #region УПРАВЛЕНИЕ ВОСПРИЗВЕДЕНИЕМ
-        private void img_Volume_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
         private void btn_PrevTrack_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -529,26 +424,21 @@ namespace Balboa
             // "&#xE102;" - Play
             // "&#xE103;" - Pause
             Button button = (Button)sender;
-            if (Server.StatusData.State == "stop")
+            switch(Server.StatusData.State)
             {
-                Server.Play();
-                // Устанавливаем символ "Pause"
-                button.Content = '\xE103';
+                case "stop": Server.Play();
+                    // Устанавливаем символ "Pause"
+                    button.Content = '\xE103';
+                    break;
+                case "pause": Server.Pause();    // Если статус сервера "pause" то команда Pause() запускает проигрывание
+                    button.Content = '\xE103';   // Устанавливаем символ "Pause"
+                    break;
+                case "play":
+                    Server.Pause();    // Если статус сервера "play" то команда Pause() прерывает проигрывание
+                    button.Content = '\xE102';  //57602 // Устанавливаем символ "Play"
+                    break;
             }
-            if (Server.StatusData.State == "pause")
-            {
-                Server.Pause();    // Если статус сервера "pause" то команда Pause() запускает проигрывание
-                // Устанавливаем символ "Pause"
-                button.Content = '\xE103';
-            }
-            if (Server.StatusData.State == "play")
-            {
-                Server.Pause();    // Если статус сервера "play" то команда Pause() прерывает проигрывание
-                // Устанавливаем символ "Play"
-                button.Content = '\xE102';  //57602
-            }
-
-
+     
             bool playedtrackselected = false; // Устанавливаем пизнак того что проигрываемый трек не подсвечен
             // Ищем в Playlist трек с установленным признаком IsPlaying
             // и если такой трек находится то прокручиваем Playlist так чтобы трек быд виден
@@ -561,7 +451,8 @@ namespace Balboa
                     return;
                 }
             }
-            // Если трек с признаком IsPlaying не найден и Playlist не пуст устанавливаем признак проигрываемого трека на первый элемент в Playlist
+            // Если трек с признаком IsPlaying не найден и Playlist не пуст устанавливаем признак проигрываемого трека
+            // на первый элемент в Playlist
             if (!playedtrackselected && Server.PlaylistData.Count>0)
             {
                 Server.PlaylistData[0].IsPlaying = true;
@@ -623,7 +514,7 @@ namespace Balboa
 
         private void listview_Genres_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var lv = sender as ListviewExtended;
+            var lv = sender as ListViewExtended;
             var si = lv.SelectedItem as CommonGridItem;
             if (si != null)
             {
@@ -667,7 +558,8 @@ namespace Balboa
                         }
                         else
                         {
-                            await MessageBox("Adding track to playlist", "No selected items to add.", MessageBoxButtons.Continue);
+                            await MessageBox(_resldr.GetString("AddingTrackToPlaylist"), 
+                                _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButtons.Continue);
                         }
                     }
                 }
@@ -683,7 +575,7 @@ namespace Balboa
         private void textbox_GenreSearch_LostFocus(object sender, RoutedEventArgs e)
         {
             var textbox = sender as TextBox;
-            textbox.Text = "Type genre name here";
+            textbox.Text = _resldr.GetString("TypeGenreNameHere");
         }
 
         private void textbox_GenreSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -694,9 +586,9 @@ namespace Balboa
                 for (int i = 0; i < genrescount; i++)
                 {
                     var genre = listview_Genres.Items[i] as CommonGridItem;
-                    if (genre.Name.ToLower().StartsWith(textbox_GenreSearch.Text.ToLower()))
+                    if (genre.Name.StartsWith(textbox_GenreSearch.Text, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        var lastgenre = listview_Genres.Items[genrescount - 1];// as CommonGridItem;
+                        var lastgenre = listview_Genres.Items[genrescount - 1];
                         listview_Genres.ScrollIntoView(lastgenre);
                         listview_Genres.ScrollIntoView(genre);
                         break;
@@ -715,12 +607,10 @@ namespace Balboa
             Server.Tracks.ClearAndNotify();
             Server.List("artist");
          }
-      
 
         private void listview_Arists_Tapped(object sender, TappedRoutedEventArgs e)
         {
-
-            var lv = sender as ListviewExtended;
+            var lv = sender as ListViewExtended;
             var si = lv.SelectedItem as CommonGridItem;
             if (si!=null)
             {
@@ -728,19 +618,17 @@ namespace Balboa
                 Server.Tracks.ClearAndNotify(); 
                 Server.List("album", "artist", si.Name);
             }
-
         }
 
         private void listview_Albums_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var lv = sender as ListviewExtended;
+            var lv = sender as ListViewExtended;
             var si = lv.SelectedItem as CommonGridItem;
             if (si != null)
             {
                 Server.Tracks.ClearAndNotify();
                 Server.Search("album", si.Name);
             }
-
         }
 
         private async void appbtn_Artist_AddToPaylist_Tapped(object sender, TappedRoutedEventArgs e)
@@ -766,7 +654,8 @@ namespace Balboa
                     }
                     else
                     {
-                        await MessageBox("Adding track to playlist", "No selected items to add.", MessageBoxButtons.Continue);
+                        await MessageBox(_resldr.GetString("AddingTrackToPlaylist"), 
+                            _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButtons.Continue);
                     }
                 }
             }
@@ -779,10 +668,10 @@ namespace Balboa
                 for (int i = 0; i < listview_Arists.Items.Count; i++)
                 {
                     var artist = (CommonGridItem)(listview_Arists.Items[i]);
-                    if (artist.Name.ToLower().StartsWith(textbox_ArtistSearch.Text.ToLower()))
+                    if (artist.Name.StartsWith(textbox_ArtistSearch.Text, StringComparison.CurrentCultureIgnoreCase))
                     {
                         var lastartist = (CommonGridItem)(listview_Arists.Items[listview_Arists.Items.Count-1]);
-                        var firstartist = (CommonGridItem)(listview_Arists.Items[0]);
+//                        var firstartist = (CommonGridItem)(listview_Arists.Items[0]);
                         listview_Arists.ScrollIntoView(lastartist);
                         listview_Arists.ScrollIntoView(artist);
                         break;
@@ -800,126 +689,102 @@ namespace Balboa
         private void textbox_ArtistSearch_LostFocus(object sender, RoutedEventArgs e)
         {
             var textbox = sender as TextBox;
-            textbox.Text = "Type artist name here";
+            textbox.Text = _resldr.GetString("TypeArtistNameHere");
         }
         #endregion
 
         #region SETTINGS
         private void btn_Settings_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if(Server.IsConnected)
-            {
-                // Прочитаем список доступных выходов и добавим их в список параметров
+            // Прочитаем список доступных выходов и добавим их в список параметров
+            if (Server.IsConnected)
                 Server.Outputs();
-            }
-            // Восстановим значения на экранной форме Settings
-            tbx_Server.Text              = _appSettings.Server;
-            tbx_Port.Text                = _appSettings.Port;
-            tbx_Password.Text            = _appSettings.Password;
-            tbx_ViewUpdateInterval.Text  = _appSettings.ViewUpdateInterval.ToString();
-            tbx_MusicCollectionPath.Text = _appSettings.MusicCollectionFolder;
-            tbx_AlbumCoverFileName.Text  = _appSettings.AlbumCoverFileName;
-            checkbox_DisplayFolderPictures.IsChecked = _appSettings.DisplayFolderPictures;
-
             SwitchDataPanelsTo(DataPanelState.Settings);
- 
         }
 
         private async void appbtn_SaveSettings_Tapped(object sender, TappedRoutedEventArgs e)
         {
             string notNumber = @"\D{1,}";
 
-            _appSettings.Server = tbx_Server.Text;
-            _appSettings.Port = tbx_Port.Text;
-            _appSettings.Password = tbx_Password.Text;
-            _appSettings.MusicCollectionFolder = tbx_MusicCollectionPath.Text;
-            _appSettings.AlbumCoverFileName = tbx_AlbumCoverFileName.Text;
-            _appSettings.DisplayFolderPictures = (bool)checkbox_DisplayFolderPictures.IsChecked;
-
-            if (Regex.IsMatch(tbx_Port.Text, notNumber) || tbx_Port.Text.Length == 0)
+            if (Regex.IsMatch(_appSettings.Port, notNumber) || _appSettings.Port.Length == 0)
             {
-                await MessageBox("Eror", "'Port' value must be number", MessageBoxButtons.Continue);
+                await MessageBox(_resldr.GetString("Eror"),
+                    _resldr.GetString("PortValueMustBeNumber"), MsgBoxButtons.Continue);
                 return;
              }
              else
              {
-                int port = int.Parse(tbx_Port.Text);
+                int port = int.Parse(_appSettings.Port);
                 if (port > 65535)
                 {
-                    await MessageBox("Eror", "'Port' value must be less then 65536", MessageBoxButtons.Continue);
+                    await MessageBox(_resldr.GetString("Eror"),
+                       _resldr.GetString("PortValueMustBeLess65536"), MsgBoxButtons.Continue);
                     return;
                 }
-                _appSettings.Port = tbx_Port.Text;
              }
 
-             if (Regex.IsMatch(tbx_ViewUpdateInterval.Text, notNumber) || tbx_ViewUpdateInterval.Text.Length==0)
+             if (Regex.IsMatch(_appSettings.ViewUpdateInterval, notNumber) || _appSettings.ViewUpdateInterval.Length==0)
              {
-                await MessageBox("Eror", "'View update interval' value must be number", MessageBoxButtons.Continue);
+                await MessageBox(_resldr.GetString("Eror"), 
+                    _resldr.GetString("ViewUpdateIntervalMustNumber"), MsgBoxButtons.Continue);
                 return;
              }
              else
              {
-                int updateinterval = int.Parse(tbx_ViewUpdateInterval.Text);
+                int updateinterval = int.Parse(_appSettings.ViewUpdateInterval);
                 if (updateinterval < 100)
                 {
-                    await MessageBox("Eror", "View update interval must be 100 or more", MessageBoxButtons.Continue);
+                    await MessageBox(_resldr.GetString("Eror"), 
+                        _resldr.GetString("ViewUpdateIntervalMustBe100"), MsgBoxButtons.Continue);
                     return;
                 }
-                _appSettings.ViewUpdateInterval = updateinterval;
               }
 
-
-              if (!_appSettings.SettingsChanged)
-                    return;
-
+              //if (!_appSettings.SettingsChanged)
+              //      return;
+               // Проверим возможность соединения с новыми параметрами перед их сохранением
               Connection connection = new Connection();
-
-              bool connectionresult = await connection.Open(tbx_Server.Text, tbx_Port.Text, tbx_Password.Text);
+              bool connectionIsOk = await connection.Open(_appSettings.Server, _appSettings.Port, _appSettings.Password);
               connection.Close();
 
-              if (connectionresult)
-              {
-                  if (_appSettings.ServerNameChanged && (!_appSettings.MusicCollectionFolderTokenChanged))
-                  {
-                      await MessageBox("Warning", "Server name changed without changing 'Path to music collection'\n  'Path to music collection' will be creared", MessageBoxButtons.Continue);
-                      tbx_MusicCollectionPath.Text = String.Empty;
-                      StorageApplicationPermissions.FutureAccessList.Clear();
-                      _appSettings.MusicCollectionFolderToken = String.Empty;
-                      _appSettings.MusicCollectionFolder = String.Empty;
-                  }
-                  _appSettings.Save();
+            if (!connectionIsOk)
+            {
+                await MessageBox(_resldr.GetString("ConnectionError"), connection.Error , MsgBoxButtons.OK);
+                return;
+            }
+            if (_appSettings.ServerNameChanged && (!_appSettings.MusicCollectionFolderTokenChanged))
+            {
+                await MessageBox(_resldr.GetString("Warning"),
+                    _resldr.GetString("ServerNameChanged"), MsgBoxButtons.Continue);
+                tbx_MusicCollectionPath.Text = String.Empty;
+                StorageApplicationPermissions.FutureAccessList.Clear();
+                _appSettings.MusicCollectionFolderToken = String.Empty;
+                _appSettings.MusicCollectionFolder = String.Empty;
+            }
+            _appSettings.Save();
 
-                  Server.Host = _appSettings.Server;
-                  Server.Port = _appSettings.Port;
-                  Server.Password = _appSettings.Password;
-                  Server.ViewUpdateInterval = _appSettings.ViewUpdateInterval;
-                  Server.MusicCollectionFolder = _appSettings.MusicCollectionFolder;
-                  Server.AlbumCoverFileNames = _appSettings.AlbumCoverFileName;
-                  Server.DisplayFolderPictures = _appSettings.DisplayFolderPictures;
+            Server.Host = _appSettings.Server;
+            Server.Port = _appSettings.Port;
+            Server.Password = _appSettings.Password;
+            Server.ViewUpdateInterval =  int.Parse(_appSettings.ViewUpdateInterval);
+            Server.MusicCollectionFolder = _appSettings.MusicCollectionFolder;
+            Server.AlbumCoverFileNames = _appSettings.AlbumCoverFileName;
+            Server.DisplayFolderPictures = (bool)_appSettings.DisplayFolderPictures;
 
-                await Server.Restart();
-                }
-                else
-                {
-                    MessageBoxButtons b = await MessageBox("Connection error", "\n" + connection.Error + "\n\nConnection parameters does not changed", MessageBoxButtons.OK);
-                }
+            Server.Restart();
         }
 
         private void ts_Output_Switched(object sender, RoutedEventArgs e)
         {
             var ts = sender as ToggleSwitch;
+            int output = int.Parse(ts.Name, NumberStyles.Integer, CultureInfo.InvariantCulture);
             if (ts.IsOn)
-                Server.EnableOutput(int.Parse(ts.Name));
+                Server.EnableOutput(output);
             else
-                Server.DisableOutput(int.Parse(ts.Name));
+                Server.DisableOutput(output);
         }
 
         private async void appbtn_TestConnection_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            await TestConnection();
-        }
-
-        private async Task TestConnection()
         {
             string message = string.Empty;
 
@@ -929,15 +794,14 @@ namespace Balboa
             if (connectionresult)
             {
                 connection.Close();
-                message = "Connected succesfully\n" + connection.InitialResponce;
+                message = string.Format(_resldr.GetString("ConnectedSuccesfully"),connection.InitialResponse);
             }
             else
             {
-                message = "Connection error\n" + connection.Error;
+                message = string.Format(_resldr.GetString("ConnectionErrorDescription"), connection.Error);
             }
 
-            MessageBoxButtons b = await MessageBox("Connection test", message, MessageBoxButtons.OK);
-
+            MsgBoxButtons b = await MessageBox(_resldr.GetString("ConnectionTest"), message, MsgBoxButtons.OK);
         }
 
         private async void btn_SelectMusicCollectionPath_Tapped(object sender, TappedRoutedEventArgs e)
@@ -962,6 +826,17 @@ namespace Balboa
             _appSettings.MusicCollectionFolder = String.Empty;
             tbx_MusicCollectionPath.Text = String.Empty;
         }
+
+        private void appbtn_StartSession_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            //Server.Restart();
+            Server.Start();
+        }
+
+        private async void appbtn_StopSession_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            await Server.Halt();
+        }
         #endregion
 
         #region CURRENT PLAYLIST COMMANDS --------------------------------------------------
@@ -969,28 +844,23 @@ namespace Balboa
         private void btn_Playlist_Tapped(object sender, TappedRoutedEventArgs e)
         {
             SwitchDataPanelsTo(DataPanelState.CurrentPlaylist);
-            // Run the PopInThemeAnimation 
-            //Windows.UI.Xaml.Media.Animation.Storyboard sb = this.FindName("PopInStoryboard") as Windows.UI.Xaml.Media.Animation.Storyboard;
-            //if (sb != null) sb.Begin();
-
         }
 
         private void lv_PlayList_GotFocus(object sender, RoutedEventArgs e)
         {
             _listViewItemGotFocus = e.OriginalSource as ListViewItem;
-            var lv = sender as ListviewExtended;
-         }
+        }
 
         private void lv_PlayList_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            Track playlistitem = _listViewItemGotFocus.Content as Track;
-            Server.PlayId(playlistitem.Id);
-
-
-            int index = lv_PlayList.SelectedItems.IndexOf(playlistitem);
-            if (index>=0)
-                lv_PlayList.SelectedItems.RemoveAt(index);
-
+            if (_listViewItemGotFocus != null)
+            { 
+                Track playlistitem = _listViewItemGotFocus.Content as Track;
+                Server.PlayId(playlistitem.Id);
+            }
+            //int index = lv_PlayList.SelectedItems.IndexOf(playlistitem);
+            //if (index>=0)
+            //    lv_PlayList.SelectedItems.RemoveAt(index);
         }
 
         private void appbtn_Playlist_Save_Tapped(object sender, TappedRoutedEventArgs e)
@@ -1055,7 +925,6 @@ namespace Balboa
 
         private void btn_PlaylistNameCancel_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //Close it all down
             popup_GetPlaylistName.IsOpen = false;
         }
 
@@ -1082,13 +951,18 @@ namespace Balboa
 
         private void gr_FileSystemContent_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            if (_gridViewItemGotFocus == null) return;
+            if (_gridViewItemGotFocus == null)
+                return;
 
             File currentfileitem = _gridViewItemGotFocus.Content as File;
-            if (currentfileitem.Type == FileType.Directory)
+
+            if (currentfileitem == null)
+                return;
+
+            if (currentfileitem.Nature == FileNature.Directory)
             {
                 _currentFilePath.Add(currentfileitem.Name.Trim());
-                Server.CurrentFolder = Utils.BuildFilePath(_currentFilePath);
+                Server.CurrentFolder = Utilities.BuildFilePath(_currentFilePath);
                 Server.LsInfo(Server.CurrentFolder);
                 appbtn_Up.IsEnabled = true;
             }
@@ -1110,7 +984,7 @@ namespace Balboa
                 _currentFilePath.RemoveAt(_currentFilePath.Count - 1);
             }
           
-            Server.CurrentFolder = Utils.BuildFilePath(_currentFilePath);
+            Server.CurrentFolder = Utilities.BuildFilePath(_currentFilePath);
             Server.LsInfo(Server.CurrentFolder);
 
             // Eсли мы поднялись на самый верх по дереву каталогов отключим кнопку Up
@@ -1130,7 +1004,7 @@ namespace Balboa
         {
             string path = string.Empty;
             if (_currentFilePath.Count>0)
-                path = Utils.BuildFilePath(_currentFilePath)+ "/";
+                path = Utilities.BuildFilePath(_currentFilePath)+ "/";
             if (gr_FileSystemContent.SelectedItems.Count > 0)
             {
                 foreach (File item in gr_FileSystemContent.SelectedItems)
@@ -1146,7 +1020,8 @@ namespace Balboa
             }
             else
             {
-               await MessageBox("Adding track to playlist", "No selected items to add.", MessageBoxButtons.Continue);
+               await MessageBox(_resldr.GetString("AddingTrackToPlaylist"), 
+                   _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButtons.Continue);
             }
         }
 
@@ -1157,52 +1032,53 @@ namespace Balboa
         private void btn_SavedPlayLists_Tapped(object sender, TappedRoutedEventArgs e)
         {
             SwitchDataPanelsTo(DataPanelState.Playlists);
-  
             Server.ListPlaylists();
         }
       
         private async void appbtn_SavedPlaylistLoad_Click(object sender, RoutedEventArgs e)
         {
             File fi = gr_SavedPlaylistsContent.SelectedItem as File;
-            if (fi != null)
+            if (fi == null)
             {
-                _currentPlaylistName = fi.Name;
-                Server.Load(fi.Name);
+                await MessageBox(_resldr.GetString("PlaylistLoading"),
+                                 _resldr.GetString("PlaylisNotSelectedForLoad"), MsgBoxButtons.Continue);
             }
             else
             {
-                await MessageBox("Playlist loading", "Playlist does not selected.", MessageBoxButtons.Continue);
+                _currentPlaylistName = fi.Name;
+                Server.Load(fi.Name);
             }
         }
 
         private async void appbtn_SavedPlaylistDelete_Tapped(object sender, TappedRoutedEventArgs e)
         {
             File fi = gr_SavedPlaylistsContent.SelectedItem as File;
-            if (fi != null)
+            if (fi == null)
+            {
+                await MessageBox(_resldr.GetString("PlaylistDeleting"),
+                                 _resldr.GetString("PlaylistNotSelectedForDelete"), MsgBoxButtons.Continue);
+            }
+            else
             {
                 Server.Rm(fi.Name);
                 Server.ListPlaylists();
             }
-            else
-            {
-                await MessageBox("Deleting playlist", "Playlist does not selected.", MessageBoxButtons.Continue);
-            }
-
         }
 
         private async void appbtn_SavedPlaylistRename_Tapped(object sender, TappedRoutedEventArgs e)
         {
             File fi = gr_SavedPlaylistsContent.SelectedItem as File;
-            if (fi != null)
+            if (fi == null)
+            {
+                await MessageBox(_resldr.GetString("PlaylistRename"),
+                                 _resldr.GetString("PlaylistNotSelectedForRename"), MsgBoxButtons.Continue);
+            }
+            else
             {
                 _oldPlaylistName = fi.Name;
                 tbx_PlaylistName.Text = _oldPlaylistName;
                 _requestNewPlaylistNameMode = NewPlaylistNameRequestMode.RenamePlaylist;
                 RequestNewPlaylistName();
-            }
-            else
-            {
-               await MessageBox("Renaming playlist", "Playlist does not selected.", MessageBoxButtons.Continue);
             }
         }
         #endregion
@@ -1221,14 +1097,14 @@ namespace Balboa
         private void btn_Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
             SwitchDataPanelsTo(DataPanelState.Search);
-            textblock_SearchResult.Text = "";
+            textblock_SearchResult.Text = string.Empty;
         }
 
         private void appbtn_Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (textbox_Search.Text.Length > 0)
             {
-                textblock_SearchResult.Text = "Searching ...";
+                textblock_SearchResult.Text = _resldr.GetString("Searching");
                 Server.Tracks.ClearAndNotify();
                 Server.Search("any", textbox_Search.Text);
             }
@@ -1243,7 +1119,8 @@ namespace Balboa
             }
            else
             {
-                await MessageBox("Adding track to playlist", "No selected items to add.", MessageBoxButtons.Continue);
+                await MessageBox(_resldr.GetString("AddingTrackToPlaylist"), 
+                    _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButtons.Continue);
             }
         }
 
@@ -1280,9 +1157,8 @@ namespace Balboa
                 {
                     item.IsPlaying = true;
                     lv_PlayList.ScrollIntoView(item);
-                    int index = lv_PlayList.SelectedItems.IndexOf(item);
-                    if (index >= 0)
-                        lv_PlayList.SelectedItems.RemoveAt(index);
+                    if (lv_PlayList.SelectedItems.IndexOf(item) >= 0)
+                        lv_PlayList.SelectedItems.Remove(item);
                 }
                 else
                 {
@@ -1308,23 +1184,11 @@ namespace Balboa
             // Изменим цвет текста во всех кнопках главного меню на белый
             foreach (UIElement uielement in stp_MainMenu.Children)
             {
-                if (uielement is Button)
-                {
-                    var btn = uielement as Button;
-                    btn.Foreground = WhiteBrush;
-                }
+                var button = uielement as Button;
+                if (button!=null)
+                    button.Foreground = WhiteBrush;
             }
 
-            /*
-            DoubleAnimation da = new DoubleAnimation();
-
-            da.From = 0.0;
-            da.To = 1.0;
-            da.Duration = TimeSpan.FromSeconds(2);
-
-            Storyboard sb = new Storyboard();
-            sb.Children.Add(da);
-            */
             // Включим нужную панель
             // Изменим цвет текста в соответствующей кнопке на оранжевый
             // Установим режим в заголовке окна
@@ -1334,60 +1198,59 @@ namespace Balboa
                 case DataPanelState.Artists:
                     btn_Artists.Foreground = OrangeBrush;
                     gr_Artists.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = "Artists";
+                    textbox_CurrentMode.Text = _resldr.GetString("Artists");
                     gr_ArtistsShowStoryboard.Begin();
                     break;
                 case DataPanelState.CurrentPlaylist:
                     btn_Playlist.Foreground = OrangeBrush;
                     gr_Playlist.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = "Current playlist";
+                    textbox_CurrentMode.Text = _resldr.GetString("PlaylistCurrent");
                     gr_CurrentPlaylistShowStoryboard.Begin();
                     break;
                 case DataPanelState.CurrentTrack:
                     btn_CurrentTrack.Foreground = OrangeBrush;
                     gr_CurrentTrack.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = "Current track";
+                    textbox_CurrentMode.Text = _resldr.GetString("CurrentTrack");
                     gr_CurrentTrackShowStoryboard.Begin();
                     break;
                 case DataPanelState.FileSystem:
                     btn_FileSystem.Foreground = OrangeBrush;
                     gr_FileSystem.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = "Files & folders";
+                    textbox_CurrentMode.Text = _resldr.GetString("FilesAndFolders");
                     gr_FileSystemShowStoryboard.Begin();
                     break;
                 case DataPanelState.Genres:
                     btn_Genres.Foreground = OrangeBrush;
                     gr_Genres.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = "Genres";
+                    textbox_CurrentMode.Text = _resldr.GetString("Genres");
                     gr_GenresShowStoryboard.Begin();
                     break;
                 case DataPanelState.Playlists:
                     btn_SavedPlayLists.Foreground = OrangeBrush;
                     gr_SavedPlayLists.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = "Playlist";
+                    textbox_CurrentMode.Text = _resldr.GetString("Playlist");
                     gr_SavedPlayListsShowStoryboard.Begin();
                     break;
                 case DataPanelState.Search:
                     btn_Search.Foreground = OrangeBrush;
                     gr_Search.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = "Search";
+                    textbox_CurrentMode.Text = _resldr.GetString("Search");
                     gr_SearchShowStoryboard.Begin();
                     break;
                 case DataPanelState.Settings:
+                    tbx_MusicCollectionPath.Text = _appSettings.MusicCollectionFolder;
+                    checkbox_DisplayFolderPictures.IsChecked = _appSettings.DisplayFolderPictures;
                     btn_Settings.Foreground = OrangeBrush;
                     gr_Settings.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = "Settings";
+                    textbox_CurrentMode.Text = _resldr.GetString("Settings");
                     gr_SettingsShowStoryboard.Begin();
                     break;
                 case DataPanelState.Statistic:
                     btn_Stats.Foreground = OrangeBrush;
                     gr_Stats.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = "Statistic";
+                    textbox_CurrentMode.Text = _resldr.GetString("Statistic");
                     gr_StatsShowStoryboard.Begin();
                          break;
-                    //            sb.SetValue(Storyboard.TargetPropertyProperty, "Opacity");
-                    //            sb.SetValue(Storyboard.TargetNameProperty, "gr_Genres");
-                    //            sb.Begin();
              }
             if (Server.StatusData.State != "stop")
             {
@@ -1404,123 +1267,75 @@ namespace Balboa
                 stackpanel_MainPanelHeader.Visibility = Visibility.Collapsed;
             else
                 stackpanel_MainPanelHeader.Visibility = Visibility.Visible;
-            //
-            //sb.SetValue(Opacity, 0.0);
-            //Storyboard.TargetName = "gr_CurrentTrack"
-            //                              Storyboard.TargetProperty = "Opacity"
-            //                              From = "0.0" To = "1.0" Duration = "0:0:2" />
-
-                // весь код в switch можно упростить используя механизм из следующей строки
-                //Windows.UI.Xaml.Media.Animation.Storyboard sb = this.FindName("PopInStoryboard") as Windows.UI.Xaml.Media.Animation.Storyboard;
-
         }
 
-        private enum MessageBoxButtons { OK,Cancel, Continue, Retry, OK_Cancel, Retry_Cancel, Continue_Exit, Exit, GoToSettings_Retry_Exit, GoToSettings }
+        [Flags]
+        private enum MsgBoxButtons { OK = 1,Cancel = 2, Continue = 4, Retry = 8,  Exit = 16, GoToSettings = 32, CloseApplication = 64 }
 
-        private async Task<MessageBoxButtons> MessageBox(string title, string message, MessageBoxButtons buttons)
+        private async Task<MsgBoxButtons> MessageBox(string title, string message, MsgBoxButtons buttons)
         {
-            
             object cmdid = new object();
             MessageDialog md = new MessageDialog(message, title);
             
-            switch(buttons)
-            {
-                case MessageBoxButtons.OK:
-                        md.Commands.Add(new UICommand("OK", null, MessageBoxButtons.OK));
-                        break;
-                case MessageBoxButtons.Cancel:
-                        md.Commands.Add(new UICommand("Cancel", null, MessageBoxButtons.Cancel));
-                        break;
-                case MessageBoxButtons.Continue:
-                        md.Commands.Add(new UICommand("Continue", null, MessageBoxButtons.Continue));
-                        break;
-                case MessageBoxButtons.Retry:
-                        md.Commands.Add(new UICommand("Retry", null, MessageBoxButtons.Retry));
-                        break;
-                case MessageBoxButtons.OK_Cancel:
-                        md.Commands.Add(new UICommand("OK", null, MessageBoxButtons.OK));
-                        md.Commands.Add(new UICommand("Cancel", null, MessageBoxButtons.Cancel));
-                        break;
-                case MessageBoxButtons.Retry_Cancel:
-                        md.Commands.Add(new UICommand("Retry", null, MessageBoxButtons.Retry));
-                        md.Commands.Add(new UICommand("Cancel", null, MessageBoxButtons.Cancel));
-                        break;
-                case MessageBoxButtons.Continue_Exit:
-                        md.Commands.Add(new UICommand("Continue", null, MessageBoxButtons.Continue));
-                        md.Commands.Add(new UICommand("Close application", null, MessageBoxButtons.Exit));
-                        break;
-                case MessageBoxButtons.GoToSettings_Retry_Exit:
-                        md.Commands.Add(new UICommand("Go to Settins", null, MessageBoxButtons.GoToSettings));
-                        md.Commands.Add(new UICommand("Retry", null, MessageBoxButtons.Continue));
-                        md.Commands.Add(new UICommand("Close application", null, MessageBoxButtons.Exit));
-                        break;
-            }
+            if (buttons.HasFlag(MsgBoxButtons.OK))
+                md.Commands.Add(new UICommand(_resldr.GetString("Ok"), null, MsgBoxButtons.OK));
+            if (buttons.HasFlag(MsgBoxButtons.Cancel))
+                md.Commands.Add(new UICommand(_resldr.GetString("Cancel"), null, MsgBoxButtons.Cancel));
+            if (buttons.HasFlag(MsgBoxButtons.Continue))
+                md.Commands.Add(new UICommand(_resldr.GetString("Continue"), null, MsgBoxButtons.Continue));
+            if (buttons.HasFlag(MsgBoxButtons.Retry))
+                md.Commands.Add(new UICommand(_resldr.GetString("Retry"), null, MsgBoxButtons.Retry));
+            if (buttons.HasFlag(MsgBoxButtons.Exit))
+                md.Commands.Add(new UICommand(_resldr.GetString("Exit"), null, MsgBoxButtons.Exit));
+            if (buttons.HasFlag(MsgBoxButtons.GoToSettings))
+                md.Commands.Add(new UICommand(_resldr.GetString("GoToSettings"), null, MsgBoxButtons.GoToSettings));
+            if (buttons.HasFlag(MsgBoxButtons.CloseApplication))
+                md.Commands.Add(new UICommand(_resldr.GetString("CloseApplication"), null, MsgBoxButtons.CloseApplication));
             UICommand selected = (UICommand) await md.ShowAsync();
-            return (MessageBoxButtons) selected.Id;
+            return (MsgBoxButtons) selected.Id;
         }
         
-        private void SetPlaybuttonPicture(string state)
-        {
-            // "&#xE102;" - Play
-            // "&#xE103;" - Pause
-
-            if (state == "play")
-            {
-                appbtn_PlayPause.Content = '\xE103'; // Устанавливаем символ "Pause"
-            }
-            else
-            {    
-                appbtn_PlayPause.Content = '\xE102'; // Устанавливаем символ "Play"
-            }
-        }
+//        private void SetPlaybuttonPicture(string state)
+//        {
+//            // "&#xE102;" - Play
+//            // "&#xE103;" - Pause
+//
+//            if (state == "play")
+//            {
+//                appbtn_PlayPause.Content = '\xE103'; // Устанавливаем символ "Pause"
+//            }
+//            else
+//            {    
+//                appbtn_PlayPause.Content = '\xE102'; // Устанавливаем символ "Play"
+//            }
+//        }
 
         private void RequestNewPlaylistName()
         { 
-        //First we need to find out how big our window is, so we can center to it.
-        CoreWindow currentWindow = Window.Current.CoreWindow;
-        //Set our background rectangle to fill the entire window
-            //rectBackgroundHide.Height = currentWindow.Bounds.Height;
-            //rectBackgroundHide.Width = currentWindow.Bounds.Width;
-            //rectBackgroundHide.Margin = new Thickness(0, 0, 0, 0);
-        //Make sure the background is visible
-            //rectBackgroundHide.Visibility = Visibility.Visible;
-            //Now we figure out where the center of the screen is, and we 
-            //move the popup to that location.
+            CoreWindow currentWindow = Window.Current.CoreWindow;
             popup_GetPlaylistName.HorizontalOffset = (currentWindow.Bounds.Width / 2) - (400 / 2);
             popup_GetPlaylistName.VerticalOffset = (currentWindow.Bounds.Height / 2) - (150 / 2);
 
-            //AddDeleteThemeTransition
             Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition popuptransition = new Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition();
-            //popuptransition..Edge = Windows.UI.Xaml.Controls.Primitives.EdgeTransitionLocation.Top;
             popup_GetPlaylistName.ChildTransitions.Add(popuptransition);
-
             popup_GetPlaylistName.IsOpen = true;
-            
-           // tbx_PlaylistName.Text = _currentPlaylistName;
-            //Presto!  We have a centered popup.
         }
         #endregion
 
         #region VOLUME CONTROL
-        private bool volumechangedbystatus = true;
+        private bool _volumeChangedByStatus = true;
         private void sl_Volume_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
         {
             var sl = sender as Slider;
-            if (!volumechangedbystatus && Server.StatusData.State == "play")
-                Server.SetVol((int)sl.Value);
-            volumechangedbystatus = false;
+            if (!_volumeChangedByStatus && Server.StatusData.State == "play")
+                Server.SetVolume((int)sl.Value);
+            _volumeChangedByStatus = false;
         }
 
         #endregion
 
         #endregion
   
-        private void textblock_Title_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            //myStoryboard.Begin();
-        }
-
- 
         private void textblock_MainMenu_Tapped(object sender, TappedRoutedEventArgs e)
         {
              if (popup_MainMenu.IsOpen)
@@ -1531,10 +1346,7 @@ namespace Balboa
 
         private void appbtn_Volume_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            
             var appbarbutton = sender as AppBarButton;
-
-            //var ttv = appbarbutton.TransformToVisual(Window.Current.Content);
             var ttv = appbarbutton.TransformToVisual(this);
             Point screenCoords = ttv.TransformPoint(new Point(15, -340));
 
@@ -1545,7 +1357,6 @@ namespace Balboa
                 popup_VolumeControl.IsOpen = false;
             else
                 popup_VolumeControl.IsOpen = true;
-            
         }
 
         private void pb_Progress_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
@@ -1557,10 +1368,10 @@ namespace Balboa
             _currentTrackPosition = pb_Progress.Value;
             if (((sl.Value + mouseweeldelta) > 0) && ((sl.Value + mouseweeldelta) < sl.Maximum))
             {
-                string soffset = mouseweeldelta.ToString();
+                string soffset = mouseweeldelta.ToString(CultureInfo.InvariantCulture);
 
                 if (mouseweeldelta > 0)
-                    soffset = "+" + mouseweeldelta.ToString();
+                    soffset = "+" + mouseweeldelta.ToString(CultureInfo.InvariantCulture);
                 Server.SeekCurrent(soffset);
             }
 
@@ -1573,12 +1384,11 @@ namespace Balboa
             _currentTrackPosition = pb_Progress.Value;
             double offset = sl.Value - _currentTrackPosition;
 
-            string soffset = offset.ToString();
+            string soffset = offset.ToString(CultureInfo.InvariantCulture);
             if (offset > 0)
                 soffset = "+" + soffset;
             Server.SeekCurrent(soffset);
             _seekBarIsBeingDragged = false;
-
         }
 
         private void sl_Volume_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
@@ -1590,11 +1400,27 @@ namespace Balboa
             int newvalue = (int)sl.Value + mouseweeldelta;
             if ((newvalue >= 0) && (newvalue<=100))
             {
-                Server.SetVol(newvalue);
+                Server.SetVolume(newvalue);
             }
         }
 
-       
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // dispose managed resources
+
+            }
+            // free native resources
+            Server.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
     }
 }
 

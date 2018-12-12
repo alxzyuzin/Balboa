@@ -8,6 +8,7 @@
  --------------------------------------------------------------------------*/
 
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -18,8 +19,9 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Balboa.Common
 {
-    public static class Utils
+    internal static class Utilities
     {
+        private const string _modName = "Utils.cs";
         /// <summary>
         /// Извлекает имя файла из строки передаваемой во входном параметре
         /// Строка должна содержать корректное имя файла и путь
@@ -28,11 +30,14 @@ namespace Balboa.Common
         /// Строка для разбора
         /// </param>
         /// <returns></returns>
-        public static string ExtractFileName(string s, bool removefileextention)
+        public static string ExtractFileName(string path, bool removeFileExtension)
         {
-            string[] fileparts = s.Split('/');
+            if (path == null)
+                throw new BalboaNullValueException(_modName, "ExtractFileName", "36", "path");
+
+            string[] fileparts = path.Split('/');
             string res = fileparts[fileparts.Length - 1];
-            if (removefileextention)
+            if (removeFileExtension)
             {
                 if (res.Contains("."))
                 { 
@@ -51,12 +56,15 @@ namespace Balboa.Common
         /// Строка для разбора
         /// </param>
         /// <returns></returns>
-        public static string ExtractFilePath(string s)
+        public static string ExtractFilePath(string path)
         {
-            if (s.Length == 0)
-                return s;
+            if (path == null)
+                throw new BalboaNullValueException(_modName, "ExtractFilePath", "62", "path");
 
-            string[] fileparts = s.Split('/');
+            if (path.Length == 0)
+                return path;
+
+            string[] fileparts = path.Split('/');
             StringBuilder filepath = new StringBuilder(fileparts[0]);
             for (int i=1; i< fileparts.Length-1;i++)
             {
@@ -74,39 +82,45 @@ namespace Balboa.Common
         /// </param>
         /// <returns></returns>
         /// 
-        public static string BuildFilePath(List<string> pathitems)
+        public static string BuildFilePath(List<string> pathItems)
         {
+            if (pathItems == null)
+                throw new BalboaNullValueException(_modName, "BuildFilePath", "88", "pathItems");
+
             string filepath = string.Empty;
 
-            if (pathitems.Count > 0)
-            { 
-                filepath += pathitems[0];
-            }
+            if (pathItems.Count > 0)
+//            { 
+                filepath += pathItems[0];
+//            }
             int i = 1;
-            while  (i < pathitems.Count)
-            {
-                filepath += ("/"+ pathitems[i++]);
-            }
+            while  (i < pathItems.Count)
+//            {
+                filepath += ("/"+ pathItems[i++]);
+//            }
             return filepath;
         }
 
-        public static string SecTo_hh_mm_ss(object value)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "HHMMSS")]
+        public static string SecToHHMMSS(object value)
         {
+            if (value == null)
+                throw new BalboaNullValueException(_modName, "SecTo_HH_MM_SS", "107", "value");
+
             string res = string.Empty;
+            string ss = string.Empty;
+            string ms = string.Empty;
             try
             {
-                string ss = string.Empty;
-                string ms = string.Empty;
-
-                float ts = float.Parse(value.ToString());
+                float ts = float.Parse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture);
 
                 int s = (int)(ts % 60);
-                ss = s.ToString();
+                ss = s.ToString(CultureInfo.InvariantCulture);
                 if (s < 10)
                     ss = "0" + ss;
                  
                 int m = (int)((ts /60) % 60);
-                ms = m.ToString();
+                ms = m.ToString(CultureInfo.InvariantCulture);
                 if (m < 10)
                     ms = "0" + ms;
 
@@ -114,29 +128,69 @@ namespace Balboa.Common
 
                 res = ms+ " : " + ss;
                 if (h > 0)
-                    res = h.ToString() + " : " + res;
+                    res = h.ToString(CultureInfo.InvariantCulture) + " : " + res;
 
             }
-            catch(Exception )
+            catch(Exception  e)
             {
-                res = "Conversion error";
+                throw new BalboaException(_modName, "SecToHHMMSS", "136", e.Message);
             }
 
             return res;
         }
 
-        public static async Task<BitmapImage> GetFolderImage(string musiccollectionfolder, string foldername, string albumcoverfilenames)
-        {
+        public static async Task<BitmapImage> GetFolderImage(string musicCollectionFolder, string folderName, string albumCoverFileNames)
+        { 
             StorageFile file = null;
-            StringBuilder sb = new StringBuilder(musiccollectionfolder);
+            while (musicCollectionFolder.EndsWith("\\", StringComparison.Ordinal))
+                musicCollectionFolder = musicCollectionFolder.Substring(0, musicCollectionFolder.Length - 1);
+
+            StringBuilder sb = new StringBuilder(musicCollectionFolder);
+            
             sb.Append('\\');
-            sb.Append(foldername);
+            sb.Append(folderName);
             sb.Replace('/', '\\');
             sb.Append('\\');
 
             int pathlength = sb.Length;
 
-            string[] CoverFileNames = albumcoverfilenames.Split(';');
+            string[] CoverFileNames = albumCoverFileNames.Split(';');
+
+            foreach (string albumCoverFileName in CoverFileNames)
+            {
+                try
+                {
+                    sb.Append(albumCoverFileName);
+                    file = await StorageFile.GetFileFromPathAsync(sb.ToString());
+                    break;
+                }
+                catch (FileNotFoundException )
+                {
+                    sb.Remove(pathlength, albumCoverFileName.Length);
+                }
+            }
+            if (file == null)
+                return null;
+            using (IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
+            {
+                BitmapImage bitmapImage = new BitmapImage();
+                await bitmapImage.SetSourceAsync(fileStream);
+                return bitmapImage;
+            }
+        }
+
+        public static async Task<IRandomAccessStream> GetFolderImageStream(string musicCollectionFolder, string folderName, string albumCoverFileNames)
+        {
+            StorageFile file = null;
+            StringBuilder sb = new StringBuilder(musicCollectionFolder);
+            sb.Append('\\');
+            sb.Append(folderName);
+            sb.Replace('/', '\\');
+            sb.Append('\\');
+
+            int pathlength = sb.Length;
+
+            string[] CoverFileNames = albumCoverFileNames.Split(';');
 
             foreach (string albumcoverfilename in CoverFileNames)
             {
@@ -150,65 +204,23 @@ namespace Balboa.Common
                 {
                     sb.Remove(pathlength, albumcoverfilename.Length);
                 }
-                catch (System.UnauthorizedAccessException )
-                {
+            }
 
-                }
-            }
-            if (file != null)
-            {
-                using (IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
-                {
-                    BitmapImage bitmapImage = new BitmapImage();
-                    await bitmapImage.SetSourceAsync(fileStream);
-                    return bitmapImage;
-                }
-            }
-            else
-            {
+            if (file == null)
                 return null;
-            }
+            IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read);
+            if (fileStream.Size == 0)
+                return null;
+            return fileStream;
         }
 
-        public static async Task<IRandomAccessStream> GetFolderImageStream(string musiccollectionfolder, string foldername, string albumcoverfilenames)
+        public static string GetExceptionMsg(Exception e)
         {
-            StorageFile file = null;
-            StringBuilder sb = new StringBuilder(musiccollectionfolder);
-            sb.Append('\\');
-            sb.Append(foldername);
-            sb.Replace('/', '\\');
-            sb.Append('\\');
-
-            int pathlength = sb.Length;
-
-            string[] CoverFileNames = albumcoverfilenames.Split(';');
-
-            foreach (string albumcoverfilename in CoverFileNames)
-            {
-                try
-                {
-                    sb.Append(albumcoverfilename);
-                    file = await StorageFile.GetFileFromPathAsync(sb.ToString());
-                    break;
-                }
-                catch (FileNotFoundException )
-                {
-                    sb.Remove(pathlength, albumcoverfilename.Length);
-                }
-                catch (System.UnauthorizedAccessException )
-                {
-
-                }
-            }
-            if (file != null)
-            {
-                IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
-                return fileStream;
-            }
+            if (e.Message.Contains("\r\n"))
+                return e.Message.Substring(0, e.Message.IndexOf("\r\n"));
             else
-            {
-                return null;
-            }
+                return e.Message;
         }
+
     }
 }

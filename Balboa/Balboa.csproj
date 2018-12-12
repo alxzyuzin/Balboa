@@ -16,9 +16,10 @@
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Balboa_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxBundlePlatforms>arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>B5006F36CC8FF1A5ECF925FE5182376ACC2C4267</PackageCertificateThumbprint>
-    <AppxBundle>Auto</AppxBundle>
+    <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>BD5700DEFF6C58034319E09794089BA503A7692E</PackageCertificateThumbprint>
+    <AppxBundle>Always</AppxBundle>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -93,6 +94,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -121,25 +123,25 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Common\BalboaExeption.cs" />
     <Compile Include="Common\CommonGridItem.cs" />
     <Compile Include="Common\Connection.cs" />
     <Compile Include="Common\CurrentSong.cs" />
     <Compile Include="Common\FileItemStyleSelector.cs" />
     <Compile Include="Common\GenericComparer.cs" />
     <Compile Include="Common\IUpdateble.cs" />
+    <Compile Include="Common\Log.cs" />
     <Compile Include="Common\ObservableObjectCollection.cs" />
     <Compile Include="Common\File.cs" />
     <Compile Include="Common\ListViewExtended.cs" />
     <Compile Include="Common\MPDResponce.cs" />
-    <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\Output.cs" />
     <Compile Include="Common\ServerEventArg.cs" />
+    <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\Track.cs" />
-    <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\PlaylistItemStyleSelector.cs" />
     <Compile Include="Common\Statistic.cs" />
     <Compile Include="Common\Status.cs" />
-    <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\TimeConverter.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -156,6 +158,7 @@
     <None Include="Balboa_DeploymentKey.pfx" />
     <None Include="Balboa_StoreKey.pfx" />
     <None Include="Balboa_TemporaryKey.pfx" />
+    <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -231,16 +234,17 @@
     <Content Include="Assets\Wide310x150Logo.scale-140.png" />
     <Content Include="Assets\Wide310x150Logo.scale-180.png" />
     <Content Include="Assets\Wide310x150Logo.scale-80.png" />
+    <None Include="BulboaSignKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Balboa_DeploymentKey.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>BulboaSignKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

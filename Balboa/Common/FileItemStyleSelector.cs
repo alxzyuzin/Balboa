@@ -1,11 +1,20 @@
-﻿using Windows.UI;
+﻿/*-----------------------------------------------------------------------
+ * Copyright 2017 Alexandr Zyuzin.
+ *
+ * This file is part of MPD client Balboa.
+ *
+ * Класс для установки стиля элемента списка файлов.
+ *
+ --------------------------------------------------------------------------*/
+
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
 namespace Balboa.Common
 {
-    public sealed class FileItemStyleSelector : StyleSelector
+    internal sealed class FileItemStyleSelector : StyleSelector
     { 
 
         protected override Style SelectStyleCore(object item, DependencyObject container)
