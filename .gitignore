@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+/discogs_client-master/*
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
