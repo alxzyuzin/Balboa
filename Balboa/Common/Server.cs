@@ -19,6 +19,7 @@ using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.ApplicationModel.Resources;
+using Windows.Networking.Sockets;
 
 namespace Balboa
 {
@@ -28,7 +29,8 @@ namespace Balboa
     internal class Server : INotifyPropertyChanged, IDisposable
     {
         private const string _modName = "Server.cs";
-        #region Объявление событий
+
+#region Events
 
         /// <summary>
         /// Уведомление об изменении значения свойства
@@ -42,11 +44,10 @@ namespace Balboa
                 await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); });
             }
         }
+
         /// <summary>
         /// Уведомление об ошибке в процессе обмена данными с сервером
         /// </summary>
-
-
         public event EventHandler Error;
 
         private async Task NotifyError(string errormessage)
@@ -61,7 +62,6 @@ namespace Balboa
         /// <summary>
         /// Уведомление о критической ошибке в процессе обмена данными с сервером
         /// </summary>
-        
         public event EventHandler CriticalError;
 
         private async void NotifyCriticalError(string errormessage)
@@ -69,16 +69,15 @@ namespace Balboa
             if (CriticalError != null)
             {
                 ServerEventArgs args = new ServerEventArgs(EventType.CriticalError, errormessage);
-                _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { CriticalError(this, args); });
+                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { CriticalError(this, args); });
             }
         }
         /// <summary>
         /// Уведомление об изменении статуса соединения с сервером
         /// </summary>
-
         public event EventHandler ConnectionStatusChanged;
 
-        private async void NotifyConnectionStatusChanged(ConnectionStatus status)
+        private async void NotifyConnectionStatusChanged(bool status)
         {
             if (ConnectionStatusChanged != null)
             {
@@ -86,21 +85,6 @@ namespace Balboa
                 await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { ConnectionStatusChanged(this, args); });;
             }
         }
-
-        /// <summary>
-        /// Уведомление об изменении статуса сервера
-        /// </summary>
-//                public event EventHandler StatusChanged;
-
-//        private async void NotifyServerStatusChanged(string status)
-//        {
-//            if (StatusChanged != null)
-//            {
-//                ServerEventArgs args = new ServerEventArgs(EventType.ServerStatusChanged,status);
-//                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { StatusChanged(this, args); }); ;
-//            }
-//        }
-
 
         /// <summary>
         /// Уведомление о завершении выполнения команды
@@ -112,21 +96,20 @@ namespace Balboa
             if (CommandCompleted != null)
             {
                 ServerEventArgs args = new ServerEventArgs(EventType.CommandCompleted, command,result,message);
-//                args.Command = command;
-//                args.Result = result;
-//                args.Message = message;
-               await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { CommandCompleted(this, args); }); ;
+                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { CommandCompleted(this, args); }); 
             }
         }
-        #endregion
+#endregion
 
         #region Поля
+        private CancellationTokenSource _tokenSource;
+        private string _errorMessage = string.Empty;
 
         ResourceLoader _resldr = new ResourceLoader();
         private DispatcherTimer     _timer;
 
         private MainPage            _mainPage;
-        private bool                _Terminating;
+//        private bool                _Terminating;
 
         private Connection          _Connection  = new Connection();
         private Queue<MpdCommand>   _CommandQueue = new Queue<MpdCommand>();
@@ -171,7 +154,7 @@ namespace Balboa
             
         }
 
-        public bool          IsConnected         { get { return (_Connection.StatusId == ConnectionStatus.Connected)?true:false; } }
+        public bool          IsConnected         { get { return _Connection.IsActive; } }
         public string        Host                { get; set; }
         public string        Port                { get; set; } 
         public string        Password            { get; set; }
@@ -224,59 +207,53 @@ namespace Balboa
         {
             SetInitialState();
 
-            _Terminating = false;
-            bool res = await _Connection.Open(Host, Port, Password);
-            if (!res)
-            {
-                await NotifyError(_Connection.Error);
-                return;
+            _tokenSource = new CancellationTokenSource();
+            CancellationToken token = _tokenSource.Token;
+
+            if (await _Connection.Open(Host, Port, Password))
+            { 
+                CreateTimer(ViewUpdateInterval);
+                _timer.Start();
+                WorkItemHandler communicator = delegate { ExecuteCommands(token); };
+                await ThreadPool.RunAsync(communicator, WorkItemPriority.High, WorkItemOptions.TimeSliced);
+ //               _timer.Stop();
             }
-            WorkItemHandler communicator = delegate { ExecuteCommands(); };
-            ThreadPool.RunAsync(communicator, WorkItemPriority.High, WorkItemOptions.TimeSliced);
-            CreateTimer(ViewUpdateInterval);
-            _timer.Start();
+
+           
         }
         /// <summary>
         /// Остановка прцесса взаимодествия с сервером
         /// </summary>
         /// <returns></returns>
-        public async Task Halt()
+        public void Halt()
         {
-            if (IsRunning)  // Если процесс не активен то сразу выходим
-            {
-                // иначе
-                _Terminating = true;  // Говорим процессу что пора прекращать работу
-                Status();             // Ставим в очередь на отправку команду статус
-                                      //  Процесс может находиться в состоянии ожидания , в котором не выполняется 
-                                      // цикл обработки команд из очереди и процесс не выполняет проверку 
-                                      // переменной _Terminating
-                                      // Постановкой команды в очередь мы будим процесс и заставляем проверить
-                                      // значение переменной _Terminating
-                // В цикле с интервалом 100 миллисекунд проверяем статус ппроцесса пока он не закончится
-                while (IsRunning) ;   
-                    await Task.Delay(TimeSpan.FromMilliseconds(100));
-             
-                _timer.Stop();        // Останавливаем тамер (прекращаем отправку команд серверу)
-                _Connection.Close();
-                _Status.ExtendedStatus = "";
-            }
+            _timer?.Stop();        // Останавливаем тамер (прекращаем отправку команд серверу)
+            _tokenSource.Cancel();
+            // Ставим в очередь на отправку команду статус
+            //  Процесс может находиться в состоянии ожидания , в котором не выполняется 
+            // цикл обработки команд из очереди
+            // Постановкой команды в очередь мы будим процесс и заставляем проверить CancellationToken
+
+            Status();
+            _Connection.Close();
+                //_Status.ExtendedStatus = "";
         }
         /// <summary>
         /// Перезапуск процесса взаимодествия с сервером
         /// </summary>
         /// <returns></returns>
-        public async void Restart()
+        public void Restart()
         {
             StatusData.State = "restart";
-            await Halt();
+            Halt();
             Start();
         }
 
         private void Connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName =="StatusId")
+            if (e.PropertyName == "IsActive")
             {
-                NotifyConnectionStatusChanged(_Connection.StatusId);
+                NotifyConnectionStatusChanged(_Connection.IsActive);
                 ConnectionState = _Connection.Status;
             }
         }
@@ -286,8 +263,6 @@ namespace Balboa
             _CommandQueue.Clear();
             _SentCommandQueue.Clear();
             _Response = string.Empty;
-            _Terminating = false;
-
             _Playlist.ClearAndNotify();
             _FileList.ClearAndNotify();
             _SavedPlaylists.ClearAndNotify();
@@ -301,49 +276,52 @@ namespace Balboa
         ///  Обработчик команд из очери команд
         /// </summary>
         /// <returns></returns>
-        private async void ExecuteCommands()
+        private async void ExecuteCommands(CancellationToken token)
         {
             // Берём очередную команду из очереди
             // Отправляем запрос на сервер
             // Читаем ответ
             // Разбираем ответ и заполняем данными 
-            IsRunning = true;
-            bool terminating = _Terminating;
-            while (!terminating)
-            {
-                MpdCommand command = null;
-                lock (_Lock)
+            try
+            { 
+                while (true)
                 {
-                   terminating = _Terminating;
-                   if (_CommandQueue.Count > 0)
-                   { // Есть команды к выполнению. Забираем команду из очереди  и разморахиваем процесс
-                       command = _CommandQueue.Dequeue();
-                       _ThreadEvent.Reset();
-                   }
-                }
-                if (!terminating)
-                {
+                    token.ThrowIfCancellationRequested();
+                    MpdCommand command = null;
+                    lock (_Lock)
+                    {
+                       if (_CommandQueue.Count > 0)
+                       { // Есть команды к выполнению. Забираем команду из очереди  и разморахиваем процесс
+                           command = _CommandQueue.Dequeue();
+                           _ThreadEvent.Reset();
+                       }
+                    }
                     if (command == null)
                     { // Если нет команд к выполнению замораживаем процесс
                         _ThreadEvent.WaitOne();
                     }
                     else
                     {
-                        try
-                        {
-                            await _Connection.SendCommand(command.FullSyntax);
-                            _SentCommandQueue.Enqueue(command);
-                            _Response += await _Connection.ReadResponse(); ;
-                            _Response = ParceResponse(_Response);
-                        }
-                        catch (Exception e)
-                        {
-                            NotifyCriticalError(_resldr.GetString("CommunicationError") + Utilities.GetExceptionMsg(e));
-                        }
+                        await _Connection.SendCommand(command.FullSyntax);
+                        _SentCommandQueue.Enqueue(command);
+                        _Response += await _Connection.ReadResponse(); ;
+                        _Response = await ParceResponse(_Response);
                     }
-                }
-            } // End while
-            IsRunning = false;
+                } // End while
+            }
+            catch (OperationCanceledException)
+            {
+//                ((IProgress<OperationStatus>)_progress).Report(status);
+                IsRunning = false;
+            }
+            catch (Exception ex)
+            {
+                Type type = ex.GetType();
+                
+                if (SocketError.GetStatus(ex.HResult) == SocketErrorStatus.Unknown)
+                    NotifyCriticalError(_resldr.GetString("CommunicationError") + Utilities.GetExceptionMsg(ex));
+                var er = SocketError.GetStatus(ex.HResult);
+            }
         }
 
         /// <summary>
@@ -361,7 +339,7 @@ namespace Balboa
         /// </summary>
         /// <param name="responce"></param>
         /// <returns></returns>
-        private string ParceResponse(string response)
+        private async Task<string> ParceResponse(string response)
         {
             MpdResponseCollection mpdresponse = new MpdResponseCollection();
             // Oтвет при ошибке начинается с ASC и заканчивается \n
@@ -371,50 +349,50 @@ namespace Balboa
             // Строка начинается с символов OK\n - это значит что в начале строки содержится ответ 
             // об успешном выполнении команды не возвращающей данных
             // Просто убираем этот ответ из входной строки
-            if (response.StartsWith("OK\n",StringComparison.Ordinal))
-                {
-                    response = response.Remove(0, 3);
-                    mpdresponse.Command = _SentCommandQueue.Dequeue();
-                    mpdresponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
-                    Task.Run(()=>HandleResponse(mpdresponse));
-                }
+            if (response.StartsWith("OK\n", StringComparison.Ordinal))
+            {
+                response = response.Remove(0, 3);
+                mpdresponse.Command = _SentCommandQueue.Dequeue();
+                mpdresponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
+                await Task.Run(() => HandleResponse(mpdresponse));
+            }
 
             // Проверка 2
             // Строка содержит символы \nOK\n - это значит что строка содержит полный ответ 
             // об успешном выполнении команды возвращающей данные
             // Забираем этот ответ из входной строки и разбираем его
             if (response.Contains("\nOK\n"))
+            {
+                //Забираем из входной строки подстроку от начала до до символов ОК (вместе с ОК)
+                int nextresponsestart = response.IndexOf("\nOK\n", StringComparison.Ordinal) + 4;
+
+                string currentresponce = response.Substring(0, nextresponsestart);
+                response = response.Remove(0, nextresponsestart);
+
+                string[] lines = currentresponce.Split('\n');
+                for (int i = 0; i < lines.Length - 2; i++)
                 {
-                     //Забираем из входной строки подстроку от начала до до символов ОК (вместе с ОК)
-                    int nextresponsestart = response.IndexOf("\nOK\n", StringComparison.Ordinal) + 4;
+                    mpdresponse.Add(lines[i]);
+                }
+                mpdresponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
+                mpdresponse.Command = _SentCommandQueue.Dequeue();
 
-                    string currentresponce = response.Substring(0, nextresponsestart);
-                    response = response.Remove(0, nextresponsestart);
-
-                    string[] lines = currentresponce.Split('\n');
-                    for (int i = 0; i < lines.Length - 2; i++)
-                    {
-                        mpdresponse.Add(lines[i]);
-                    }
-                    mpdresponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
-                    mpdresponse.Command = _SentCommandQueue.Dequeue();
-
-                    Task.Run(() => HandleResponse(mpdresponse));
-                 }
+                await Task.Run(() => HandleResponse(mpdresponse));
+            }
 
             // Проверка 3
             // Строка содержит символы ACK - это значит что строка содержит ответ с информацией 
             // об ошибке при выполнении команды  
             // Забираем этот ответ из входной строки и cообщаем об ошибке
             if (response.StartsWith("ACK", StringComparison.Ordinal))
-                {
-                    int newresponsestart = response.IndexOf("\n", StringComparison.Ordinal) + 1;
-                    string currentresponse = response.Substring(0, newresponsestart);
-                    response = response.Remove(0, newresponsestart);
-                    NotifyError("Server return error : \n" + currentresponse);
-                    return response;
-                }
-             return response;
+            {
+                int newresponsestart = response.IndexOf("\n", StringComparison.Ordinal) + 1;
+                string currentresponse = response.Substring(0, newresponsestart);
+                response = response.Remove(0, newresponsestart);
+                await NotifyError("Server return error : \n" + currentresponse);
+                return response;
+            }
+            return response;
         }
 
         /// <summary>
@@ -423,7 +401,7 @@ namespace Balboa
         private async Task HandleResponse(MpdResponseCollection response)
         {
             //bool handleResponseCriticalError = false;
-            string errorMessage = string.Empty;
+            
             try
             {
                 switch (response.Command.Op)
@@ -484,29 +462,28 @@ namespace Balboa
             }
             catch (BalboaNullValueException be)
             {
-                _Terminating = true;
-                errorMessage = string.Format(_resldr.GetString("NullValueExceptionMsg"),
+//                _Terminating = true;
+                _errorMessage = string.Format(_resldr.GetString("NullValueExceptionMsg"),
                                                 be.VariableName, be.MethodName, be.FileName, be.LineNumber);
+                throw be;
             }
             catch (BalboaException be)
             {
-                _Terminating = true;
-                errorMessage = string.Format(_resldr.GetString("BalboaExceptionMsg"),
+                //_Terminating = true;
+                _errorMessage = string.Format(_resldr.GetString("BalboaExceptionMsg"),
                                                  be.MethodName, be.FileName, be.LineNumber, be.Message);
+                throw be;
             }
             catch (Exception e)
             {
-                _Terminating = true;
+                //_Terminating = true;
                 string exceptionMessage  = e.Message.Contains("\r\n") ? e.Message.Substring(0, e.Message.IndexOf("\r\n")) : e.Message;
-                errorMessage = string.Format(_resldr.GetString("UnexpectedServerError"), exceptionMessage);
+                _errorMessage = string.Format(_resldr.GetString("UnexpectedServerError"), exceptionMessage);
+                throw e;
             }
             finally
             {
-                if (_Terminating)
-                {
-                    //await Halt();
-                    NotifyCriticalError(errorMessage);
-                }
+ //                   NotifyCriticalError(_errorMessage);
             }
 
         }
@@ -573,7 +550,7 @@ namespace Balboa
         /// </summary>
         private void AddCommand(MpdCommand command)
         {
-            if (_Connection.StatusId == ConnectionStatus.Connected)
+            if (_Connection.IsActive)
             { 
                 lock( _Lock)
                 {

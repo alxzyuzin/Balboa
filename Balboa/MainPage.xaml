@@ -819,8 +819,8 @@
                 <StackPanel x:Name="stp_Outputs" Grid.Row="2" Grid.Column="5" Grid.RowSpan="10" Margin="70,0,0,0" />
 
                 <StackPanel  Grid.Row="14" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right"  Grid.ColumnSpan="5">
-                    <AppBarButton x:Name="appbtn_StartSession" Icon="Preview" Label="Start session" Tapped="appbtn_StartSession_Tapped"  HorizontalAlignment="Right" Visibility="Collapsed"/>
-                    <AppBarButton x:Name="appbtn_StopSession" Icon="Preview" Label="Stop session"  Tapped="appbtn_StopSession_Tapped" HorizontalAlignment="Right" Visibility="Collapsed"/>
+                    <AppBarButton x:Name="appbtn_StartSession" Icon="Preview" Label="Start session" Tapped="appbtn_StartSession_Tapped"  HorizontalAlignment="Right" Visibility="Visible"/>
+                    <AppBarButton x:Name="appbtn_StopSession" Icon="Preview" Label="Stop session"  Tapped="appbtn_StopSession_Tapped" HorizontalAlignment="Right" Visibility="Visible"/>
                     <AppBarSeparator Visibility="Collapsed"/>
                     <AppBarButton x:Name="appbtn_TestConnection" Icon="Preview" Label="Test connection" Tapped="appbtn_TestConnection_Tapped" HorizontalAlignment="Right"/>
                     <AppBarSeparator/>

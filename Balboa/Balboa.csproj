@@ -155,9 +155,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Balboa_DeploymentKey.pfx" />
-    <None Include="Balboa_StoreKey.pfx" />
-    <None Include="Balboa_TemporaryKey.pfx" />
     <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
@@ -234,7 +231,6 @@
     <Content Include="Assets\Wide310x150Logo.scale-140.png" />
     <Content Include="Assets\Wide310x150Logo.scale-180.png" />
     <Content Include="Assets\Wide310x150Logo.scale-80.png" />
-    <None Include="BulboaSignKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
@@ -244,7 +240,8 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>BulboaSignKey.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -94,7 +94,6 @@ namespace Balboa
 
             stackpanel_MainPanelHeader.DataContext = Server.CurrentSongData;
 
-
             tb_ConnectionStatus.DataContext = Server;
 
             gr_CurrentTrack.DataContext = Server.CurrentSongData;
@@ -173,9 +172,9 @@ namespace Balboa
             }
         }
 
-        private async void OnSuspending(object sender, SuspendingEventArgs e)
+        private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            await Server.Halt();
+            Server.Halt();
         }
 
         private void OnResuming(Object sender, Object e)
@@ -347,7 +346,7 @@ namespace Balboa
 
         private async void OnServerError(object sender, EventArgs eventArgs)
         {
-            await Server.Halt();
+            Server.Halt();
             switch(await MessageBox(_resldr.GetString("Error"),((ServerEventArgs) eventArgs).Message, MsgBoxButtons.GoToSettings | MsgBoxButtons.Retry | MsgBoxButtons.Exit))
             {
                 case MsgBoxButtons.Exit: Application.Current.Exit(); break;
@@ -358,7 +357,7 @@ namespace Balboa
 
         private async void OnServerCriticalError(object sender, EventArgs eventArgs)
         {
-            await Server.Halt();
+            Server.Halt();
             MsgBoxButtons responce = await MessageBox(_resldr.GetString("CriticalError"), ((ServerEventArgs)eventArgs).Message, MsgBoxButtons.GoToSettings | MsgBoxButtons.CloseApplication);
             switch (responce)
             {
@@ -370,7 +369,7 @@ namespace Balboa
 
         private       void OnServerConnectionStatusChanged(object sender, EventArgs eventArgs)
         {
-            if(((ServerEventArgs)eventArgs).ConnectionStatus == ConnectionStatus.Connected)
+            if(((ServerEventArgs)eventArgs).ConnectionStatus)
                 Server.PlaylistInfo();
         }
 
@@ -833,9 +832,9 @@ namespace Balboa
             Server.Start();
         }
 
-        private async void appbtn_StopSession_Tapped(object sender, TappedRoutedEventArgs e)
+        private void appbtn_StopSession_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            await Server.Halt();
+            Server.Halt();
         }
         #endregion
 

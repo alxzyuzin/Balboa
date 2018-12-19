@@ -19,14 +19,14 @@ using Windows.Storage.Streams;
 
 namespace Balboa.Common
 {
-    public enum ConnectionStatus
-    {
-        Disconnected,            // Not connected and idle
-        Connecting,              // (Re-)establishing connection
-        Connected,               // Connection OK
-        Disconnecting,            // Disconnecting and not reconnecting when done
-        ConnectionError
-    }
+    //public enum ConnectionStatus
+    //{
+    //    Disconnected,            // Not connected and idle
+    //    Connecting,              // (Re-)establishing connection
+    //    Connected,               // Connection OK
+    //    Disconnecting,            // Disconnecting and not reconnecting when done
+    //    ConnectionError
+    //}
 
     public sealed class Connection : INotifyPropertyChanged
     {
@@ -47,13 +47,12 @@ namespace Balboa.Common
 
         #region Fields
 
-        private StreamSocket        _socket;
+       // private string _server_port;
 
-        private string              _status;
-        
+        private StreamSocket _socket;
+       
         private DataReader _datareader;
         private DataWriter _datawriter;
-
         private string _host;
         private string _port;
 
@@ -61,35 +60,50 @@ namespace Balboa.Common
         #endregion
 
         #region Properties
-        private ConnectionStatus _statusId;
-        public ConnectionStatus StatusId
+        private bool _isActive = false;
+        public  bool IsActive
         {
-            get { return _statusId; }
-
+            get {return _isActive; }
             private set
             {
-                if(_statusId != value)
-                { 
-                   string s = _host + " port : " + _port;
-
-                    _statusId = value;
-                    switch (_statusId)
-                    {
-                        case ConnectionStatus.Connected:       Status = "Connected to " + s; break;
-                        case ConnectionStatus.Connecting:      Status = "Connecting to " + s; break;
-                        case ConnectionStatus.Disconnected:    Status = "Disconnected from " + s; break;
-                        case ConnectionStatus.Disconnecting:   Status = "Disconnecting from " + s; break;
-                        case ConnectionStatus.ConnectionError: Status = Error; break;
-                    }
-                    NotifyPropertyChanged("StatusId");
+                if (_isActive != value)
+                {
+                    _isActive = value;
+                    NotifyPropertyChanged(nameof(IsActive));
                 }
             }
-            
         }
 
+        //private ConnectionStatus _statusId;
+        //public ConnectionStatus StatusId
+        //{
+        //    get { return _statusId; }
+
+        //    private set
+        //    {
+        //        if (_statusId != value)
+        //        {
+        //            string s = _host + " port : " + _port;
+
+        //            _statusId = value;
+        //            switch (_statusId)
+        //            {
+        //                case ConnectionStatus.Connected: Status = "Connected to " + s; break;
+        //                case ConnectionStatus.Connecting: Status = "Connecting to " + s; break;
+        //                case ConnectionStatus.Disconnected: Status = "Disconnected from " + s; break;
+        //                case ConnectionStatus.Disconnecting: Status = "Disconnecting from " + s; break;
+        //                case ConnectionStatus.ConnectionError: Status = Error; break;
+        //            }
+        //            NotifyPropertyChanged("StatusId");
+        //        }
+        //    }
+
+        //}
+
+        private string _status;
         public string Status
         {
-            set
+           private set
             {
                 if (_status != value)
                 {
@@ -117,7 +131,7 @@ namespace Balboa.Common
 
         public string InitialResponse { get; set; }
         #endregion
-     
+
         /// <summary>
         /// Устанавливаем соединение с сервером
         /// Если соединение установлено успешноб читаем ответ сервера при установлении соедиения
@@ -128,7 +142,7 @@ namespace Balboa.Common
             _host = host;
             _port = port;
 
-            StatusId = ConnectionStatus.Connecting;
+            Status = $"Connecting to {_host} port:{_port}";
             try
             {
                 HostName hostName = new HostName(host);
@@ -158,35 +172,42 @@ namespace Balboa.Common
 
                 if (InitialResponse.StartsWith("OK ") && InitialResponse.Contains("MPD"))
                 {
-                   if (password!=null && password.Length>0)
-                   {
-                      await SendCommand("password " + password);
-                      string res = await ReadResponse();
-                      if (res != "OK\n")
-                      {
-                         await SendCommand("close");
-                         Clear();
-                         Error = _resldr.GetString("ConnectionError")+"\n" + res;
-                         return false;
-                      }
+                    if (password != null && password.Length > 0)
+                    {
+                        await SendCommand("password " + password);
+                        string res = await ReadResponse();
+                        if (res != "OK\n")
+                        {
+                            await SendCommand("close");
+                            Clear();
+                            Error = _resldr.GetString("ConnectionError") + "\n" + res;
+                            return false;
+                        }
                     }
-                    StatusId = ConnectionStatus.Connected;
+                    IsActive = true;
+                    Status = $"Connected to  {_host} port:{_port}";
                     return true;
-                 }
-                 else
-                 {
+                }
+                else
+                {
                     Clear();
                     Error = _resldr.GetString("InvalidInitialResponse") + InitialResponse;
+                    IsActive = false;
                     return false;
-                  }
+                }
             }
-             catch (Exception e)
-             {
+            catch (Exception e)
+            {
                 Clear();
                 Error = string.Format(CultureInfo.CurrentCulture, _resldr.GetString("ConnectionErrorDescription"),
-                                        _host, _port,  Utilities.GetExceptionMsg(e));
+                                        _host, _port, Utilities.GetExceptionMsg(e));
+                IsActive = false;
                 return false;
-             }
+            }
+            finally
+            {
+
+            }
         }
 
         /// <summary>
@@ -194,7 +215,7 @@ namespace Balboa.Common
         /// </summary>
         private void Clear()
         {
-            StatusId = ConnectionStatus.ConnectionError;
+//            StatusId = ConnectionStatus.ConnectionError;
 
             if (_datareader != null) _datareader.Dispose();
             if (_datawriter != null) _datawriter.Dispose();
@@ -203,24 +224,26 @@ namespace Balboa.Common
 
         public void Close()
         {
-            if (_statusId != ConnectionStatus.Disconnected)
+//            if (_statusId != ConnectionStatus.Disconnected)
+            if (IsActive)
             {
                 Clear();
-                StatusId = ConnectionStatus.Disconnected;
+                Status = $"Disconnected from  {_host} port:{_port}";
+                IsActive = false;
             }
         }
 
-        public async Task<bool> SendCommand(string command)
+        public async Task SendCommand(string command)
         {
-            _datawriter.WriteString(command + "\n");
-            await _datawriter.StoreAsync();
-            return true;
+                _datawriter.WriteString(command + "\n");
+                await _datawriter.StoreAsync();
         }
+        
         
         public async Task<string> ReadResponse()
         {
-            await _datareader.LoadAsync(1000000);
-            return _datareader.ReadString(_datareader.UnconsumedBufferLength);
+                await _datareader.LoadAsync(1000000);
+                return _datareader.ReadString(_datareader.UnconsumedBufferLength);
         }
     }
 }
