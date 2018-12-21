@@ -3,6 +3,27 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 
+    <SolidColorBrush x:Key="MainBackgroundBrush" Color="#FF303030" />
+    <SolidColorBrush x:Key="InformationPanelBackgroundBrush" Color="#FF404040" />
+
+    <Style x:Key="UtilityButtonStyle" TargetType="Button" >
+        <Setter Property="Margin" Value="20,0,0,0"/>
+        <Setter Property="Height" Value="40" />
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontWeight" Value="Light"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+
+
+    <Style x:Name="ToggleSwitchStyle" TargetType="ToggleSwitch">
+        <Setter Property="Width" Value="200"/>
+        <Setter Property="Height" Value="80"/>
+        <Setter Property="OffContent" Value="Off"/>
+        <Setter Property="OnContent" Value="On"/>
+        <Setter Property="FontSize" Value="18"/>
+    </Style>
+
 
     <!-- Цвет галочки которая отмечает  Selected Item -->
     <SolidColorBrush x:Key="ListViewItemCheckThemeBrush" Color="Orange" />

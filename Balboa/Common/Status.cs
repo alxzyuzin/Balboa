@@ -17,7 +17,7 @@ using System.Text.RegularExpressions;
 namespace Balboa.Common
 {
 
-    internal sealed class Status: INotifyPropertyChanged
+    public sealed class Status: INotifyPropertyChanged
     {
         private const string _modName = "Status.cs";
 

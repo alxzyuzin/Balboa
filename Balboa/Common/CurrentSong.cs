@@ -13,7 +13,7 @@ using Windows.UI.Core;
 
 namespace Balboa.Common
 {
-    internal sealed class CurrentSong : INotifyPropertyChanged
+    public sealed class CurrentSong : INotifyPropertyChanged
     {
         #region
 

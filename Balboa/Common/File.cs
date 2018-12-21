@@ -14,9 +14,9 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Balboa.Common
 {
-    internal enum FileNature { File, Directory, Playlist }
+    public enum FileNature { File, Directory, Playlist }
 
-    internal class File: IComparable, INotifyPropertyChanged, IUpdatable
+    public class File: IComparable, INotifyPropertyChanged, IUpdatable
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

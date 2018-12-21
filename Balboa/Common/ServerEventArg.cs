@@ -19,6 +19,7 @@ namespace Balboa.Common
         public string Result { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
         public bool ConnectionStatus { get; set; }
+        public string Content { get; set; } = string.Empty;
 
         public ServerEventArgs() {}
         public ServerEventArgs(EventType eventType, string command,string result, string message)
@@ -43,20 +44,5 @@ namespace Balboa.Common
         }
 
     }
-    /*
-        public class ServerCommandCompletionEventArgs : ServerEventArgs
-        {
-            public string Command { get; set; }
-            public string Result { get; set; }
-         }
-
-        public class ServerConnectionStatusEventArgs : ServerEventArgs
-        {
-            public ServerConnectionStatusEventArgs(ConnectionStatus status)
-            {
-                Status = status;
-            }
-            public ConnectionStatus Status { get; set; }
-        }
-        */
+  
 }

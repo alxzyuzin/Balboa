@@ -26,10 +26,10 @@
     
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
         <x:String x:Key="AppName">Balboa</x:String>
-
+<!--
         <SolidColorBrush x:Key="MainBackgroundBrush" Color="#FF303030" />
         <SolidColorBrush x:Key="InformationPanelBackgroundBrush" Color="#FF404040" />
-
+-->
         <!-- Определение класса TimeConverter в виде статического ресурса для подключения к TexstBlock  Converter={StaticResource Converter1}-->
         <common:TimeConverter  x:Key="TimeConverter"/>
         <common:PlaylistItemStyleSelector x:Key="PlaylistItemStyleSelector"/>
@@ -144,7 +144,7 @@
             <Setter Property="FontWeight" Value="Light"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
         </Style>
-
+<!--
         <Style x:Key="UtilityButtonStyle" TargetType="Button" >
             <Setter Property="Margin" Value="20,0,0,0"/>
             <Setter Property="Height" Value="40" />
@@ -153,7 +153,7 @@
             <Setter Property="FontWeight" Value="Light"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
         </Style>
-
+-->
         <Style x:Name="ToggleSwitchStyle" TargetType="ToggleSwitch">
             <Setter Property="Width" Value="200"/>
             <Setter Property="Height" Value="80"/>
@@ -200,7 +200,7 @@
         <Style x:Key="StatisticDataTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource StatisticTextBlockStyle}">
             <Setter Property="TextAlignment" Value="Left" />
         </Style>
-
+<!--
         <Style x:Key="SettingsTextBlockStyle" TargetType="TextBlock" >
             <Setter Property="FontSize" Value="22"/>
             <Setter Property="FontWeight" Value="ExtraLight"/>
@@ -216,7 +216,7 @@
             <Setter Property="Padding" Value="0,0,0,0"/>
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
-
+-->
     </Page.Resources>
     <Page.Background>
         <StaticResource ResourceKey="ListViewItemSelectedBackgroundThemeBrush"/>
@@ -228,6 +228,7 @@
         * Row 1 contains the rest of the page layout
     -->
     <Grid x:Name="grid_Main"  Background="{StaticResource MainBackgroundBrush}">
+        
         <!--="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,3,0,-3"> -->
         <!--
         <Grid.ChildrenTransitions>
@@ -244,7 +245,8 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="20"/>
         </Grid.ColumnDefinitions>
-
+       
+        
         <!--  PЗАГОЛОВОК ОКНА-->
         <StackPanel x:Name="stackpanel_PageHeader" Orientation="Horizontal"  Height="70" Margin="20,0,20,0" VerticalAlignment="Top" Visibility="Collapsed">
             <TextBlock x:Name="textblock_MainMenu" Text="&#xE14C;"  FontSize="50" FontFamily="Segoe UI Symbol"  Tapped="textblock_MainMenu_Tapped" />
@@ -253,65 +255,16 @@
 
         <!-- Главное окно-->
         <Grid x:Name="grid_MainPanel" Margin="220,20,0,0" >
-
             <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="10"/>
                 <RowDefinition Height="140"/>
             </Grid.RowDefinitions>
 
-            <Grid x:Name="stackpanel_MainPanelHeader" Height="100"  VerticalAlignment="Top"   
-                        HorizontalAlignment="Right" Opacity="0" Margin="0,0,50,0">
-                <Grid.Resources>
-                    <Storyboard x:Name="stackpanel_MainPanelHeaderShowStoryboard">
-
-                        <DoubleAnimation  Storyboard.TargetName="stackpanel_MainPanelHeader"
-                                          Storyboard.TargetProperty="Opacity"
-                                          From="0.0" To="1.0" Duration="0:0:1"/>
-                    </Storyboard>
-                    <Storyboard x:Name="stackpanel_MainPanelHeaderHideStoryboard">
-
-                        <DoubleAnimation  Storyboard.TargetName="stackpanel_MainPanelHeader"
-                                          Storyboard.TargetProperty="Opacity"
-                                          From="1.0" To="0.0" Duration="0:0:1"/>
-                    </Storyboard>
-
-                </Grid.Resources>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Image x:Name="image_AlbumCoverSmall"  Grid.Column="0" Width="100" Height="100" Margin="0,-20,0,0" />
-                <Grid  Grid.Column="1" HorizontalAlignment="Left">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="2*"/>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
-                    </Grid.RowDefinitions>
-
-                    <StackPanel  Grid.Row="0" Grid.RowSpan="3">
-                       
-                        <TextBlock  Text="{Binding Title}"      
-                                    Style="{StaticResource  CurrentTrackTextBlockStyle}"  FontSize="35" Margin="40,0,0,0"  
-                                    TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Height="45"/>
-                        
-                    <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Grid.Row="1">
-                            <TextBlock x:Uid="Artist"  Text="" FontSize="15" Margin="10,0,0,0"/>
-                        <!--TextBlock Text="Artist :"  FontSize="15" Margin="10,0,0,0"/-->
-                        <TextBlock Text="{Binding Artist}" FontSize="15" Margin="10,0,0,0"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Grid.Row="2">
-                        <TextBlock Text="Album :"  FontSize="15" Margin="10,0,0,0"/>
-                        <TextBlock Text="{Binding Album}"  FontSize="15" Margin="10,0,0,0"/>
-                    </StackPanel>
-                  
-                    </StackPanel>
-                </Grid>
-            </Grid>
-
-            <!--   CURRENT TRACK
+             <!--   CURRENT TRACK
          -->
-            <Grid  x:Name="gr_CurrentTrack" Style="{StaticResource InformationGridStyle}" Visibility="Visible" Margin="0,0,0,10" d:IsHidden="True">
+            <Grid  x:Name="gr_CurrentTrack" Grid.Row="1" Style="{StaticResource InformationGridStyle}" Visibility="Visible" Margin="0,0,0,10">
 
                 <Grid.Resources>
                     <Storyboard x:Name="gr_CurrentTrackShowStoryboard">
@@ -387,7 +340,7 @@
 
             <!--   CURRENT PLAYLIST
         -->
-            <Grid  x:Name="gr_Playlist" Style="{StaticResource InformationGridStyle}" Visibility="Visible" d:IsHidden="True">
+            <Grid  x:Name="gr_Playlist" Grid.Row="1" Style="{StaticResource InformationGridStyle}" Visibility="Visible" d:IsHidden="True">
                 <Grid.Resources>
                     <Storyboard x:Name="gr_CurrentPlaylistShowStoryboard">
                         <DoubleAnimation  Storyboard.TargetName="gr_Playlist"
@@ -430,7 +383,7 @@
 
             <!--  FILE SYSTEM
         -->
-            <Grid  x:Name="gr_FileSystem" Style="{StaticResource InformationGridStyle}" d:IsHidden="True">
+            <Grid  x:Name="gr_FileSystem" Grid.Row="1" Style="{StaticResource InformationGridStyle}" d:IsHidden="True">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -473,7 +426,7 @@
 
             <!--  SAVED PLAYLISTS
         -->
-            <Grid  x:Name="gr_SavedPlayLists" Style="{StaticResource InformationGridStyle}" d:IsHidden="True">
+            <Grid  x:Name="gr_SavedPlayLists" Grid.Row="1" Style="{StaticResource InformationGridStyle}" d:IsHidden="True">
                 <Grid.Resources>
                     <Storyboard x:Name="gr_SavedPlayListsShowStoryboard">
                         <DoubleAnimation  Storyboard.TargetName="gr_SavedPlayLists"
@@ -507,7 +460,7 @@
 
             <!--  GENRE
         -->
-            <Grid  x:Name="gr_Genres"  Style="{StaticResource InformationGridStyle}" Visibility="Visible" d:IsHidden="True">
+            <Grid  x:Name="gr_Genres" Grid.Row="1"  Style="{StaticResource InformationGridStyle}" Visibility="Visible" d:IsHidden="True">
                 <Grid.Resources>
                     <Storyboard x:Name="gr_GenresShowStoryboard">
                         <DoubleAnimation  Storyboard.TargetName="gr_Genres"
@@ -580,7 +533,7 @@
 
             <!--  ARTISTS
         -->
-            <Grid  x:Name="gr_Artists" Style="{StaticResource InformationGridStyle}"  Visibility="Visible" d:IsHidden="True">
+            <Grid  x:Name="gr_Artists" Grid.Row="1" Style="{StaticResource InformationGridStyle}"  Visibility="Visible" d:IsHidden="True">
                 <Grid.Resources>
                     <Storyboard x:Name="gr_ArtistsShowStoryboard">
                         <DoubleAnimation  Storyboard.TargetName="gr_Artists"
@@ -646,7 +599,7 @@
 
             <!--  SEARCH
         -->
-            <Grid  x:Name="gr_Search" Grid.Row="0" Grid.Column="0" Style="{StaticResource InformationGridStyle}" Visibility="Visible" d:IsHidden="True">
+            <Grid  x:Name="gr_Search" Grid.Row="1" Grid.Column="0" Style="{StaticResource InformationGridStyle}" Visibility="Visible" d:IsHidden="True">
                 <Grid.Resources>
                     <Storyboard x:Name="gr_SearchShowStoryboard">
                         <DoubleAnimation  Storyboard.TargetName="gr_Search"
@@ -690,7 +643,7 @@
 
             <!--  STATS
         -->
-            <Grid  x:Name="gr_Stats" Grid.Row="0" Grid.Column="0" Style="{StaticResource InformationGridStyle}" d:IsHidden="True">
+            <Grid  x:Name="gr_Stats" Grid.Row="1" Grid.Column="0" Style="{StaticResource InformationGridStyle}" d:IsHidden="True">
                 <Grid.Resources>
                     <Storyboard x:Name="gr_StatsShowStoryboard">
                         <DoubleAnimation  Storyboard.TargetName="gr_Stats"
@@ -726,7 +679,8 @@
 
             <!--  SETTINGS
         -->
-            <Grid  x:Name="gr_Settings" Grid.Row="0" Grid.Column="0" 
+            <local:Settings x:Name="p_Settings" Grid.Row="1" d:IsHidden="True" />
+            <!--Grid  x:Name="gr_Settings" Grid.Row="0" Grid.Column="0" 
                Style="{StaticResource InformationGridStyle}" Visibility="Visible" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30"/>
@@ -826,10 +780,10 @@
                     <AppBarSeparator/>
                     <AppBarButton x:Name="appbtn_SaveSettings" Icon="Save" Label="Save" Tapped="appbtn_SaveSettings_Tapped" />
                 </StackPanel>
-            </Grid>
+            </Grid-->
 
             <!-- Панель управления проигрыванием -->
-            <StackPanel x:Name="stp_ServerStatus" Grid.Row="2" Grid.Column="0" Margin="0,-25,0,0">
+            <StackPanel x:Name="stp_ServerStatus" Grid.Row="3" Grid.Column="0" Margin="0,-25,0,0">
 
                 <Grid  x:Name="gr_SongTimes" Margin="0,0,0,20">
                     <!-- Длительность трека и время от начала воспроизведения трека-->
@@ -895,6 +849,54 @@
 
         </Grid>
 
+         <Grid x:Name="stackpanel_MainPanelHeader" Grid.Row="0" Height="100"  VerticalAlignment="Top"   
+                        HorizontalAlignment="Right" Opacity="0" Margin="0,0,50,0">
+                <Grid.Resources>
+                    <Storyboard x:Name="stackpanel_MainPanelHeaderShowStoryboard">
+
+                        <DoubleAnimation  Storyboard.TargetName="stackpanel_MainPanelHeader"
+                                          Storyboard.TargetProperty="Opacity"
+                                          From="0.0" To="1.0" Duration="0:0:1"/>
+                    </Storyboard>
+                    <Storyboard x:Name="stackpanel_MainPanelHeaderHideStoryboard">
+
+                        <DoubleAnimation  Storyboard.TargetName="stackpanel_MainPanelHeader"
+                                          Storyboard.TargetProperty="Opacity"
+                                          From="1.0" To="0.0" Duration="0:0:1"/>
+                    </Storyboard>
+
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image x:Name="image_AlbumCoverSmall"  Grid.Column="0" Width="100" Height="100" Margin="0,-20,0,0" />
+                <Grid  Grid.Column="1" HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel  Grid.Row="0" Grid.RowSpan="3">
+                       
+                        <TextBlock  Text="{Binding Title}"      
+                                    Style="{StaticResource  CurrentTrackTextBlockStyle}"  FontSize="35" Margin="40,0,0,0"  
+                                    TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Height="45"/>
+                        
+                    <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Grid.Row="1">
+                            <TextBlock x:Uid="Artist"  Text="" FontSize="15" Margin="10,0,0,0"/>
+                        <!--TextBlock Text="Artist :"  FontSize="15" Margin="10,0,0,0"/-->
+                        <TextBlock Text="{Binding Artist}" FontSize="15" Margin="10,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Grid.Row="2">
+                        <TextBlock Text="Album :"  FontSize="15" Margin="10,0,0,0"/>
+                        <TextBlock Text="{Binding Album}"  FontSize="15" Margin="10,0,0,0"/>
+                    </StackPanel>
+                  
+                    </StackPanel>
+                </Grid>
+            </Grid>
         <!-- Главное меню -->
         <Grid x:Name="grid_MainMenu" Width="200"   
               HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="20,0,0,0" Background="{StaticResource MainBackgroundBrush}">
@@ -946,7 +948,7 @@
             </StackPanel>
 
         </Grid>
-
+        <local:MessageBox x:Name="MsgBox" Visibility="Collapsed"/>
         <Popup x:Name="popup_GetPlaylistName">
 
             <Popup.ChildTransitions>

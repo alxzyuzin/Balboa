@@ -19,15 +19,7 @@ using Windows.Storage.Streams;
 
 namespace Balboa.Common
 {
-    //public enum ConnectionStatus
-    //{
-    //    Disconnected,            // Not connected and idle
-    //    Connecting,              // (Re-)establishing connection
-    //    Connected,               // Connection OK
-    //    Disconnecting,            // Disconnecting and not reconnecting when done
-    //    ConnectionError
-    //}
-
+  
     public sealed class Connection : INotifyPropertyChanged
     {
         ResourceLoader _resldr = new ResourceLoader();
@@ -47,19 +39,16 @@ namespace Balboa.Common
 
         #region Fields
 
-       // private string _server_port;
-
         private StreamSocket _socket;
-       
         private DataReader _datareader;
         private DataWriter _datawriter;
         private string _host;
         private string _port;
 
-
         #endregion
 
         #region Properties
+
         private bool _isActive = false;
         public  bool IsActive
         {
@@ -73,32 +62,6 @@ namespace Balboa.Common
                 }
             }
         }
-
-        //private ConnectionStatus _statusId;
-        //public ConnectionStatus StatusId
-        //{
-        //    get { return _statusId; }
-
-        //    private set
-        //    {
-        //        if (_statusId != value)
-        //        {
-        //            string s = _host + " port : " + _port;
-
-        //            _statusId = value;
-        //            switch (_statusId)
-        //            {
-        //                case ConnectionStatus.Connected: Status = "Connected to " + s; break;
-        //                case ConnectionStatus.Connecting: Status = "Connecting to " + s; break;
-        //                case ConnectionStatus.Disconnected: Status = "Disconnected from " + s; break;
-        //                case ConnectionStatus.Disconnecting: Status = "Disconnecting from " + s; break;
-        //                case ConnectionStatus.ConnectionError: Status = Error; break;
-        //            }
-        //            NotifyPropertyChanged("StatusId");
-        //        }
-        //    }
-
-        //}
 
         private string _status;
         public string Status
@@ -215,8 +178,6 @@ namespace Balboa.Common
         /// </summary>
         private void Clear()
         {
-//            StatusId = ConnectionStatus.ConnectionError;
-
             if (_datareader != null) _datareader.Dispose();
             if (_datawriter != null) _datawriter.Dispose();
             if (_socket != null) _socket.Dispose();
@@ -224,7 +185,6 @@ namespace Balboa.Common
 
         public void Close()
         {
-//            if (_statusId != ConnectionStatus.Disconnected)
             if (IsActive)
             {
                 Clear();

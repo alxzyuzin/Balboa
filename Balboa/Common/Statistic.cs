@@ -15,7 +15,7 @@ using Windows.UI.Core;
 namespace Balboa.Common
 {
     
-    internal class Statistic : INotifyPropertyChanged
+    public class Statistic : INotifyPropertyChanged
     {
         private const string _modName = "Statistic.cs";
         #region

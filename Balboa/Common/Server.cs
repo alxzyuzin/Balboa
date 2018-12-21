@@ -25,12 +25,15 @@ namespace Balboa
 {
 
     public delegate void EventHandler<TServerEventArgs>(object sender, TServerEventArgs eventArgs);
+    
+    public delegate void DataReadyEventHandler<MpdResponse>(object sender, MpdResponse eventArgs);
 
-    internal class Server : INotifyPropertyChanged, IDisposable
+    public class Server : INotifyPropertyChanged, IDisposable
     {
         private const string _modName = "Server.cs";
 
-#region Events
+        #region Events
+        public event DataReadyEventHandler<MpdResponse> DataReady;
 
         /// <summary>
         /// Уведомление об изменении значения свойства
@@ -101,10 +104,13 @@ namespace Balboa
         }
 #endregion
 
-        #region Поля
+#region Fields
         private CancellationTokenSource _tokenSource;
         private string _errorMessage = string.Empty;
+        private AppSettings _appSettings = new AppSettings();
+        private Progress<MpdResponse> _status;
 
+//---------------------------------------------------------------------------------
         ResourceLoader _resldr = new ResourceLoader();
         private DispatcherTimer     _timer;
 
@@ -124,7 +130,7 @@ namespace Balboa
         private ObservableObjectCollection<Track>          _Playlist;
         private ObservableObjectCollection<File>           _FileList;
         private ObservableObjectCollection<File>           _SavedPlaylists;
-        private ObservableObjectCollection<Output>         _Outputs;
+//        private ObservableObjectCollection<Output>         _Outputs;
         private ObservableObjectCollection<CommonGridItem> _Genres;
         private ObservableObjectCollection<CommonGridItem> _Artists;
         private ObservableObjectCollection<CommonGridItem> _Albums;
@@ -135,10 +141,26 @@ namespace Balboa
         private bool _filelistCancelUpdate = false;
         private bool _filelistUpdatInProcess = false;
 
-        #endregion
+#endregion
 
-        #region Свойства      
+#region Properties
+        private string _response;
+        public string Response
+        {
+            get { return _response; }
+            private set
+            {
+                if (_response!=value)
+                {
+                    _response = value;
+                    NotifyPropertyChanged(nameof(Response));
+                }
+            }
 
+        }
+        public AppSettings Settings { get { return _appSettings; } }
+
+        public bool Initialized { get; private set; } = false;
         private string      _strConnectionState;
         public string        ConnectionState
         {
@@ -171,7 +193,7 @@ namespace Balboa
         public ObservableObjectCollection<Track>  PlaylistData { get { return _Playlist; } }
         public ObservableObjectCollection<File>   DirectoryData { get { return _FileList; } }
         public ObservableObjectCollection<File>   SavedPlaylistsData { get { return _SavedPlaylists; } }
-        public ObservableObjectCollection<Output> OutputsData  { get { return _Outputs; } }
+//        public ObservableObjectCollection<Output> OutputsData  { get { return _Outputs; } }
         public ObservableObjectCollection<CommonGridItem> Artists { get { return _Artists; } }
         public ObservableObjectCollection<CommonGridItem> Genres { get { return _Genres; } }
         public ObservableObjectCollection<CommonGridItem> Albums { get { return _Albums; } }
@@ -181,6 +203,25 @@ namespace Balboa
 
         public Server(MainPage mainPage)
         {
+
+            _appSettings.Restore();
+
+            if (_appSettings.InitialSetupDone)
+            {
+                Host = _appSettings.Server;
+                Port = _appSettings.Port;
+                Password = _appSettings.Password;
+                ViewUpdateInterval = int.Parse(_appSettings.ViewUpdateInterval, System.Globalization.CultureInfo.InvariantCulture);
+                MusicCollectionFolder = _appSettings.MusicCollectionFolder;
+                AlbumCoverFileNames = _appSettings.AlbumCoverFileName;
+                DisplayFolderPictures = (bool)_appSettings.DisplayFolderPictures;
+                Initialized = true;
+            }
+
+            _status = new Progress<MpdResponse>(ReportStatus);
+
+            //-------------------------------------------------------------------------------------
+
             _mainPage = mainPage;
 
             _Statistics =   new Statistic(_mainPage);
@@ -190,7 +231,7 @@ namespace Balboa
             _Playlist =     new ObservableObjectCollection<Track>(_mainPage);
             _FileList =     new ObservableObjectCollection<File>(_mainPage);
             _SavedPlaylists = new ObservableObjectCollection<File>(_mainPage);
-            _Outputs =      new ObservableObjectCollection<Output>(_mainPage);
+//            _Outputs =      new ObservableObjectCollection<Output>(_mainPage);
             _Artists =      new ObservableObjectCollection<CommonGridItem>(_mainPage);
             _Genres =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
             _Albums =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
@@ -249,6 +290,11 @@ namespace Balboa
             Start();
         }
 
+        private void ReportStatus(MpdResponse response)
+        {
+            DataReady?.Invoke(this, response );
+        }
+
         private void Connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "IsActive")
@@ -266,7 +312,7 @@ namespace Balboa
             _Playlist.ClearAndNotify();
             _FileList.ClearAndNotify();
             _SavedPlaylists.ClearAndNotify();
-            _Outputs.ClearAndNotify();
+//            _Outputs.ClearAndNotify();
             _Artists.ClearAndNotify();
             _Genres.ClearAndNotify();
             _Albums.ClearAndNotify();
@@ -341,7 +387,7 @@ namespace Balboa
         /// <returns></returns>
         private async Task<string> ParceResponse(string response)
         {
-            MpdResponseCollection mpdresponse = new MpdResponseCollection();
+            
             // Oтвет при ошибке начинается с ASC и заканчивается \n
             // Ответ при нормальном завершении заканчивается OK\n
 
@@ -351,10 +397,17 @@ namespace Balboa
             // Просто убираем этот ответ из входной строки
             if (response.StartsWith("OK\n", StringComparison.Ordinal))
             {
+                MpdResponseCollection mpdResponse = new MpdResponseCollection();
+
+                string currentresponse = response.Substring(0, 3);
                 response = response.Remove(0, 3);
-                mpdresponse.Command = _SentCommandQueue.Dequeue();
-                mpdresponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
-                await Task.Run(() => HandleResponse(mpdresponse));
+                mpdResponse.Command = _SentCommandQueue.Dequeue();
+                mpdResponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
+
+                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.Ok, mpdResponse.Command, currentresponse);
+                ((IProgress<MpdResponse>)_status).Report(mpdresp);
+
+                await Task.Run(() => HandleResponse(mpdResponse));
             }
 
             // Проверка 2
@@ -365,19 +418,26 @@ namespace Balboa
             {
                 //Забираем из входной строки подстроку от начала до до символов ОК (вместе с ОК)
                 int nextresponsestart = response.IndexOf("\nOK\n", StringComparison.Ordinal) + 4;
-
+                // currentresponce - содержит полный ответ от сервера
                 string currentresponce = response.Substring(0, nextresponsestart);
                 response = response.Remove(0, nextresponsestart);
 
+                MpdResponseCollection mpdResponse = new MpdResponseCollection();
+               
+
+               // mpdResponse.Content = currentresponce;
                 string[] lines = currentresponce.Split('\n');
                 for (int i = 0; i < lines.Length - 2; i++)
                 {
-                    mpdresponse.Add(lines[i]);
+                    mpdResponse.Add(lines[i]);
                 }
-                mpdresponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
-                mpdresponse.Command = _SentCommandQueue.Dequeue();
+                mpdResponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
+                mpdResponse.Command = _SentCommandQueue.Dequeue();
 
-                await Task.Run(() => HandleResponse(mpdresponse));
+                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.Ok, mpdResponse.Command, currentresponce);
+               ((IProgress<MpdResponse>)_status).Report(mpdresp);
+
+                await Task.Run(() => HandleResponse(mpdResponse));
             }
 
             // Проверка 3
@@ -390,6 +450,11 @@ namespace Balboa
                 string currentresponse = response.Substring(0, newresponsestart);
                 response = response.Remove(0, newresponsestart);
                 await NotifyError("Server return error : \n" + currentresponse);
+
+                MpdCommand command = null;// = _SentCommandQueue.Dequeue();
+                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.ACK, command, currentresponse);
+                ((IProgress<MpdResponse>)_status).Report(mpdresp);
+
                 return response;
             }
             return response;
@@ -449,16 +514,19 @@ namespace Balboa
                     case "search": _Tracks.Update(response); break;
                     case "playlistinfo": _Playlist.Update(response); break;
                     case "listplaylists": _SavedPlaylists.Update(response); break;
-                    case "outputs":
-                        if (response.Count > 0)
-                            _Outputs.Update(response);
-                        break;
+                    //case "outputs":
+                    //    if (response.Count > 0)
+                    //        _Outputs.Update(response);
+                    //    break;
                     case "config":
                         break;
                     default: break;
                 }
                 if (response.Command.Op != "status")
+                {
                     NotifyCommandCompletion(response.Command.Op, "OK", response.Error);
+                    Response = response.Command.FullSyntax;
+                }
             }
             catch (BalboaNullValueException be)
             {
@@ -540,7 +608,7 @@ namespace Balboa
 
         private void OnTimerTick(object sender, object e)
         {
-            Status();
+           // Status();
         }
 
         #region Раздел с утилитами
