@@ -12,6 +12,11 @@ namespace Balboa.Common
         CommandCompleted
     }
 
+    public enum CommandButton
+    {
+        AddTracks
+    }
+
     internal class ServerEventArgs : EventArgs
     {
         public EventType EventType { get; set; } = EventType.NoEvent;
@@ -44,5 +49,31 @@ namespace Balboa.Common
         }
 
     }
-  
+
+
+    public class DisplayMessageEventArgs : EventArgs
+    {
+        public DisplayMessageEventArgs(MsgBoxType type, string message, MsgBoxButton buttons, int boxHeight)
+        {
+            Type = type;
+            Message = message;
+            Buttons = buttons;
+            BoxHeight = boxHeight;
+        }
+        public MsgBoxType Type { get; private set; }
+        public string Message { get; private set; } = string.Empty;
+        public MsgBoxButton Buttons { get; private set; } = MsgBoxButton.Close;
+        public int BoxHeight { get; private set; } = 200;
+    }
+
+    public class CommandButtonPressedEventArgs : EventArgs
+    {
+        public CommandButton PressedButton { get; private set; }
+
+        public CommandButtonPressedEventArgs(CommandButton button)
+        {
+            PressedButton = button;
+        }
+    }
 }
+

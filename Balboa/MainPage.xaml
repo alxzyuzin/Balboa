@@ -229,14 +229,7 @@
     -->
     <Grid x:Name="grid_Main"  Background="{StaticResource MainBackgroundBrush}">
         
-        <!--="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,3,0,-3"> -->
-        <!--
-        <Grid.ChildrenTransitions>
-            <TransitionCollection>
-               <AddDeleteThemeTransition/>
-            </TransitionCollection>
-        </Grid.ChildrenTransitions>
--->
+ 
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -264,7 +257,7 @@
 
              <!--   CURRENT TRACK
          -->
-            <Grid  x:Name="gr_CurrentTrack" Grid.Row="1" Style="{StaticResource InformationGridStyle}" Visibility="Visible" Margin="0,0,0,10">
+            <Grid  x:Name="gr_CurrentTrack" Grid.Row="1" Style="{StaticResource InformationGridStyle}" Visibility="Visible" Margin="0,0,0,10" d:IsHidden="True">
 
                 <Grid.Resources>
                     <Storyboard x:Name="gr_CurrentTrackShowStoryboard">
@@ -381,9 +374,12 @@
                 </StackPanel>
             </Grid>
 
+            
             <!--  FILE SYSTEM
-        -->
-            <Grid  x:Name="gr_FileSystem" Grid.Row="1" Style="{StaticResource InformationGridStyle}" d:IsHidden="True">
+      -->
+            <local:TrackDirectory x:Name="p_TrackDirectory" Grid.Row="1" Visibility="Collapsed" />
+         <!--   
+            <Grid  x:Name="gr_FileSystem" Grid.Row="1" Style="{StaticResource InformationGridStyle}">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -423,7 +419,7 @@
                     <AppBarButton x:Name="appbtn_AddFromFileSystem" Icon="Add" Label="Add selected" Tapped="appbtn_AddFromFileSystem_Tapped"/>
                 </StackPanel>
             </Grid>
-
+  -->
             <!--  SAVED PLAYLISTS
         -->
             <Grid  x:Name="gr_SavedPlayLists" Grid.Row="1" Style="{StaticResource InformationGridStyle}" d:IsHidden="True">
@@ -678,110 +674,9 @@
             </Grid>
 
             <!--  SETTINGS
-        -->
-            <local:Settings x:Name="p_Settings" Grid.Row="1" d:IsHidden="True" />
-            <!--Grid  x:Name="gr_Settings" Grid.Row="0" Grid.Column="0" 
-               Style="{StaticResource InformationGridStyle}" Visibility="Visible" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="30"/>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="6*"/>
-                    <ColumnDefinition Width="6*"/>
-                    
-                    <ColumnDefinition Width="6*"/>
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="87"/>
-                </Grid.RowDefinitions>
-                <Grid.Resources>
-                    <Storyboard x:Name="gr_SettingsShowStoryboard">
-                        <DoubleAnimation  Storyboard.TargetName="gr_Settings"
-                                          Storyboard.TargetProperty="Opacity"
-                                          From="0.0" To="1.0" Duration="0:0:1"/>
-                    </Storyboard>
-                </Grid.Resources>
-
-                <TextBlock                      Text="Server"    Grid.Row="2" Grid.Column="1"  
-                                                Style="{StaticResource  SettingsTextBlockStyle}"/>
-                <TextBox   x:Name="tbx_Server"  Grid.Row="2" Grid.Column="2" Width="150" 
-                           Style="{StaticResource  SettingsTextBoxStyle }"
-                           Text="{Binding Server, Mode=TwoWay}"/>
-
-                <TextBlock                   Text="Port" Grid.Row="3" Grid.Column="1"  Style="{StaticResource SettingsTextBlockStyle}"/>
-                <TextBox   x:Name="tbx_Port" Text="{Binding Port, Mode=TwoWay}" Grid.Row="3" Grid.Column="2"  Width="80" Style="{StaticResource  SettingsTextBoxStyle }"/>
-                <TextBlock Text="(1 - 6553 typicaly 6600)" Grid.Row="3" Grid.Column="3"  Grid.ColumnSpan="2"
-                           Style="{StaticResource  SettingsTextBlockStyle}" Margin="15,0,0,0"/>
-
-                <TextBlock                   Text="Password"    Grid.Row="4" Grid.Column="1"  Style="{StaticResource SettingsTextBlockStyle}"/>
-                <TextBox   x:Name="tbx_Password"                Grid.Row="4" Grid.Column="2" Width="150"  
-                           Text="{Binding Password, Mode=TwoWay}"
-                           Style="{StaticResource  SettingsTextBoxStyle }"/>
-                <TextBlock                   Text="(optional)"  Grid.Row="4" Grid.Column="3"  Style="{StaticResource SettingsTextBlockStyle}" Margin="15,0,0,0"/>
-
-                <TextBlock Text="View update interval" Grid.Row="6" Grid.Column="1"   Grid.RowSpan="2" 
-                           Style="{StaticResource SettingsTextBlockStyle}"
-                           TextWrapping="WrapWholeWords" Height="70" />
-                <TextBox   Text="{Binding ViewUpdateInterval, Mode=TwoWay}"  Grid.Row="6" Grid.Column="2"   Width="80" 
-                           Style="{StaticResource  SettingsTextBoxStyle }"/>
-                <TextBlock  Text="(milliseconds)" Grid.Row="6" Grid.Column="3"  Style="{StaticResource SettingsTextBlockStyle}" Margin="15,0,0,0"/>
-
-                <TextBlock Text="Path to music collection" Grid.Row="8" Grid.Column="1"  Grid.RowSpan="2" Style="{StaticResource SettingsTextBlockStyle}" 
-                           TextWrapping="WrapWholeWords" Height="70"/>
-                <TextBox   x:Name="tbx_MusicCollectionPath" Grid.Row="8" Grid.Column="2" 
-                           Text="{Binding MusicCollectionFolder, Mode=TwoWay}"
-                           HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }"  
-                           Background="#FFF4F4F4" IsEnabled="False"
-                           Grid.RowSpan="2" VerticalAlignment="Top"
-                           Grid.ColumnSpan="2" Margin="0,0,100,0" />
-                <Button x:Name="btn_SelectMusicCollectionPath" Content="Select" Grid.Row="8" Grid.Column="3"  
-                        Style="{StaticResource  UtilityButtonStyle}" HorizontalAlignment="Right" Margin="0,-2,10,0" VerticalAlignment="Top"
-                        Height="37" Tapped="btn_SelectMusicCollectionPath_Tapped" FontSize="18" Grid.RowSpan="2"/>
-                <Button x:Name="btn_ClearMusicCollectionPath" Content="Clear" Grid.Row="8" Grid.Column="4"  
-                        Style="{StaticResource  UtilityButtonStyle}" HorizontalAlignment="Left" Margin="0,-2,0,0" VerticalAlignment="Top"
-                        Height="37" Tapped="btn_ClearMusicCollectionPath_Tapped" FontSize="18" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
-
-                <TextBlock Text="Album cover file name" Grid.Row="10" Grid.Column="1"  Grid.RowSpan="2" 
-                           Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
-                <TextBox   x:Name="tbx_AlbumCoverFileName" Text="{Binding AlbumCoverFileName, Mode=TwoWay}"  Grid.Row="10" Grid.Column="2" 
-                           HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }" Grid.RowSpan="2" VerticalAlignment="Top"/>
-                <TextBlock Text="File names separated with semicolon" Grid.Row="10" Grid.Column="3"  
-                           Style="{StaticResource SettingsTextBlockStyle}" Margin="15,0,0,0" TextWrapping="WrapWholeWords"
-                           Grid.RowSpan="2"  Grid.ColumnSpan="3" VerticalAlignment="Top" Height="75"/>
-
-                <TextBlock Text="Display pictures for folders" Grid.Row="12" Grid.Column="1"  Grid.RowSpan="2" Grid.ColumnSpan="2"
-                           Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
-                <CheckBox   x:Name="checkbox_DisplayFolderPictures" IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"  Grid.Row="12" Grid.Column="2" 
-                           HorizontalAlignment="Right" Grid.RowSpan="2" VerticalAlignment="Top"/>
-
-                <TextBlock Text="Outputs" Grid.Row="1" Grid.Column="5" FontWeight="Bold"  Margin="70,0,0,0" Style="{StaticResource  SettingsTextBlockStyle}"/>
-
-                <StackPanel x:Name="stp_Outputs" Grid.Row="2" Grid.Column="5" Grid.RowSpan="10" Margin="70,0,0,0" />
-
-                <StackPanel  Grid.Row="14" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right"  Grid.ColumnSpan="5">
-                    <AppBarButton x:Name="appbtn_StartSession" Icon="Preview" Label="Start session" Tapped="appbtn_StartSession_Tapped"  HorizontalAlignment="Right" Visibility="Visible"/>
-                    <AppBarButton x:Name="appbtn_StopSession" Icon="Preview" Label="Stop session"  Tapped="appbtn_StopSession_Tapped" HorizontalAlignment="Right" Visibility="Visible"/>
-                    <AppBarSeparator Visibility="Collapsed"/>
-                    <AppBarButton x:Name="appbtn_TestConnection" Icon="Preview" Label="Test connection" Tapped="appbtn_TestConnection_Tapped" HorizontalAlignment="Right"/>
-                    <AppBarSeparator/>
-                    <AppBarButton x:Name="appbtn_SaveSettings" Icon="Save" Label="Save" Tapped="appbtn_SaveSettings_Tapped" />
-                </StackPanel>
-            </Grid-->
-
+ -->       
+            <local:Settings x:Name="p_Settings" Grid.Row="1" />
+ 
             <!-- Панель управления проигрыванием -->
             <StackPanel x:Name="stp_ServerStatus" Grid.Row="3" Grid.Column="0" Margin="0,-25,0,0">
 
@@ -843,7 +738,7 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="tb_ServerStatus"      Grid.Column="0" HorizontalAlignment="Stretch" TextAlignment="Left"  Text="{Binding ExtendedStatus}"  FontSize="15" Margin="0,2,0,3" Grid.ColumnSpan="2"/>
-                    <TextBlock x:Name="tb_ConnectionStatus"  Grid.Column="1" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding ConnectionState}" FontSize="15" Margin="5,1,10,4"/>
+                    <TextBlock x:Name="tb_ConnectionStatus"  Grid.Column="1" HorizontalAlignment="Stretch" TextAlignment="Right" Text="{Binding ConnectionStatus}" FontSize="15" Margin="5,1,10,4"/>
                 </Grid>
             </StackPanel>
 

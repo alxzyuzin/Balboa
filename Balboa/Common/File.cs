@@ -9,7 +9,9 @@
  --------------------------------------------------------------------------*/
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Balboa.Common
@@ -97,6 +99,21 @@ namespace Balboa.Common
             }
         }
 
+        private GridLength _albumArtWidth = new GridLength(1);
+        public GridLength AlbumArtWidth
+        {
+            get { return _albumArtWidth; }
+            set
+            {
+                if (_albumArtWidth != value)
+                {
+                    _albumArtWidth = value;
+                    NotifyPropertyChanged("AlbumArtWidth");
+                }
+            }
+        }
+
+
         private BitmapImage _imagesource = null;
         public BitmapImage ImageSource
         {
@@ -144,7 +161,43 @@ namespace Balboa.Common
                 (!response[i].StartsWith("directory", StringComparison.OrdinalIgnoreCase)));
              response.RemoveRange(0, i);
         }
- 
+
+        public void Update(List<string> response)
+        {
+            int i = 0;
+
+            do
+            {
+                string[] items = response[i].Split(':');
+                string tagname = items[0].ToLower();
+                string tagvalue = items[1].Trim();
+
+                switch (tagname)
+                {
+                    case "file":
+                        Name = Utilities.ExtractFileName(tagvalue, false);
+                        Nature = FileNature.File;
+                        Icon += '\xE189';
+                        break;           // 57737     // E189
+                    case "directory":
+                        Name = Utilities.ExtractFileName(tagvalue, false);
+                        Nature = FileNature.Directory;
+                        Icon += '\xE188';
+                        break; // 57736    // E188
+                    case "playlist": Name = tagvalue; Nature = FileNature.Playlist; break;
+                    case "Last-Modified": LastModified = tagvalue; break;
+                }
+                i++;
+            }
+            while ((i < response.Count) &&
+                            (!response[i].StartsWith("file", StringComparison.OrdinalIgnoreCase)) &&
+                            (!response[i].StartsWith("playlist", StringComparison.OrdinalIgnoreCase)) &&
+                            (!response[i].StartsWith("directory", StringComparison.OrdinalIgnoreCase)));
+
+            response.RemoveRange(0, i);
+        }
+
+
         /// <summary>
         /// Реализует интерфейс IComparable
         /// Сравнивает текущий объект с объектом переданным в качестве входного параметра

@@ -24,6 +24,24 @@ using Windows.Networking.Sockets;
 namespace Balboa
 {
 
+    enum ack
+    {
+        ACK_ERROR_NOT_LIST = 1,
+        ACK_ERROR_ARG = 2,
+        ACK_ERROR_PASSWORD = 3,
+        ACK_ERROR_PERMISSION = 4,
+        ACK_ERROR_UNKNOWN = 5,
+        ACK_ERROR_NO_EXIST = 50,
+        ACK_ERROR_PLAYLIST_MAX = 51,
+        ACK_ERROR_SYSTEM = 52,
+        ACK_ERROR_PLAYLIST_LOAD = 53,
+        ACK_ERROR_UPDATE_ALREADY = 54,
+        ACK_ERROR_PLAYER_SYNC = 55,
+        ACK_ERROR_EXIST = 56,
+    };
+
+    public delegate void ConnectionStatusChangedEventHandler(object sender, string connectionStatus);
+
     public delegate void EventHandler<TServerEventArgs>(object sender, TServerEventArgs eventArgs);
     
     public delegate void DataReadyEventHandler<MpdResponse>(object sender, MpdResponse eventArgs);
@@ -78,16 +96,18 @@ namespace Balboa
         /// <summary>
         /// Уведомление об изменении статуса соединения с сервером
         /// </summary>
-        public event EventHandler ConnectionStatusChanged;
+        public event ConnectionStatusChangedEventHandler ConnectionStatusChanged;
 
-        private async void NotifyConnectionStatusChanged(bool status)
-        {
-            if (ConnectionStatusChanged != null)
-            {
-                ServerEventArgs args = new ServerEventArgs(EventType.ConnectionStatusChanged,status,string.Empty);
-                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { ConnectionStatusChanged(this, args); });;
-            }
-        }
+        //public event EventHandler ConnectionStatusChanged;
+
+        //private async void NotifyConnectionStatusChanged(bool status)
+        //{
+        //    if (ConnectionStatusChanged != null)
+        //    {
+        //        ServerEventArgs args = new ServerEventArgs(EventType.ConnectionStatusChanged,status,string.Empty);
+        //        await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { ConnectionStatusChanged(this, args); });;
+        //    }
+        //}
 
         /// <summary>
         /// Уведомление о завершении выполнения команды
@@ -109,13 +129,12 @@ namespace Balboa
         private string _errorMessage = string.Empty;
         private AppSettings _appSettings = new AppSettings();
         private Progress<MpdResponse> _status;
-
+        private MpdResponse _currentResponse = new MpdResponse();
 //---------------------------------------------------------------------------------
         ResourceLoader _resldr = new ResourceLoader();
         private DispatcherTimer     _timer;
 
         private MainPage            _mainPage;
-//        private bool                _Terminating;
 
         private Connection          _Connection  = new Connection();
         private Queue<MpdCommand>   _CommandQueue = new Queue<MpdCommand>();
@@ -128,18 +147,13 @@ namespace Balboa
         private Status                                     _Status;
         private CurrentSong                                _CurrentSong;
         private ObservableObjectCollection<Track>          _Playlist;
-        private ObservableObjectCollection<File>           _FileList;
         private ObservableObjectCollection<File>           _SavedPlaylists;
-//        private ObservableObjectCollection<Output>         _Outputs;
         private ObservableObjectCollection<CommonGridItem> _Genres;
         private ObservableObjectCollection<CommonGridItem> _Artists;
         private ObservableObjectCollection<CommonGridItem> _Albums;
         private ObservableObjectCollection<Track>          _Tracks;
 
         private string _Response;
-
-        private bool _filelistCancelUpdate = false;
-        private bool _filelistUpdatInProcess = false;
 
 #endregion
 
@@ -159,6 +173,10 @@ namespace Balboa
 
         }
         public AppSettings Settings { get { return _appSettings; } }
+        public string MusicCollectionFolder => _appSettings.MusicCollectionFolder;
+        public string AlbumCoverFileNames => _appSettings.AlbumCoverFileName;
+        public bool?  DisplayFolderPictures => _appSettings.DisplayFolderPictures;
+
 
         public bool Initialized { get; private set; } = false;
         private string      _strConnectionState;
@@ -175,25 +193,25 @@ namespace Balboa
             get { return _strConnectionState; }
             
         }
-
         public bool          IsConnected         { get { return _Connection.IsActive; } }
-        public string        Host                { get; set; }
-        public string        Port                { get; set; } 
-        public string        Password            { get; set; }
-        public int           ViewUpdateInterval  { get; set; } = 500;
+
+        public string   Host                { get; set; }
+        public string   Port                { get; set; } 
+        public string   Password            { get; set; }
+        public int      ViewUpdateInterval  { get; set; } = 500;
+
+
+
         public bool          IsRunning           { get; private set; }=false;
         public Status        StatusData         { get { return _Status; } }
         public Statistic     StatisticData      { get { return _Statistics; } }
         public CurrentSong   CurrentSongData { get { return _CurrentSong; } }
-        public string        MusicCollectionFolder { get; set; }
-        public string        CurrentFolder         { get; set; }
-        public string        AlbumCoverFileNames   { get; set; }
-        public bool          DisplayFolderPictures { get; set; }
+
+       //
+        
 
         public ObservableObjectCollection<Track>  PlaylistData { get { return _Playlist; } }
-        public ObservableObjectCollection<File>   DirectoryData { get { return _FileList; } }
         public ObservableObjectCollection<File>   SavedPlaylistsData { get { return _SavedPlaylists; } }
-//        public ObservableObjectCollection<Output> OutputsData  { get { return _Outputs; } }
         public ObservableObjectCollection<CommonGridItem> Artists { get { return _Artists; } }
         public ObservableObjectCollection<CommonGridItem> Genres { get { return _Genres; } }
         public ObservableObjectCollection<CommonGridItem> Albums { get { return _Albums; } }
@@ -203,7 +221,6 @@ namespace Balboa
 
         public Server(MainPage mainPage)
         {
-
             _appSettings.Restore();
 
             if (_appSettings.InitialSetupDone)
@@ -212,9 +229,9 @@ namespace Balboa
                 Port = _appSettings.Port;
                 Password = _appSettings.Password;
                 ViewUpdateInterval = int.Parse(_appSettings.ViewUpdateInterval, System.Globalization.CultureInfo.InvariantCulture);
-                MusicCollectionFolder = _appSettings.MusicCollectionFolder;
-                AlbumCoverFileNames = _appSettings.AlbumCoverFileName;
-                DisplayFolderPictures = (bool)_appSettings.DisplayFolderPictures;
+                //MusicCollectionFolder = _appSettings.MusicCollectionFolder;
+                //AlbumCoverFileNames = _appSettings.AlbumCoverFileName;
+                //DisplayFolderPictures = (bool)_appSettings.DisplayFolderPictures;
                 Initialized = true;
             }
 
@@ -229,15 +246,13 @@ namespace Balboa
             _CurrentSong =  new CurrentSong(_mainPage);
 
             _Playlist =     new ObservableObjectCollection<Track>(_mainPage);
-            _FileList =     new ObservableObjectCollection<File>(_mainPage);
             _SavedPlaylists = new ObservableObjectCollection<File>(_mainPage);
-//            _Outputs =      new ObservableObjectCollection<Output>(_mainPage);
             _Artists =      new ObservableObjectCollection<CommonGridItem>(_mainPage);
             _Genres =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
             _Albums =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
             _Tracks =       new ObservableObjectCollection<Track>(_mainPage);
 
-            _Connection.PropertyChanged += Connection_PropertyChanged;
+            _Connection.PropertyChanged += (object obj, PropertyChangedEventArgs args )=> { ConnectionStatusChanged?.Invoke(this, _Connection.Status); };
         }
 
         #region Методы
@@ -247,17 +262,18 @@ namespace Balboa
         public async void Start()
         {
             SetInitialState();
-
-            _tokenSource = new CancellationTokenSource();
-            CancellationToken token = _tokenSource.Token;
-
             if (await _Connection.Open(Host, Port, Password))
             { 
-                CreateTimer(ViewUpdateInterval);
+                //CreateTimer(ViewUpdateInterval);
+                _timer = new DispatcherTimer();
+                _timer.Tick += (object sender, object e) => { Status(); };
+                _timer.Interval = new TimeSpan(0, 0, 0, 0, ViewUpdateInterval);
                 _timer.Start();
+
+                _tokenSource = new CancellationTokenSource();
+                CancellationToken token = _tokenSource.Token;
                 WorkItemHandler communicator = delegate { ExecuteCommands(token); };
                 await ThreadPool.RunAsync(communicator, WorkItemPriority.High, WorkItemOptions.TimeSliced);
- //               _timer.Stop();
             }
 
            
@@ -269,7 +285,7 @@ namespace Balboa
         public void Halt()
         {
             _timer?.Stop();        // Останавливаем тамер (прекращаем отправку команд серверу)
-            _tokenSource.Cancel();
+            _tokenSource?.Cancel();
             // Ставим в очередь на отправку команду статус
             //  Процесс может находиться в состоянии ожидания , в котором не выполняется 
             // цикл обработки команд из очереди
@@ -295,14 +311,20 @@ namespace Balboa
             DataReady?.Invoke(this, response );
         }
 
-        private void Connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "IsActive")
-            {
-                NotifyConnectionStatusChanged(_Connection.IsActive);
-                ConnectionState = _Connection.Status;
-            }
-        }
+        //private void Connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        //{
+        //    if (e.PropertyName == "IsActive")
+        //    {
+        //        NotifyConnectionStatusChanged(_Connection.IsActive);
+        //        ConnectionState = _Connection.Status;
+        //    }
+
+        //    if (e.PropertyName == "Status")
+        //    {
+        //        NotifyConnectionStatusChanged(_Connection.IsActive);
+        //        ConnectionState = _Connection.Status;
+        //    }
+        //}
 
         private void SetInitialState()
         {
@@ -310,9 +332,7 @@ namespace Balboa
             _SentCommandQueue.Clear();
             _Response = string.Empty;
             _Playlist.ClearAndNotify();
-            _FileList.ClearAndNotify();
             _SavedPlaylists.ClearAndNotify();
-//            _Outputs.ClearAndNotify();
             _Artists.ClearAndNotify();
             _Genres.ClearAndNotify();
             _Albums.ClearAndNotify();
@@ -339,6 +359,7 @@ namespace Balboa
                        if (_CommandQueue.Count > 0)
                        { // Есть команды к выполнению. Забираем команду из очереди  и разморахиваем процесс
                            command = _CommandQueue.Dequeue();
+                            _currentResponse.Init(command);
                            _ThreadEvent.Reset();
                        }
                     }
@@ -387,7 +408,10 @@ namespace Balboa
         /// <returns></returns>
         private async Task<string> ParceResponse(string response)
         {
-            
+            ResponseKeyword keyword = ResponseKeyword.Empty;
+            string currentresponse = string.Empty;
+
+
             // Oтвет при ошибке начинается с ASC и заканчивается \n
             // Ответ при нормальном завершении заканчивается OK\n
 
@@ -397,17 +421,9 @@ namespace Balboa
             // Просто убираем этот ответ из входной строки
             if (response.StartsWith("OK\n", StringComparison.Ordinal))
             {
-                MpdResponseCollection mpdResponse = new MpdResponseCollection();
-
-                string currentresponse = response.Substring(0, 3);
+                keyword = ResponseKeyword.OK;
+                currentresponse = response.Substring(0, 3);
                 response = response.Remove(0, 3);
-                mpdResponse.Command = _SentCommandQueue.Dequeue();
-                mpdResponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
-
-                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.Ok, mpdResponse.Command, currentresponse);
-                ((IProgress<MpdResponse>)_status).Report(mpdresp);
-
-                await Task.Run(() => HandleResponse(mpdResponse));
             }
 
             // Проверка 2
@@ -416,28 +432,12 @@ namespace Balboa
             // Забираем этот ответ из входной строки и разбираем его
             if (response.Contains("\nOK\n"))
             {
+                keyword = ResponseKeyword.OK;
                 //Забираем из входной строки подстроку от начала до до символов ОК (вместе с ОК)
                 int nextresponsestart = response.IndexOf("\nOK\n", StringComparison.Ordinal) + 4;
                 // currentresponce - содержит полный ответ от сервера
-                string currentresponce = response.Substring(0, nextresponsestart);
+                currentresponse = response.Substring(0, nextresponsestart);
                 response = response.Remove(0, nextresponsestart);
-
-                MpdResponseCollection mpdResponse = new MpdResponseCollection();
-               
-
-               // mpdResponse.Content = currentresponce;
-                string[] lines = currentresponce.Split('\n');
-                for (int i = 0; i < lines.Length - 2; i++)
-                {
-                    mpdResponse.Add(lines[i]);
-                }
-                mpdResponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
-                mpdResponse.Command = _SentCommandQueue.Dequeue();
-
-                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.Ok, mpdResponse.Command, currentresponce);
-               ((IProgress<MpdResponse>)_status).Report(mpdresp);
-
-                await Task.Run(() => HandleResponse(mpdResponse));
             }
 
             // Проверка 3
@@ -446,17 +446,18 @@ namespace Balboa
             // Забираем этот ответ из входной строки и cообщаем об ошибке
             if (response.StartsWith("ACK", StringComparison.Ordinal))
             {
+                keyword = ResponseKeyword.ACK;
                 int newresponsestart = response.IndexOf("\n", StringComparison.Ordinal) + 1;
-                string currentresponse = response.Substring(0, newresponsestart);
+                currentresponse = response.Substring(0, newresponsestart);
                 response = response.Remove(0, newresponsestart);
-                await NotifyError("Server return error : \n" + currentresponse);
-
-                MpdCommand command = null;// = _SentCommandQueue.Dequeue();
-                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.ACK, command, currentresponse);
-                ((IProgress<MpdResponse>)_status).Report(mpdresp);
-
-                return response;
             }
+            if (keyword != ResponseKeyword.Empty)
+            {
+                MpdCommand command = _SentCommandQueue.Dequeue();
+                MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
+                ((IProgress<MpdResponse>)_status).Report(mpdresp);
+            }
+
             return response;
         }
 
@@ -465,7 +466,6 @@ namespace Balboa
         /// </summary>
         private async Task HandleResponse(MpdResponseCollection response)
         {
-            //bool handleResponseCriticalError = false;
             
             try
             {
@@ -475,33 +475,6 @@ namespace Balboa
                     case "stats": _Statistics.Update(response); break;
                     case "status": _Status.Update(response); break;       // Реализовано
                     case "currentsong": _CurrentSong.Update(response); break;
-                    case "lsinfo":
-                        if (response.Count > 0)
-                        { //  Каталог не пустой 
-                            string currentfolder = string.Empty;
-                            if (CurrentFolder.Length != 0)
-                                currentfolder = CurrentFolder + "\\";
-                            // Создаём временный список файлов и заполняем его данными из ответв сервера
-                            ObservableObjectCollection<File> filelist = new ObservableObjectCollection<File>(_mainPage);
-                            filelist.Update(response);
-
-                            if (_filelistUpdatInProcess)
-                            {
-                                _filelistCancelUpdate = true;
-                                while (_filelistUpdatInProcess)
-                                {
-                                    await Task.Delay(TimeSpan.FromMilliseconds(100));
-                                }
-//                                while (_filelistUpdatInProcess);
-                                _filelistCancelUpdate = false;
-                            }
-                            await UpdateFileList(filelist);
-                        }
-                        else
-                        {  // Каталог не содержит файлов
-                            _FileList.ClearAndNotify();
-                        }
-                        break;
                     case "list":
                         switch (response.Command.Argument1)
                         {
@@ -514,10 +487,6 @@ namespace Balboa
                     case "search": _Tracks.Update(response); break;
                     case "playlistinfo": _Playlist.Update(response); break;
                     case "listplaylists": _SavedPlaylists.Update(response); break;
-                    //case "outputs":
-                    //    if (response.Count > 0)
-                    //        _Outputs.Update(response);
-                    //    break;
                     case "config":
                         break;
                     default: break;
@@ -549,67 +518,12 @@ namespace Balboa
                 _errorMessage = string.Format(_resldr.GetString("UnexpectedServerError"), exceptionMessage);
                 throw e;
             }
-            finally
-            {
- //                   NotifyCriticalError(_errorMessage);
-            }
 
         }
 
-        private async Task UpdateFileList(ObservableObjectCollection<File> filelist)
-        {
-            _filelistUpdatInProcess = true;
-             _FileList.Clear();
-            // переносим из временного списка в список файлов отображаемый пользователю только элементы с типом File и Directory
-            foreach (File file in filelist)
-                if (file.Nature != FileNature.Playlist)
-                {
-                    _FileList.Add(file);
-                }
-            // Сортируем элементы списка по типу так чтобы каталоги оказались в начале
-            _FileList.Sort(new GenericComparer<File>("Nature",SortOrder.Desc));
-            // Добавляем картинки каталогов
-            if (DisplayFolderPictures)
-            {
-                string currentfolder = string.Empty;
-                if (CurrentFolder.Length != 0)
-                    currentfolder = CurrentFolder + "\\";
-
-                foreach (File file in _FileList)
-                {
-                    if (_filelistCancelUpdate)
-                        break;
-                    if (file.Nature == FileNature.Directory)
-                    {
-                        IRandomAccessStream fileStream = await Utilities.GetFolderImageStream(MusicCollectionFolder, currentfolder + file.Name, AlbumCoverFileNames);
-                        if (fileStream != null )
-                        {
-                            await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                async delegate
-                                {
-                                    BitmapImage bmi = new BitmapImage();
-                                    await bmi.SetSourceAsync(fileStream);
-                                    file.ImageSource = bmi;
-                                });
-                        }
-                    }
-                }
-            }
-            _filelistUpdatInProcess = false;
-        }
         #endregion
 
-        private void CreateTimer(int interval)
-        {
-            _timer =  new DispatcherTimer();
-            _timer.Tick += OnTimerTick;
-            _timer.Interval = new TimeSpan(0, 0, 0, 0, interval);
-        }
-
-        private void OnTimerTick(object sender, object e)
-        {
-           // Status();
-        }
+  
 
         #region Раздел с утилитами
 

@@ -71,6 +71,7 @@ namespace Balboa.Common
                 if (_status != value)
                 {
                     _status = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Status)));
                     NotifyPropertyChanged("Status");
                 }
             }
@@ -104,7 +105,7 @@ namespace Balboa.Common
         {
             _host = host;
             _port = port;
-
+            IsActive = false;
             Status = $"Connecting to {_host} port:{_port}";
             try
             {
@@ -144,6 +145,8 @@ namespace Balboa.Common
                             await SendCommand("close");
                             Clear();
                             Error = _resldr.GetString("ConnectionError") + "\n" + res;
+                            IsActive = false;
+                            Status = "Disconnected";
                             return false;
                         }
                     }
@@ -156,6 +159,7 @@ namespace Balboa.Common
                     Clear();
                     Error = _resldr.GetString("InvalidInitialResponse") + InitialResponse;
                     IsActive = false;
+                    Status = "Disconnected";
                     return false;
                 }
             }
@@ -165,11 +169,8 @@ namespace Balboa.Common
                 Error = string.Format(CultureInfo.CurrentCulture, _resldr.GetString("ConnectionErrorDescription"),
                                         _host, _port, Utilities.GetExceptionMsg(e));
                 IsActive = false;
+                Status = "Disconnected";
                 return false;
-            }
-            finally
-            {
-
             }
         }
 

@@ -14,10 +14,11 @@ using System.Collections.Generic;
 
 namespace Balboa.Common
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Mpd")]
+    public enum ResponseKeyword { OK, NotOk, ACK, Empty }
+
     public class MpdResponseCollection : List<string>
     {
-        public enum ResponseKeyword { Ok, NotOk, [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ack")] Ack }
+   
 
         public ResponseKeyword Keyword { get; set;} 
         public MpdCommand      Command { get; set; } 
@@ -25,20 +26,24 @@ namespace Balboa.Common
         public string          Content { get; set; } = string.Empty;
     }
 
-    public enum ResponseKeyword { Ok, Error, ACK }
+   
     public class MpdResponse : EventArgs
     {
-        public ResponseKeyword Keyword { get; }
-        public MpdCommand Command { get; }
+        public ResponseKeyword Keyword { get; private set; }
+        public MpdCommand Command { get; private set; }
         private List<string> _content = new List<string>();
         public  List<string> Content { get { return _content; }  }
         public string ErrorMessage { get; set; } = string.Empty;
 
+        public MpdResponse()
+        {
+
+        }
         public MpdResponse(ResponseKeyword keyword, MpdCommand command, string  content)
         {
             Keyword = keyword;
             Command = command;
-            if (keyword == ResponseKeyword.Ok)
+            if (keyword == ResponseKeyword.OK)
             {
                 _content.AddRange(content.Split('\n'));
                 // Уберём из ответа два последних элемента (ОК и \n)
@@ -46,8 +51,27 @@ namespace Balboa.Common
             }
             else
                 ErrorMessage = content;
+        }
 
+        public void Init(MpdCommand command)
+        {
+            Command = command;
+        }
 
+        public void Update(ResponseKeyword keyword, string content)
+        {
+            Keyword = keyword;
+            //if (Command != command)
+            //    throw new InvalidOperationException("Responce command does not match request command");
+            
+            if (keyword == ResponseKeyword.OK)
+            {
+                _content.AddRange(content.Split('\n'));
+                // Уберём из ответа два последних элемента (ОК и \n)
+                _content.RemoveRange(_content.Count - 2, 2);
+            }
+            else
+                ErrorMessage = content;
         }
     }
 }

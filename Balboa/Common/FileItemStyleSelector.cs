@@ -29,7 +29,7 @@ namespace Balboa.Common
             style.Setters.Add(new Setter(GridViewItem.BackgroundProperty, new SolidColorBrush(Color.FromArgb(0x10, 0xF0, 0xF0, 0xF0))));
  
             style.Setters.Add(new Setter(GridViewItem.WidthProperty, 400));
-            style.Setters.Add(new Setter(GridViewItem.HeightProperty, 80));
+            style.Setters.Add(new Setter(GridViewItem.HeightProperty, 75));
 
             // Custom IsPlaying Style
             if (listitem.JustClosed)

@@ -125,6 +125,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="TrackDirectory.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -163,6 +167,9 @@
     <Compile Include="Common\Server.cs" />
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TrackDirectory.xaml.cs">
+      <DependentUpon>TrackDirectory.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

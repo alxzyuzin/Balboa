@@ -204,7 +204,7 @@
     <value>New playlist</value>
   </data>
   <data name="NoAudioFilesInFolder" xml:space="preserve">
-    <value>Folder "{0}" doesn't contain audio files.</value>
+    <value>Folder {0} doesn't contain audio files.</value>
   </data>
   <data name="NoSelectedItemsToAdd" xml:space="preserve">
     <value>No selected items to add.</value>

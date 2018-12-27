@@ -82,24 +82,24 @@ namespace Balboa.Common
         /// </param>
         /// <returns></returns>
         /// 
-        public static string BuildFilePath(List<string> pathItems)
-        {
-            if (pathItems == null)
-                throw new BalboaNullValueException(_modName, "BuildFilePath", "88", "pathItems");
+//        public static string BuildFilePath(List<string> pathItems)
+//        {
+//            if (pathItems == null)
+//                throw new BalboaNullValueException(_modName, "BuildFilePath", "88", "pathItems");
 
-            string filepath = string.Empty;
+//            string filepath = string.Empty;
 
-            if (pathItems.Count > 0)
-//            { 
-                filepath += pathItems[0];
-//            }
-            int i = 1;
-            while  (i < pathItems.Count)
-//            {
-                filepath += ("/"+ pathItems[i++]);
-//            }
-            return filepath;
-        }
+//            if (pathItems.Count > 0)
+////            { 
+//                filepath += pathItems[0];
+////            }
+//            int i = 1;
+//            while  (i < pathItems.Count)
+////            {
+//                filepath += ("/"+ pathItems[i++]);
+////            }
+//            return filepath;
+//        }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "HHMMSS")]
         public static string SecToHHMMSS(object value)
@@ -139,81 +139,7 @@ namespace Balboa.Common
             return res;
         }
 
-        public static async Task<BitmapImage> GetFolderImage(string musicCollectionFolder, string folderName, string albumCoverFileNames)
-        { 
-            StorageFile file = null;
-            while (musicCollectionFolder.EndsWith("\\", StringComparison.Ordinal))
-                musicCollectionFolder = musicCollectionFolder.Substring(0, musicCollectionFolder.Length - 1);
-
-            StringBuilder sb = new StringBuilder(musicCollectionFolder);
-            
-            sb.Append('\\');
-            sb.Append(folderName);
-            sb.Replace('/', '\\');
-            sb.Append('\\');
-
-            int pathlength = sb.Length;
-
-            string[] CoverFileNames = albumCoverFileNames.Split(';');
-
-            foreach (string albumCoverFileName in CoverFileNames)
-            {
-                try
-                {
-                    sb.Append(albumCoverFileName);
-                    file = await StorageFile.GetFileFromPathAsync(sb.ToString());
-                    break;
-                }
-                catch (FileNotFoundException )
-                {
-                    sb.Remove(pathlength, albumCoverFileName.Length);
-                }
-            }
-            if (file == null)
-                return null;
-            using (IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
-            {
-                BitmapImage bitmapImage = new BitmapImage();
-                await bitmapImage.SetSourceAsync(fileStream);
-                return bitmapImage;
-            }
-        }
-
-        public static async Task<IRandomAccessStream> GetFolderImageStream(string musicCollectionFolder, string folderName, string albumCoverFileNames)
-        {
-            StorageFile file = null;
-            StringBuilder sb = new StringBuilder(musicCollectionFolder);
-            sb.Append('\\');
-            sb.Append(folderName);
-            sb.Replace('/', '\\');
-            sb.Append('\\');
-
-            int pathlength = sb.Length;
-
-            string[] CoverFileNames = albumCoverFileNames.Split(';');
-
-            foreach (string albumcoverfilename in CoverFileNames)
-            {
-                try
-                {
-                    sb.Append(albumcoverfilename);
-                    file = await StorageFile.GetFileFromPathAsync(sb.ToString());
-                    break;
-                }
-                catch (FileNotFoundException )
-                {
-                    sb.Remove(pathlength, albumcoverfilename.Length);
-                }
-            }
-
-            if (file == null)
-                return null;
-            IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read);
-            if (fileStream.Size == 0)
-                return null;
-            return fileStream;
-        }
-
+ 
         public static string GetExceptionMsg(Exception e)
         {
             if (e.Message.Contains("\r\n"))

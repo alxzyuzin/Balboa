@@ -19,20 +19,7 @@ namespace Balboa
 {
     public delegate void ErrorEventHandler<ErrorEventArgs>(object sender, ErrorEventArgs eventArgs);
 
-    public class DisplayMessageEventArgs : EventArgs
-    {
-        public DisplayMessageEventArgs(MsgBoxType type, string message, MsgBoxButton buttons, int boxHeight )
-        {
-            Type = type;
-            Message = message;
-            Buttons = buttons;
-            BoxHeight = boxHeight;
-        }
-        public MsgBoxType Type { get; private set; }
-        public string Message { get; private set; } = string.Empty;
-        public MsgBoxButton Buttons { get; private set; } = MsgBoxButton.Close;
-        public int BoxHeight { get; private set; } = 200;
-    }
+    
 
     public sealed partial class Settings : UserControl, INotifyPropertyChanged
     {
@@ -60,9 +47,9 @@ namespace Balboa
         private void _server_DataReady(object sender, EventArgs e)
         {
             var mpdData = e as MpdResponse;
-            if (mpdData.Command.Op == "outputs" && mpdData.Keyword == ResponseKeyword.Ok)
+            if (mpdData.Keyword == ResponseKeyword.OK && mpdData.Command.Op == "outputs")
             {
-                UpdateOutputsCollection(mpdData.Content);
+                UpdateDataCollection(mpdData.Content);
                 UpdateToggleSwitchPanel();
             }
         }
@@ -86,7 +73,7 @@ namespace Balboa
             }
         }
 
-        public void UpdateOutputsCollection(List<string> serverData)
+        public void UpdateDataCollection(List<string> serverData)
         {
             _outputs.Clear();
             while (serverData.Count > 0) 
