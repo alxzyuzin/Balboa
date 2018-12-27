@@ -1,0 +1,78 @@
+﻿<UserControl
+    x:Class="Balboa.TrackDirectory"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Balboa"
+    xmlns:common="using:Balboa.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+
+        <common:FileItemStyleSelector x:Key="FileItemStyleSelector" />
+        <!-- ШАБЛОН для представления элемента FILESYSTEM-->
+        <DataTemplate x:Key="FileSystemItemTemplate"  >
+            <Grid x:Name="gr_FileSystemItemTemplate" Margin="10,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{Binding AlbumArtWidth}" />
+                    <ColumnDefinition Width="60" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="30" />
+                </Grid.ColumnDefinitions>
+               
+                <Image     Grid.Column="0" Source="{Binding ImageSource}" VerticalAlignment="Top"/>
+                <TextBlock Grid.Column="1"  Text="{Binding Icon}"  FontFamily="Segoe UI Symbol" FontSize="30" Margin="10,0,0,0" />
+                <TextBlock Grid.Column="2"  Text="{Binding Name}"  TextWrapping="WrapWholeWords" FontFamily="Segoe UI Symbol" FontSize="22" VerticalAlignment="Top" Margin="10,0,0,0" />
+                <TextBlock Grid.Column="3" />
+            </Grid>
+        </DataTemplate>
+
+    </UserControl.Resources>
+    
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="87"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.Resources>
+            <Storyboard x:Name="gr_FileSystemShowStoryboard">
+                <DoubleAnimation  Storyboard.TargetName="gr_FileSystem"
+                                          Storyboard.TargetProperty="Opacity"
+                                          From="0.0" To="1.0" Duration="0:0:1"/>
+            </Storyboard>
+        </Grid.Resources>
+
+        <GridView x:Name="gr_FileSystemContent" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                      SelectionMode="Multiple"  
+                      ItemTemplate="{StaticResource FileSystemItemTemplate}" 
+                      ItemContainerStyleSelector="{StaticResource FileItemStyleSelector}" 
+                      DoubleTapped="gr_FileSystemContent_DoubleTapped"
+                      GotFocus="gr_FileSystemContent_GotFocus">
+        </GridView>
+        <TextBlock x:Name="textblock_FileSystemContent" Grid.Row="0" Grid.Column="1" 
+                           VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25"
+                           Text="{Binding EmptyDirectoryMessage}"
+                           TextWrapping="WrapWholeWords"/>
+        <!--
+        <StackPanel  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"  
+                         Margin="5,0,5,5" Background="{StaticResource MainBackgroundBrush}"/>
+        -->
+        <AppBarButton x:Name="appbtn_Up" Grid.Row="1" Grid.Column="0" Icon="Up" Label="Up" HorizontalAlignment="Left" Tapped="appbtn_Up_Tapped"/>
+        <StackPanel  Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <AppBarButton x:Name="appbtn_RescanDatabase" Icon="SyncFolder" Label="Rescan database" Tapped="appbtn_RescanDatabase_Tapped"/>
+            <AppBarSeparator/>
+            <AppBarButton x:Name="appbtn_AddFromFileSystem" Icon="Add" Label="Add selected" Tapped="appbtn_AddFromFileSystem_Tapped"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
