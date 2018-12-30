@@ -106,7 +106,7 @@ namespace Balboa.Common
             _host = host;
             _port = port;
             IsActive = false;
-            Status = $"Connecting to {_host} port:{_port}";
+            Status = $"Connecting to {_host} port: {_port}.";
             try
             {
                 HostName hostName = new HostName(host);
@@ -151,7 +151,7 @@ namespace Balboa.Common
                         }
                     }
                     IsActive = true;
-                    Status = $"Connected to  {_host} port:{_port}";
+                    Status = $"Connected to  {_host} port: {_port}";
                     return true;
                 }
                 else
@@ -189,7 +189,7 @@ namespace Balboa.Common
             if (IsActive)
             {
                 Clear();
-                Status = $"Disconnected from  {_host} port:{_port}";
+                Status = $"Disconnected.";
                 IsActive = false;
             }
         }

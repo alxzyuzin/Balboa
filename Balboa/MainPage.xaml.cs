@@ -9,32 +9,21 @@
 
 using Balboa.Common;
 using System;
-using System.Globalization;
-using System.Text;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Resources;
 using Windows.UI;
-using Windows.UI.Core;
+using Windows.UI.Input;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.ApplicationModel;
-using Windows.Storage;
-using Windows.Storage.AccessCache;
-using Windows.Storage.Pickers;
-using Windows.Foundation;
-using Windows.UI.Input;
-using Windows.Graphics.Display;
-using System.Text.RegularExpressions;
-using Windows.ApplicationModel.Resources;
 
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
-[assembly: CLSCompliant(true)]
+[assembly: CLSCompliant(false)]
 
 namespace Balboa
 {
@@ -44,33 +33,36 @@ namespace Balboa
     //  Thread.CurrentThread.CurrentCulture = new CultureInfo("Fr-fr", true);
     //  myDateTime = DateTime.Parse(dt);
 
+    public enum ControlAction {NoAction, RestartServer, SwitchToTrackDirectory, SwitchToPlaylist }
+
     public partial class MainPage : Page, INotifyPropertyChanged, IDisposable
     {
-        private enum NewPlaylistNameRequestMode { SaveNewPlaylist, RenamePlaylist };
+        //private enum NewPlaylistNameRequestMode { SaveNewPlaylist, RenamePlaylist };
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private ResourceLoader _resldr = new ResourceLoader();
-        private string _connectionStatus;
-        public string ConnectionStatus
-        {
-            get { return _connectionStatus; }
-            set
-            {
-                if (_connectionStatus!=value)
-                {
-                    _connectionStatus = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConnectionStatus)));
-                }
-            }
-        }
 
-        private ListViewItem    _listViewItemGotFocus;
-        private string          _currentPlaylistName = string.Empty;
-        private string          _oldPlaylistName;
-        private string          _newPlaylistName;
+        //private string _connectionStatus;
+        //public string ConnectionStatus
+        //{
+        //    get { return _connectionStatus; }
+        //    set
+        //    {
+        //        if (_connectionStatus!=value)
+        //        {
+        //            _connectionStatus = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConnectionStatus)));
+        //        }
+        //    }
+        //}
 
-        NewPlaylistNameRequestMode _requestNewPlaylistNameMode;
+        //private ListViewItem    _listViewItemGotFocus;
+        //private string          _currentPlaylistName = string.Empty;
+        //private string          _oldPlaylistName;
+        //private string          _newPlaylistName;
+
+        //NewPlaylistNameRequestMode _requestNewPlaylistNameMode;
   
         private Server _server;
 
@@ -81,63 +73,40 @@ namespace Balboa
             this.InitializeComponent();
             Application.Current.Suspending += OnSuspending;
             Application.Current.Resuming += OnResuming;
-
+            this.SizeChanged += MainPage_SizeChanged;
 
             DataContext = this;
             _server = new Server(this);
-            _server.ConnectionStatusChanged += (object obj, string status) =>
-                            {
-                                tb_ConnectionStatus.Text = status;
-                                  ConnectionStatus = status;
-                            };
 
 
-            _currentPlaylistName = _resldr.GetString("NewPlaylist");
-
-            this.SizeChanged += MainPage_SizeChanged;
-           
-
-           
+            //_currentPlaylistName = _resldr.GetString("NewPlaylist");
 
             
             _server.Error += OnServerError;
             _server.CriticalError += OnServerCriticalError;
-            _server.StatusData.PropertyChanged += OnStatusDataPropertyChanged;
             _server.CurrentSongData.PropertyChanged += OnCurrentSongDataPropertyChanged;
             _server.CommandCompleted += OnCommandCompleted;
-//            _server.OutputsData.CollectionChanged += OnOutputsCollectionChanged;
-//            _server.DirectoryData.CollectionChanged += OnFilelistChanged;
 
             //////
             p_Settings.Init(_server);
             p_TrackDirectory.Init(_server);
+            p_ControlPanel.Init(_server);
+            p_CurrentPlaylist.Init(_server);
 
-            p_Settings.PropertyChanged += (object obj, PropertyChangedEventArgs e ) => { _server.Restart(); };
-            p_Settings.MessageReady += async (object obj, DisplayMessageEventArgs e) => { await DisplayMessage(e); };
-            p_TrackDirectory.MessageReady += async (object obj, DisplayMessageEventArgs e) => { await DisplayMessage(e); };
-            p_TrackDirectory.CommandButtonPressed += (object obj, CommandButtonPressedEventArgs args) =>
-                                {
-                                    if (args.PressedButton == CommandButton.AddTracks)
-                                        SwitchDataPanelsTo(DataPanelState.CurrentPlaylist);
-                                };
+
+            p_Settings.PropertyChanged += OnDataPanelPropertyChanged;
+            p_TrackDirectory.PropertyChanged += OnDataPanelPropertyChanged;
+            p_CurrentPlaylist.PropertyChanged += OnDataPanelPropertyChanged;
+
 
             //////
 
 
             // Установка контекстов для databinding
-            stp_ServerStatus.DataContext = _server.StatusData;
             stp_MainMenu.DataContext = _server.StatusData;
-
             stackpanel_MainPanelHeader.DataContext = _server.CurrentSongData;
-
-            tb_ConnectionStatus.DataContext = _server;
-
             gr_CurrentTrack.DataContext = _server.CurrentSongData;
             gr_Stats.DataContext            = _server.StatisticData;
-//            gr_Settings.DataContext         = _appSettings;
-
-            lv_PlayList.ItemsSource         = _server.PlaylistData;
-//            gr_FileSystemContent.ItemsSource = _server.DirectoryData;
             gr_SavedPlaylistsContent.ItemsSource = _server.SavedPlaylistsData;
 
             listview_Genres.ItemsSource = _server.Genres;
@@ -162,39 +131,39 @@ namespace Balboa
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var displayinformation = DisplayInformation.GetForCurrentView();
+            //var displayinformation = DisplayInformation.GetForCurrentView();
 
-            if (displayinformation.CurrentOrientation == DisplayOrientations.Landscape || displayinformation.CurrentOrientation == DisplayOrientations.LandscapeFlipped)
-            {
-                if (e.NewSize.Width >= 1100)
-                {
-                    VisualStateManager.GoToState(this, "Default", true);
-                }
+            //if (displayinformation.CurrentOrientation == DisplayOrientations.Landscape || displayinformation.CurrentOrientation == DisplayOrientations.LandscapeFlipped)
+            //{
+            //    if (e.NewSize.Width >= 1100)
+            //    {
+            //        VisualStateManager.GoToState(this, "Default", true);
+            //    }
 
-                if (e.NewSize.Width < 1100)
-                {
-                    // Прячем горизонтальный регулятор громкости
-                    // Показываем кнопку регулятора громкости
-                    // Меняем размер колонки 1 в панели управления воспроизведения grid_PlayControls.ColumnDefinitions[1];
-                    // (меняем 300 на 20*
-                    VisualStateManager.GoToState(this, "Filled", true);
-                }
+            //    if (e.NewSize.Width < 1100)
+            //    {
+            //        // Прячем горизонтальный регулятор громкости
+            //        // Показываем кнопку регулятора громкости
+            //        // Меняем размер колонки 1 в панели управления воспроизведения grid_PlayControls.ColumnDefinitions[1];
+            //        // (меняем 300 на 20*
+            //        VisualStateManager.GoToState(this, "Filled", true);
+            //    }
 
-                if (e.NewSize.Width < 900)
-                {
-                    VisualStateManager.GoToState(this, "Narrow", true);
-                }
+            //    if (e.NewSize.Width < 900)
+            //    {
+            //        VisualStateManager.GoToState(this, "Narrow", true);
+            //    }
 
-                if (e.NewSize.Width < 620)
-                {
-                    VisualStateManager.GoToState(this, "SuperNarrow", true);
-                }
-            }
+            //    if (e.NewSize.Width < 620)
+            //    {
+            //        VisualStateManager.GoToState(this, "SuperNarrow", true);
+            //    }
+            //}
 
-            if (displayinformation.CurrentOrientation == DisplayOrientations.Portrait || displayinformation.CurrentOrientation == DisplayOrientations.PortraitFlipped)
-            {
-                VisualStateManager.GoToState(this, "Portrait", true); 
-            }
+            //if (displayinformation.CurrentOrientation == DisplayOrientations.Portrait || displayinformation.CurrentOrientation == DisplayOrientations.PortraitFlipped)
+            //{
+            //    VisualStateManager.GoToState(this, "Portrait", true); 
+            //}
         }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
@@ -207,39 +176,69 @@ namespace Balboa
             _server.Start();
         }
 
+        private async void OnDataPanelPropertyChanged(object sender, PropertyChangedEventArgs eventArgs)
+        {
+
+            var panel = sender as IDataPanel;
+                switch (eventArgs.PropertyName)
+                {
+                    case "Message":
+                        await DisplayMessage(panel.Message);
+                        break;
+                case "Action":
+                    switch(panel.Action)
+                    {
+                        case ControlAction.RestartServer:
+                            _server.Restart();
+                            break;
+                        case ControlAction.SwitchToTrackDirectory:
+                            SwitchDataPanelsTo(DataPanelState.FileSystem);
+                            break;
+                        case ControlAction.SwitchToPlaylist:
+                            SwitchDataPanelsTo(DataPanelState.CurrentPlaylist);
+                            break;
+
+                    }
+                    break;
+                }
+                
+            
+        }
+
+
         #region Обработчики событий объекта Server
 
-        private void OnStatusDataPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "TimeElapsed":
-                    if(!_seekBarIsBeingDragged)
-                        pb_Progress.Value = _server.StatusData.TimeElapsed;
-                    break;
-                case "SongId": _server.CurrentSong();break;
-                case "PlaylistId": _server.PlaylistInfo(); break;
-                case "State": // "&#xE102;" - Play, "&#xE103;" - Pause
-                    appbtn_PlayPause.Content = (_server.StatusData.State == "play") ? '\xE103' : '\xE102';
+        //private void OnStatusDataPropertyChanged(object sender, PropertyChangedEventArgs e)
+        //{
+        //    switch (e.PropertyName)
+        //    {
+        //        case "TimeElapsed":
+        //            if(!_seekBarIsBeingDragged)
+        //                pb_Progress.Value = _server.StatusData.TimeElapsed;
+        //            break;
+        //        case "SongId": _server.CurrentSong();break;
+        //        case "PlaylistId": _server.PlaylistInfo(); break;
+        //        case "State": // "&#xE102;" - Play, "&#xE103;" - Pause
+        //            appbtn_PlayPause.Content = (_server.StatusData.State == "play") ? '\xE103' : '\xE102';
                     
-                    if (_server.StatusData.State == "stop")
-                    {
-                        if (stackpanel_MainPanelHeader.Opacity != 0)
-                            stackpanel_MainPanelHeaderHideStoryboard.Begin();
-                    }
-                    else
-                    {
-                        if (stackpanel_MainPanelHeader.Opacity == 0)
-                            stackpanel_MainPanelHeaderShowStoryboard.Begin();
-                    }
-                    break;
-                case "Volume":
-                    _volumeChangedByStatus = true;
-                    sl_Volume.Value = _server.StatusData.Volume;
-                    sl_VerticalVolume.Value = _server.StatusData.Volume;
-                    break;
-            }
-        }
+        //            if (_server.StatusData.State == "stop")
+        //            {
+        //                if (stackpanel_MainPanelHeader.Opacity != 0)
+        //                    stackpanel_MainPanelHeaderHideStoryboard.Begin();
+        //            }
+        //            else
+        //            {
+        //                if (stackpanel_MainPanelHeader.Opacity == 0)
+        //                    stackpanel_MainPanelHeaderShowStoryboard.Begin();
+        //            }
+        //            break;
+        //        case "Volume":
+        //            _volumeChangedByStatus = true;
+        //            sl_Volume.Value = _server.StatusData.Volume;
+        //            sl_VerticalVolume.Value = _server.StatusData.Volume;
+        //            break;
+        //    }
+        //}
 
         /// <summary>
         /// Устанавливает свойство IsPlaying для текущего проигрываемого трека равным true
@@ -252,9 +251,9 @@ namespace Balboa
         {
             if (e.PropertyName == "Id")
             {
-                _server.StatusData.Duration = _server.CurrentSongData.Duration;
-                pb_Progress.Maximum = _server.CurrentSongData.Duration;
-                HightlightCurrentPlaingTrack();
+ //               _server.StatusData.Duration = _server.CurrentSongData.Duration;
+//                pb_Progress.Maximum = _server.CurrentSongData.Duration;
+                //HightlightCurrentPlaingTrack();
 
                 if (_server.Settings.MusicCollectionFolderToken.Length == 0)
                     return;
@@ -293,14 +292,14 @@ namespace Balboa
                 case "load":
                     if (args.Result == "OK")
                     { 
-                    tbk_PlaylistName.Text = _currentPlaylistName;
-                        NotifyUser(_resldr.GetString("PlaylistLoading"),
-                           string.Format(CultureInfo.CurrentCulture, _resldr.GetString("PlaylistLoaded"), _currentPlaylistName));
+                        //tbk_PlaylistName.Text = _currentPlaylistName;
+                        //NotifyUser(_resldr.GetString("PlaylistLoading"),
+                        //   string.Format(CultureInfo.CurrentCulture, _resldr.GetString("PlaylistLoaded"), _currentPlaylistName));
                     }
                     else
                     {
-                        NotifyUser(_resldr.GetString("Error"), 
-                           string.Format(CultureInfo.CurrentCulture, _resldr.GetString("PlaylistError"), _currentPlaylistName, args.Message));
+                        //NotifyUser(_resldr.GetString("Error"), 
+                        //   string.Format(CultureInfo.CurrentCulture, _resldr.GetString("PlaylistError"), _currentPlaylistName, args.Message));
                     }
                     break; 
                 case "search":
@@ -311,19 +310,20 @@ namespace Balboa
                     break;
 
                 case "playlistinfo":
-                    if (_server.PlaylistData.Count == 0)
-                        textblock_PlaylistContent.Text = _resldr.GetString("PlaylistIsEmpty");
-                    else
-                    { 
-                        textblock_PlaylistContent.Text = string.Empty;
+ //                   if (_server.PlaylistData.Count == 0)
+                        playlastaddedtrack = false;
+                    //textblock_PlaylistContent.Text = _resldr.GetString("PlaylistIsEmpty");
+ //                   else
+ //                   { 
+                        //textblock_PlaylistContent.Text = string.Empty;
                         if (playlastaddedtrack)
                         {
-                            var track = lv_PlayList.Items[lv_PlayList.Items.Count-1] as Track;
-                            _server.PlayId(track.Id);
+                          //  var track = lv_PlayList.Items[lv_PlayList.Items.Count-1] as Track;
+                          //  _server.PlayId(track.Id);
                             playlastaddedtrack = false;
                         }
-                        HightlightCurrentPlaingTrack();
-                    }
+                        //HightlightCurrentPlaingTrack();
+//                    }
                     break;
  
             }
@@ -355,13 +355,7 @@ namespace Balboa
             }
         }
 
-        private       void OnServerConnectionStatusChanged(object sender, EventArgs eventArgs)
-        {
-            if(((ServerEventArgs)eventArgs).ConnectionStatus)
-                _server.PlaylistInfo();
-        }
-
-        #endregion
+         #endregion
 
         private async void NotifyUser(string title, string message)
         {
@@ -373,91 +367,33 @@ namespace Balboa
         }
  
         #region Seek bar
-        private bool _seekBarIsBeingDragged = false;
-        private double _currentTrackPosition = 0;
+        //private bool _seekBarIsBeingDragged = false;
+        //private double _currentTrackPosition = 0;
 
-        private void pb_Progress_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            _seekBarIsBeingDragged = true;
-            var sl = sender as Slider;
-            _currentTrackPosition = sl.Value;
-         }
+        //private void pb_Progress_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        //{
+        //    _seekBarIsBeingDragged = true;
+        //    var sl = sender as Slider;
+        //    _currentTrackPosition = sl.Value;
+        // }
 
-        private void pb_Progress_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            var sl = sender as Slider;
-            double offset = sl.Value - _currentTrackPosition;
+        //private void pb_Progress_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        //{
+        //    var sl = sender as Slider;
+        //    double offset = sl.Value - _currentTrackPosition;
 
-            string soffset = offset.ToString(CultureInfo.InvariantCulture);
-            if (offset > 0)
-                 soffset = "+"+soffset;
-            _server.SeekCurrent(soffset);
-            _seekBarIsBeingDragged = false;
-        }
+        //    string soffset = offset.ToString(CultureInfo.InvariantCulture);
+        //    if (offset > 0)
+        //         soffset = "+"+soffset;
+        //    _server.SeekCurrent(soffset);
+        //    _seekBarIsBeingDragged = false;
+        //}
        
         #endregion
 
         #region Обработка событий интерфейса
 
-        #region УПРАВЛЕНИЕ ВОСПРИЗВЕДЕНИЕМ
-
-        private void btn_PrevTrack_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _server.Previous();
-        }
-
-        private void btn_PlayPause_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            // "&#xE102;" - Play
-            // "&#xE103;" - Pause
-            Button button = (Button)sender;
-            switch(_server.StatusData.State)
-            {
-                case "stop": _server.Play();
-                    // Устанавливаем символ "Pause"
-                    button.Content = '\xE103';
-                    break;
-                case "pause": _server.Pause();    // Если статус сервера "pause" то команда Pause() запускает проигрывание
-                    button.Content = '\xE103';   // Устанавливаем символ "Pause"
-                    break;
-                case "play":
-                    _server.Pause();    // Если статус сервера "play" то команда Pause() прерывает проигрывание
-                    button.Content = '\xE102';  //57602 // Устанавливаем символ "Play"
-                    break;
-            }
-     
-            bool playedtrackselected = false; // Устанавливаем пизнак того что проигрываемый трек не подсвечен
-            // Ищем в Playlist трек с установленным признаком IsPlaying
-            // и если такой трек находится то прокручиваем Playlist так чтобы трек быд виден
-            foreach (Track item in _server.PlaylistData)
-            {
-                if (item.IsPlaying)
-                {
-                    playedtrackselected = true;
-                    lv_PlayList.ScrollIntoView(item);
-                    return;
-                }
-            }
-            // Если трек с признаком IsPlaying не найден и Playlist не пуст устанавливаем признак проигрываемого трека
-            // на первый элемент в Playlist
-            if (!playedtrackselected && _server.PlaylistData.Count>0)
-            {
-                _server.PlaylistData[0].IsPlaying = true;
-            }
-         }
-
-        private void btn_NextTrack_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _server.Next();
-        }
-
-        private void btn_Stop_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _server.Stop();
-        }
-    
-        #endregion
-
+       
         #region MAIN MENU
 
         private void ts_Random_Toggled(object sender, RoutedEventArgs e)
@@ -473,6 +409,21 @@ namespace Balboa
         private void ts_Consume_Toggled(object sender, RoutedEventArgs e)
         {
             _server.Consume(((ToggleSwitch)(sender)).IsOn);
+        }
+
+        private void btn_Playlist_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            SwitchDataPanelsTo(DataPanelState.CurrentPlaylist);
+        }
+
+        /// <summary>
+        /// Отображает содержимое закладки File system (Содержимое корневого каталога MPD )
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_FileSystem_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            SwitchDataPanelsTo(DataPanelState.FileSystem);
         }
 
         #endregion
@@ -682,7 +633,7 @@ namespace Balboa
 
         #region SETTINGS
        
-        private async void btn_Settings_Tapped(object sender, TappedRoutedEventArgs e)
+        private void btn_Settings_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Прочитаем список доступных выходов и добавим их в список параметров
             if (_server.IsConnected)
@@ -692,117 +643,12 @@ namespace Balboa
        
         #endregion
 
-        #region CURRENT PLAYLIST COMMANDS --------------------------------------------------
+    
 
-        private void btn_Playlist_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SwitchDataPanelsTo(DataPanelState.CurrentPlaylist);
-        }
-
-        private void lv_PlayList_GotFocus(object sender, RoutedEventArgs e)
-        {
-            _listViewItemGotFocus = e.OriginalSource as ListViewItem;
-        }
-
-        private void lv_PlayList_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            if (_listViewItemGotFocus != null)
-            { 
-                Track playlistitem = _listViewItemGotFocus.Content as Track;
-                _server.PlayId(playlistitem.Id);
-            }
-            //int index = lv_PlayList.SelectedItems.IndexOf(playlistitem);
-            //if (index>=0)
-            //    lv_PlayList.SelectedItems.RemoveAt(index);
-        }
-
-        private void appbtn_Playlist_Save_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _requestNewPlaylistNameMode = NewPlaylistNameRequestMode.SaveNewPlaylist;
-            tbx_PlaylistName.Text = _currentPlaylistName;
-            RequestNewPlaylistName();
-        }
-
-        private void appbtn_Playlist_DeleteSelected_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            foreach (Track track in lv_PlayList.SelectedItems)
-            {
-                _server.DeleteId(track.Id);
-            }
-        }
-
-        private void appbtn_Playlist_Clear_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _server.Clear();
-        }
-
-        private bool EnteredFromPlaylistMode = false;
-        private void appbtn_Playlist_Add_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            EnteredFromPlaylistMode = true;
-            btn_FileSystem_Tapped(sender, e);
-        }
-
-        private void appbtn_Playlist_Shaffle_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _server.Shuffle();
-        }
-
-        private void btn_PlaylistNameSave_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            if(_requestNewPlaylistNameMode == NewPlaylistNameRequestMode.SaveNewPlaylist)
-            { 
-                _currentPlaylistName = tbx_PlaylistName.Text;
-                tbk_PlaylistName.Text = _currentPlaylistName;
-            
-                string str = tbk_PlaylistName.Text;
-            
-                Encoding encoding = Encoding.Unicode;
-                byte[] encBytes = encoding.GetBytes(str);
-                byte[] utf8Bytes = Encoding.Convert(encoding, Encoding.UTF8, encBytes);
-
-                str = Encoding.UTF8.GetString(utf8Bytes,0, utf8Bytes.Length);
-
-                _server.Save(str);
-            }
-
-            if (_requestNewPlaylistNameMode == NewPlaylistNameRequestMode.RenamePlaylist)
-            {
-                _newPlaylistName = tbx_PlaylistName.Text;
-                _server.Rename(_oldPlaylistName, _newPlaylistName);
-            }
-
-            _server.ListPlaylists();
-            popup_GetPlaylistName.IsOpen = false;
-        }
-
-        private void btn_PlaylistNameCancel_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            popup_GetPlaylistName.IsOpen = false;
-        }
-
+ 
         #endregion   ------------------------------------------------------------
 
         #region FILE SYSTEM COMMANDS  -----------------------------------------------
-        /// <summary>
-        /// Отображает содержимое закладки File system (Содержимое корневого каталога MPD )
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-
-       
-        private void btn_FileSystem_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            //var sb = new StringBuilder("CD/ABBA");
-            //_server.LsInfo(sb.ToString());
-            SwitchDataPanelsTo(DataPanelState.FileSystem);
-        }
-
-        
-
-       
-
-  
 
         #endregion --------------------------------------------------------------
 
@@ -823,7 +669,7 @@ namespace Balboa
             }
             else
             {
-                _currentPlaylistName = fi.Name;
+                //_currentPlaylistName = fi.Name;
                 _server.Load(fi.Name);
             }
         }
@@ -853,10 +699,10 @@ namespace Balboa
             }
             else
             {
-                _oldPlaylistName = fi.Name;
-                tbx_PlaylistName.Text = _oldPlaylistName;
-                _requestNewPlaylistNameMode = NewPlaylistNameRequestMode.RenamePlaylist;
-                RequestNewPlaylistName();
+            //    _oldPlaylistName = fi.Name;
+            //    tbx_PlaylistName.Text = _oldPlaylistName;
+            //    _requestNewPlaylistNameMode = NewPlaylistNameRequestMode.RenamePlaylist;
+            //    RequestNewPlaylistName();
             }
         }
         #endregion
@@ -914,36 +760,20 @@ namespace Balboa
 
         private void listview_Search_GotFocus(object sender, RoutedEventArgs e)
         {
-            _listViewItemGotFocus = e.OriginalSource as ListViewItem;
+           // _listViewItemGotFocus = e.OriginalSource as ListViewItem;
         }
 
         private bool playlastaddedtrack = false;
         private void listview_Search_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            Track track = _listViewItemGotFocus.Content as Track;
-            _server.Add(track.File);
+            //Track track = _listViewItemGotFocus.Content as Track;
+            //_server.Add(track.File);
             playlastaddedtrack = true;
          }
         #endregion
 
         #region UTILS
-        private void HightlightCurrentPlaingTrack()
-        {
-            foreach (Track item in lv_PlayList.Items)
-            {
-                if (item.Id == _server.CurrentSongData.Id)
-                {
-                    item.IsPlaying = true;
-                    lv_PlayList.ScrollIntoView(item);
-                    if (lv_PlayList.SelectedItems.IndexOf(item) >= 0)
-                        lv_PlayList.SelectedItems.Remove(item);
-                }
-                else
-                {
-                    item.IsPlaying = false;
-                }
-            }
-        }
+        
         
         private void SwitchDataPanelsTo(DataPanelState state)
         {
@@ -956,7 +786,10 @@ namespace Balboa
             // Выключим все информационные панели
             foreach (UIElement uielement in grid_MainPanel.Children)
             {
-                if (uielement is Grid || uielement is Settings || uielement is TrackDirectory)
+                if (uielement is Grid || 
+                    uielement is Settings || 
+                    uielement is TrackDirectory ||
+                    uielement is CurrentPlaylist)
                     uielement.Visibility = Visibility.Collapsed;
             }
             // Изменим цвет текста во всех кнопках главного меню на белый
@@ -981,9 +814,10 @@ namespace Balboa
                     break;
                 case DataPanelState.CurrentPlaylist:
                     btn_Playlist.Foreground = OrangeBrush;
-                    gr_Playlist.Visibility = Visibility.Visible;
                     textbox_CurrentMode.Text = _resldr.GetString("PlaylistCurrent");
-                    gr_CurrentPlaylistShowStoryboard.Begin();
+                    p_CurrentPlaylist.Visibility = Visibility.Visible;
+                    p_CurrentPlaylist.Update();
+                    //gr_CurrentPlaylistShowStoryboard.Begin();
                     break;
                 case DataPanelState.CurrentTrack:
                     btn_CurrentTrack.Foreground = OrangeBrush;
@@ -994,8 +828,6 @@ namespace Balboa
                 case DataPanelState.FileSystem:
                     btn_FileSystem.Foreground = OrangeBrush;
                     textbox_CurrentMode.Text = _resldr.GetString("FilesAndFolders");
-                    //                    gr_FileSystem.Visibility = Visibility.Visible;
-                    //                    gr_FileSystemShowStoryboard.Begin();
                     p_TrackDirectory.Visibility = Visibility.Visible;
                     p_TrackDirectory.Update();
                     break;
@@ -1092,31 +924,31 @@ namespace Balboa
 //            }
 //        }
 
-        private void RequestNewPlaylistName()
-        { 
-            CoreWindow currentWindow = Window.Current.CoreWindow;
-            popup_GetPlaylistName.HorizontalOffset = (currentWindow.Bounds.Width / 2) - (400 / 2);
-            popup_GetPlaylistName.VerticalOffset = (currentWindow.Bounds.Height / 2) - (150 / 2);
+        //private void RequestNewPlaylistName()
+        //{ 
+        //    CoreWindow currentWindow = Window.Current.CoreWindow;
+        //    popup_GetPlaylistName.HorizontalOffset = (currentWindow.Bounds.Width / 2) - (400 / 2);
+        //    popup_GetPlaylistName.VerticalOffset = (currentWindow.Bounds.Height / 2) - (150 / 2);
 
-            Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition popuptransition = new Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition();
-            popup_GetPlaylistName.ChildTransitions.Add(popuptransition);
-            popup_GetPlaylistName.IsOpen = true;
-        }
+        //    Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition popuptransition = new Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition();
+        //    popup_GetPlaylistName.ChildTransitions.Add(popuptransition);
+        //    popup_GetPlaylistName.IsOpen = true;
+        //}
         #endregion
 
-        #region VOLUME CONTROL
-        private bool _volumeChangedByStatus = true;
-        private void sl_Volume_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            var sl = sender as Slider;
-            if (!_volumeChangedByStatus && _server.StatusData.State == "play")
-                _server.SetVolume((int)sl.Value);
-            _volumeChangedByStatus = false;
-        }
+        //#region VOLUME CONTROL
+        //private bool _volumeChangedByStatus = true;
+        //private void sl_Volume_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
+        //{
+        //    var sl = sender as Slider;
+        //    if (!_volumeChangedByStatus && _server.StatusData.State == "play")
+        //        _server.SetVolume((int)sl.Value);
+        //    _volumeChangedByStatus = false;
+        //}
 
-        #endregion
+        //#endregion
 
-        #endregion
+       
   
         private void textblock_MainMenu_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -1126,52 +958,52 @@ namespace Balboa
                 popup_MainMenu.IsOpen = true;
         }
 
-        private void appbtn_Volume_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            var appbarbutton = sender as AppBarButton;
-            var ttv = appbarbutton.TransformToVisual(this);
-            Point screenCoords = ttv.TransformPoint(new Point(15, -340));
+        //private void appbtn_Volume_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    var appbarbutton = sender as AppBarButton;
+        //    var ttv = appbarbutton.TransformToVisual(this);
+        //    Point screenCoords = ttv.TransformPoint(new Point(15, -340));
 
-            popup_VolumeControl.HorizontalOffset = screenCoords.X;
-            popup_VolumeControl.VerticalOffset = screenCoords.Y;
+        //    popup_VolumeControl.HorizontalOffset = screenCoords.X;
+        //    popup_VolumeControl.VerticalOffset = screenCoords.Y;
 
-            if (popup_VolumeControl.IsOpen)
-                popup_VolumeControl.IsOpen = false;
-            else
-                popup_VolumeControl.IsOpen = true;
-        }
+        //    if (popup_VolumeControl.IsOpen)
+        //        popup_VolumeControl.IsOpen = false;
+        //    else
+        //        popup_VolumeControl.IsOpen = true;
+        //}
 
-        private void pb_Progress_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
-        {
-            var sl = sender as Slider;
-            var cp =  e.GetCurrentPoint((UIElement)sender) as PointerPoint;
-            int mouseweeldelta = cp.Properties.MouseWheelDelta/24; // считаем что каждый клик смещает позицию в треке на 5 сек
+        //private void pb_Progress_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        //{
+        //    var sl = sender as Slider;
+        //    var cp =  e.GetCurrentPoint((UIElement)sender) as PointerPoint;
+        //    int mouseweeldelta = cp.Properties.MouseWheelDelta/24; // считаем что каждый клик смещает позицию в треке на 5 сек
 
-            _currentTrackPosition = pb_Progress.Value;
-            if (((sl.Value + mouseweeldelta) > 0) && ((sl.Value + mouseweeldelta) < sl.Maximum))
-            {
-                string soffset = mouseweeldelta.ToString(CultureInfo.InvariantCulture);
+        //    _currentTrackPosition = pb_Progress.Value;
+        //    if (((sl.Value + mouseweeldelta) > 0) && ((sl.Value + mouseweeldelta) < sl.Maximum))
+        //    {
+        //        string soffset = mouseweeldelta.ToString(CultureInfo.InvariantCulture);
 
-                if (mouseweeldelta > 0)
-                    soffset = "+" + mouseweeldelta.ToString(CultureInfo.InvariantCulture);
-                _server.SeekCurrent(soffset);
-            }
+        //        if (mouseweeldelta > 0)
+        //            soffset = "+" + mouseweeldelta.ToString(CultureInfo.InvariantCulture);
+        //        _server.SeekCurrent(soffset);
+        //    }
 
-        }
+        //}
 
-        private void pb_Progress_Tapped(object sender, TappedRoutedEventArgs e)
-        {
+        //private void pb_Progress_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
 
-            var sl = sender as Slider;
-            _currentTrackPosition = pb_Progress.Value;
-            double offset = sl.Value - _currentTrackPosition;
+        //    var sl = sender as Slider;
+        //    _currentTrackPosition = pb_Progress.Value;
+        //    double offset = sl.Value - _currentTrackPosition;
 
-            string soffset = offset.ToString(CultureInfo.InvariantCulture);
-            if (offset > 0)
-                soffset = "+" + soffset;
-            _server.SeekCurrent(soffset);
-            _seekBarIsBeingDragged = false;
-        }
+        //    string soffset = offset.ToString(CultureInfo.InvariantCulture);
+        //    if (offset > 0)
+        //        soffset = "+" + soffset;
+        //    _server.SeekCurrent(soffset);
+        //    _seekBarIsBeingDragged = false;
+        //}
 
         private void sl_Volume_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
@@ -1211,10 +1043,10 @@ namespace Balboa
             return await MsgBox.Show();
         }
 
-        private async Task<MsgBoxButton> DisplayMessage(DisplayMessageEventArgs messageArgs)
+        private async Task<MsgBoxButton> DisplayMessage(Message messageArgs)
         {
             MsgBox.SetButtons(messageArgs.Buttons);
-            MsgBox.Message = messageArgs.Message;
+            MsgBox.Message = messageArgs.Text;
             MsgBox.BoxHeight = messageArgs.BoxHeight;
             return await MsgBox.Show();
         }

@@ -54,7 +54,7 @@
         </Grid.Resources>
 
         <GridView x:Name="gr_FileSystemContent" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                      SelectionMode="Multiple"  
+                      SelectionMode="Multiple"   ItemsSource="{Binding Files}"
                       ItemTemplate="{StaticResource FileSystemItemTemplate}" 
                       ItemContainerStyleSelector="{StaticResource FileItemStyleSelector}" 
                       DoubleTapped="gr_FileSystemContent_DoubleTapped"

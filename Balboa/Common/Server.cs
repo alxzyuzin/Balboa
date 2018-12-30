@@ -58,15 +58,7 @@ namespace Balboa
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private async void NotifyPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); });
-            }
-        }
-
-        /// <summary>
+         /// <summary>
         /// Уведомление об ошибке в процессе обмена данными с сервером
         /// </summary>
         public event EventHandler Error;
@@ -98,17 +90,6 @@ namespace Balboa
         /// </summary>
         public event ConnectionStatusChangedEventHandler ConnectionStatusChanged;
 
-        //public event EventHandler ConnectionStatusChanged;
-
-        //private async void NotifyConnectionStatusChanged(bool status)
-        //{
-        //    if (ConnectionStatusChanged != null)
-        //    {
-        //        ServerEventArgs args = new ServerEventArgs(EventType.ConnectionStatusChanged,status,string.Empty);
-        //        await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { ConnectionStatusChanged(this, args); });;
-        //    }
-        //}
-
         /// <summary>
         /// Уведомление о завершении выполнения команды
         /// </summary>
@@ -130,23 +111,26 @@ namespace Balboa
         private AppSettings _appSettings = new AppSettings();
         private Progress<MpdResponse> _status;
         private MpdResponse _currentResponse = new MpdResponse();
-//---------------------------------------------------------------------------------
+        private Connection _Connection = new Connection();
+        private ManualResetEvent _ThreadEvent = new ManualResetEvent(false);
+        private object _Lock = new object();
+
+
+        //---------------------------------------------------------------------------------
         ResourceLoader _resldr = new ResourceLoader();
         private DispatcherTimer     _timer;
 
         private MainPage            _mainPage;
 
-        private Connection          _Connection  = new Connection();
+        
         private Queue<MpdCommand>   _CommandQueue = new Queue<MpdCommand>();
         private Queue<MpdCommand>   _SentCommandQueue = new Queue<MpdCommand>();
 
-        private ManualResetEvent    _ThreadEvent = new ManualResetEvent(false);
-        private object              _Lock = new object();
 
         private Statistic                                  _Statistics;
         private Status                                     _Status;
         private CurrentSong                                _CurrentSong;
-        private ObservableObjectCollection<Track>          _Playlist;
+//        private ObservableObjectCollection<Track>          _Playlist;
         private ObservableObjectCollection<File>           _SavedPlaylists;
         private ObservableObjectCollection<CommonGridItem> _Genres;
         private ObservableObjectCollection<CommonGridItem> _Artists;
@@ -155,9 +139,28 @@ namespace Balboa
 
         private string _Response;
 
-#endregion
+        #endregion
 
-#region Properties
+        #region Properties
+        public bool? DisplayFolderPictures => _appSettings.DisplayFolderPictures;
+        public string ConnectionStatus => _Connection.Status;
+
+        public string ConnectionState
+        {
+            set
+            {
+                if (_strConnectionState != value)
+                {
+                    _strConnectionState = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConnectionState)));
+                }
+            }
+            get { return _strConnectionState; }
+
+        }
+
+
+
         private string _response;
         public string Response
         {
@@ -167,7 +170,7 @@ namespace Balboa
                 if (_response!=value)
                 {
                     _response = value;
-                    NotifyPropertyChanged(nameof(Response));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Response)));
                 }
             }
 
@@ -175,31 +178,18 @@ namespace Balboa
         public AppSettings Settings { get { return _appSettings; } }
         public string MusicCollectionFolder => _appSettings.MusicCollectionFolder;
         public string AlbumCoverFileNames => _appSettings.AlbumCoverFileName;
-        public bool?  DisplayFolderPictures => _appSettings.DisplayFolderPictures;
+        
 
 
         public bool Initialized { get; private set; } = false;
         private string      _strConnectionState;
-        public string        ConnectionState
-        {
-            set
-            {
-                if (_strConnectionState != value)
-                {
-                    _strConnectionState = value;
-                    NotifyPropertyChanged("ConnectionState");
-                }
-            }
-            get { return _strConnectionState; }
-            
-        }
+        
         public bool          IsConnected         { get { return _Connection.IsActive; } }
 
         public string   Host                { get; set; }
         public string   Port                { get; set; } 
         public string   Password            { get; set; }
         public int      ViewUpdateInterval  { get; set; } = 500;
-
 
 
         public bool          IsRunning           { get; private set; }=false;
@@ -210,7 +200,7 @@ namespace Balboa
        //
         
 
-        public ObservableObjectCollection<Track>  PlaylistData { get { return _Playlist; } }
+//        public ObservableObjectCollection<Track>  PlaylistData { get { return _Playlist; } }
         public ObservableObjectCollection<File>   SavedPlaylistsData { get { return _SavedPlaylists; } }
         public ObservableObjectCollection<CommonGridItem> Artists { get { return _Artists; } }
         public ObservableObjectCollection<CommonGridItem> Genres { get { return _Genres; } }
@@ -245,14 +235,18 @@ namespace Balboa
             _Status =       new Status(_mainPage);
             _CurrentSong =  new CurrentSong(_mainPage);
 
-            _Playlist =     new ObservableObjectCollection<Track>(_mainPage);
+//            _Playlist =     new ObservableObjectCollection<Track>(_mainPage);
             _SavedPlaylists = new ObservableObjectCollection<File>(_mainPage);
             _Artists =      new ObservableObjectCollection<CommonGridItem>(_mainPage);
             _Genres =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
             _Albums =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
             _Tracks =       new ObservableObjectCollection<Track>(_mainPage);
 
-            _Connection.PropertyChanged += (object obj, PropertyChangedEventArgs args )=> { ConnectionStatusChanged?.Invoke(this, _Connection.Status); };
+            _Connection.PropertyChanged += (object obj, PropertyChangedEventArgs args )=> 
+                                    {
+                                        if (args.PropertyName == nameof(Connection.Status))
+                                            ConnectionStatusChanged?.Invoke(this, _Connection.Status);
+                                    };
         }
 
         #region Методы
@@ -301,7 +295,7 @@ namespace Balboa
         /// <returns></returns>
         public void Restart()
         {
-            StatusData.State = "restart";
+            //StatusData.State = "restart";
             Halt();
             Start();
         }
@@ -331,7 +325,7 @@ namespace Balboa
             _CommandQueue.Clear();
             _SentCommandQueue.Clear();
             _Response = string.Empty;
-            _Playlist.ClearAndNotify();
+//            _Playlist.ClearAndNotify();
             _SavedPlaylists.ClearAndNotify();
             _Artists.ClearAndNotify();
             _Genres.ClearAndNotify();
@@ -485,7 +479,7 @@ namespace Balboa
                         }
                         break;
                     case "search": _Tracks.Update(response); break;
-                    case "playlistinfo": _Playlist.Update(response); break;
+//                    case "playlistinfo": _Playlist.Update(response); break;
                     case "listplaylists": _SavedPlaylists.Update(response); break;
                     case "config":
                         break;

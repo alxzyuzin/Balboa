@@ -1,0 +1,104 @@
+﻿<UserControl
+    x:Class="Balboa.ControlPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Balboa"
+    xmlns:common="using:Balboa.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="140"
+    d:DesignWidth="600">
+    
+    <Grid>
+        <Grid.Resources>
+            <common:TimeConverter  x:Key="TimeConverter"/>
+            
+        </Grid.Resources>
+        <StackPanel x:Name="stp_ServerStatus">
+
+            <Grid  x:Name="gr_SongTimes"  Margin="20,0,20,0">
+                <!-- Длительность трека и время от начала воспроизведения трека-->
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="15"/>
+                    <ColumnDefinition Width="70"/>
+                </Grid.ColumnDefinitions>
+                <Slider x:Name="pb_Progress" Grid.Column="1" Height="23" Foreground="Orange" Margin="0,-11,0,10" 
+                     Minimum="0" 
+                     Maximum="1" 
+                     Value="{Binding ProgressValue}" 
+                     ManipulationStarted="pb_Progress_ManipulationStarted"
+                     ManipulationCompleted="pb_Progress_ManipulationCompleted" 
+                     Tapped="pb_Progress_Tapped"
+                     PointerWheelChanged="pb_Progress_PointerWheelChanged"  
+                        d:IsLocked="True"   ManipulationMode="TranslateX" />
+                <TextBlock Grid.Column="0"  TextAlignment="Left"   Text="{Binding TimeLeft, Converter={StaticResource TimeConverter}}"  FontSize="15" HorizontalAlignment="Left"/>
+                <TextBlock Grid.Column="2"  TextAlignment="Right"  Text="{Binding TimeElapsed, Converter={StaticResource TimeConverter}}" FontSize="15" />
+                <TextBlock Grid.Column="3"  TextAlignment="Center" Text="/" FontSize="15"  />
+                <TextBlock Grid.Column="4"  TextAlignment="Left"   Text="{Binding Duration, Converter={StaticResource TimeConverter}}" FontSize="15"/>
+            </Grid>
+
+            <Grid  x:Name="grid_PlayControls" Height="80" Margin="0,20,0,0" >
+                <!-- Кнопки управления воспроизведением-->
+          
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="40*" x:Name="grid_PlayControls_VolumeColumn"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="100" x:Name="grid_PlayControls_StopColumn"/>
+                    <ColumnDefinition Width="10*"/>
+                </Grid.ColumnDefinitions>
+
+                <AppBarButton x:Name="appbtn_Volume"    Grid.Column="0" Icon="Volume"  FontWeight="Light" Visibility="Collapsed" 
+                              Tapped="appbtn_Volume_Tapped"/>
+                <Slider       x:Name="sl_Volume"        Grid.Column="0"  HorizontalAlignment="Stretch"  VerticalAlignment="Top"
+                                  Margin="30,-10,15,0"  Height="53"  Foreground="Orange"  Grid.ColumnSpan="2" Header="Volume" 
+                                  Minimum="0" Maximum="100" Value="{Binding Volume}"
+                                  ValueChanged="sl_Volume_ValueChanged"
+                                  PointerWheelChanged="sl_Volume_PointerWheelChanged" />
+                <AppBarButton x:Name="appbtn_PrevTrack" Grid.Column="2" Icon="Previous"  Tapped="btn_PrevTrack_Tapped"  FontWeight="Light"/>
+                <Button       x:Name="appbtn_PlayPause" Grid.Column="3"  Content="{Binding PlayPauseButtonContent}" Tapped="btn_PlayPause_Tapped" Style="{StaticResource PlayButtonStyle}"/>
+                <AppBarButton x:Name="appbtn_NextTrack" Grid.Column="4" Icon="Next"      Tapped="btn_NextTrack_Tapped"  FontWeight="Light" />
+                <AppBarButton x:Name="appbtn_Stop"      Grid.Column="6" Icon="Stop"      Tapped="btn_Stop_Tapped"  FontWeight="Light"/>
+            </Grid>
+            <Grid Height="25">
+                <!-- Параметры воспроизведения и статус соединения -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock  Grid.Column="0" TextAlignment="Left"  Text="{Binding ExtendedStatus}" FontSize="15"/>
+                <TextBlock  Grid.Column="1" TextAlignment="Left"  Text="{Binding ConnectionStatus}" FontSize="15"/>
+            </Grid>
+        </StackPanel>
+
+        <Popup x:Name="popup_VolumeControl" Visibility="Collapsed">
+
+            <Popup.ChildTransitions>
+                <TransitionCollection>
+                    <PaneThemeTransition Edge="Bottom"/>
+                </TransitionCollection>
+            </Popup.ChildTransitions>
+
+            <Border BorderThickness="0" BorderBrush="LightGray">
+                <Grid Height="350" Width="70" Background="Gray">
+                    <Slider  x:Name="sl_VerticalVolume" Grid.Row="0" Grid.Column="1"  
+                             HorizontalAlignment="Stretch"  Orientation="Vertical"
+                             Margin="0,10,15,10"   VerticalAlignment="Stretch" Height="300"  Width="22"
+                             Foreground="Orange"  Background="LightGray"
+                             Minimum="0" Maximum="100" Value="{Binding Volume}"
+                             ValueChanged="sl_Volume_ValueChanged"
+                             PointerWheelChanged="sl_Volume_PointerWheelChanged"/>
+                </Grid>
+            </Border>
+        </Popup>
+
+    </Grid>
+</UserControl>

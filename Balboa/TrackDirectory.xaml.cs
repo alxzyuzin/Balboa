@@ -21,30 +21,27 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace Balboa
 {
-    public sealed partial class TrackDirectory : UserControl, INotifyPropertyChanged
+    public sealed partial class TrackDirectory : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public event EventHandler<DisplayMessageEventArgs> MessageReady;
-        public event EventHandler<CommandButtonPressedEventArgs> CommandButtonPressed;
+        //public event EventHandler<DisplayMessageEventArgs> MessageReady;
+        //public event EventHandler<CommandButtonPressedEventArgs> CommandButtonPressed;
+
+        private Server _server;
 
         private ResourceLoader _resldr = new ResourceLoader();
-        private Server _server;
-        private List<string> _currentFilePath = new List<string>();
-
+      
         private string _currentPath = string.Empty;
         private string _parentFolderName = string.Empty;
         private string _newPathChunck = string.Empty;
 
         private GridViewItem _gridViewItemGotFocus;
+        public ObservableCollection<File> Files => _files;
         private ObservableCollection<File> _files = new ObservableCollection<File>();
         private bool _fileIconsUpdating = false;
 
-        
-
         private Progress<FileIconParams> _progress;
         private ManualResetEvent _ThreadEvent = new ManualResetEvent(false);
-
-        public ObservableCollection<File> Files => _files;
         private CancellationTokenSource _tokenSource; 
 
         private string _emptyDirectoryMessage = string.Empty;
@@ -65,12 +62,39 @@ namespace Balboa
             }
         }
 
+        private ControlAction _action = ControlAction.NoAction;
+        public ControlAction Action
+        {
+            get { return _action; }
+            private set
+            {
+                if (_action!= value)
+                {
+                    _action = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Action)));
+                }
+            }
+        }
+
+        private Message _message;
+        public Message Message
+        {
+            get { return _message; }
+            private set
+            {
+                if (_message != value)
+                {
+                    _message = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
+                }
+            }
+        }
+
+
         public TrackDirectory()
         {
             this.InitializeComponent();
             DataContext = this;
-            gr_FileSystemContent.ItemsSource = _files;
-
             _progress = new Progress<FileIconParams>(SetFileIcon);
         }
 
@@ -100,17 +124,18 @@ namespace Balboa
                 }
                 else
                 {
-                    UpdateDataCollection(mpdData.Content);
+                    UpdateControlData(mpdData.Content);
                     HighLiteLastOpenedFolder();
                     if (_currentPath.Length>0 && _newPathChunck.Length>0)
                         _currentPath += "/";
                     _currentPath += _newPathChunck;
+                    _newPathChunck = string.Empty;
 
-                    if (_newPathChunck.Length > 0)
-                    {
-                        _currentFilePath.Add(_newPathChunck);
-                        _newPathChunck = string.Empty;
-                    }
+                    //if (_newPathChunck.Length > 0)
+                    //{
+                    //    _currentFilePath.Add(_newPathChunck);
+                    //    _newPathChunck = string.Empty;
+                    //}
                     appbtn_Up.IsEnabled = _currentPath.Length>0 ? true : false;
                     EmptyDirectoryMessage = _files.Count == 0 ?
                          string.Format(_resldr.GetString("NoAudioFilesInFolder"), "\""+_currentPath+ "\"") : string.Empty;
@@ -127,7 +152,7 @@ namespace Balboa
             }
         }
 
-        public void UpdateDataCollection(List<string> serverData)
+        public void UpdateControlData(List<string> serverData)
         {
             _files.Clear();
             while (serverData.Count > 0)
@@ -147,13 +172,13 @@ namespace Balboa
 
         private void gr_FileSystemContent_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            //if (_gridViewItemGotFocus == null)
-            //    return;
+            if (_gridViewItemGotFocus == null)
+                return;
 
             File currentfileitem = _gridViewItemGotFocus.Content as File;
 
-            //if (currentfileitem == null)
-            //    return;
+            if (currentfileitem == null)
+                return;
 
             if (currentfileitem.Nature == FileNature.Directory)
             {
@@ -170,11 +195,11 @@ namespace Balboa
         {
             // Если мы не на самом верхнем уровне в дереве каталогов то удалим последний элемент 
             // в списке каталогов
-            if (_currentFilePath.Count > 0)
-            {
-                _parentFolderName = _currentFilePath[_currentFilePath.Count - 1];
-                _currentFilePath.RemoveAt(_currentFilePath.Count - 1);
-            }
+            //if (_currentFilePath.Count > 0)
+            //{
+            //    _parentFolderName = _currentFilePath[_currentFilePath.Count - 1];
+            //    _currentFilePath.RemoveAt(_currentFilePath.Count - 1);
+            //}
 
             int i =_currentPath.LastIndexOf("/");
             if (i >= 0)
@@ -193,11 +218,14 @@ namespace Balboa
 
         private void appbtn_AddFromFileSystem_Tapped(object sender, TappedRoutedEventArgs e)
         {
-
-            string path = _currentPath + "/";  
+            string path = string.Empty;
+            if (_currentPath.Length>0 && !_currentPath.EndsWith("/"))
+                path = _currentPath + "/";  
+            //else
+            //    path = _currentPath;
             if (gr_FileSystemContent.SelectedItems.Count == 0)
             {
-                MessageReady?.Invoke(this, new DisplayMessageEventArgs(MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButton.Close, 200));
+                Message = new Message(MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButton.Close, 200);
                 return;
             }
             foreach (File item in gr_FileSystemContent.SelectedItems)
@@ -206,7 +234,7 @@ namespace Balboa
                 _server.Add(path + item.Name);
             }
             gr_FileSystemContent.SelectedItems.Clear();
-            CommandButtonPressed?.Invoke(this, new CommandButtonPressedEventArgs(CommandButton.AddTracks));
+            Action = ControlAction.SwitchToPlaylist;
         }
 
         private void HighLiteLastOpenedFolder()

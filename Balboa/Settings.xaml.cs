@@ -21,15 +21,45 @@ namespace Balboa
 
     
 
-    public sealed partial class Settings : UserControl, INotifyPropertyChanged
+    public sealed partial class Settings : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler   PropertyChanged;
-        public event EventHandler<DisplayMessageEventArgs>  MessageReady;
+//        public event EventHandler<DisplayMessageEventArgs>  MessageReady;
 
         private AppSettings _appSettings;
         private Server _server;
         private List<Output> _outputs =  new List<Output>();
         private ResourceLoader _resldr = new ResourceLoader();
+
+        private Message _message;
+        public Message Message
+        {
+            get { return _message; }
+            private set
+            {
+                if (_message != value)
+                {
+                    _message = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
+                }
+            }
+        }
+
+        private ControlAction _action;
+        public ControlAction Action
+        {
+            get { return _action; }
+            private set
+            {
+                if (_action != value)
+                {
+                    _action = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
+                }
+            }
+        }
+
+       
 
         public Settings()
         {
@@ -43,6 +73,8 @@ namespace Balboa
             this.DataContext = _appSettings;
             _server.DataReady += _server_DataReady;
         }
+
+        public void Update() { }
 
         private void _server_DataReady(object sender, EventArgs e)
         {
@@ -90,9 +122,7 @@ namespace Balboa
 
             if (Regex.IsMatch(_appSettings.Port, notNumber) || _appSettings.Port.Length == 0)
             {
-                var args = new DisplayMessageEventArgs(MsgBoxType.Error, _resldr.GetString("PortValueMustBeNumber"),
-                                                    MsgBoxButton.Close, 200);
-                MessageReady?.Invoke(this, args);
+                Message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeNumber"), MsgBoxButton.Close, 200);
                 return;
             }
             else
@@ -100,18 +130,14 @@ namespace Balboa
                 int port = int.Parse(_appSettings.Port);
                 if (port > 65535)
                 {
-                    var args = new DisplayMessageEventArgs(MsgBoxType.Error, _resldr.GetString("PortValueMustBeLess65536"),
-                                                    MsgBoxButton.Close, 200);
-                    MessageReady?.Invoke(this, args);
+                    Message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeLess65536"), MsgBoxButton.Close, 200);
                     return;
                 }
             }
 
             if (Regex.IsMatch(_appSettings.ViewUpdateInterval, notNumber) || _appSettings.ViewUpdateInterval.Length == 0)
             {
-                var args = new DisplayMessageEventArgs(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustNumber"),
-                                                    MsgBoxButton.Close, 200);
-                MessageReady?.Invoke(this, args);
+                Message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustNumber"), MsgBoxButton.Close, 200);
                 return;
             }
             else
@@ -119,9 +145,7 @@ namespace Balboa
                 int updateinterval = int.Parse(_appSettings.ViewUpdateInterval);
                 if (updateinterval < 100)
                 {
-                    var args = new DisplayMessageEventArgs(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustBe100"),
-                                                     MsgBoxButton.Close, 200);
-                    MessageReady?.Invoke(this, args);
+                    Message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustBe100"), MsgBoxButton.Close, 200);
                     return;
                 }
             }
@@ -132,25 +156,22 @@ namespace Balboa
             Connection connection = new Connection();
             await connection.Open(_appSettings.Server, _appSettings.Port, _appSettings.Password);
             
-
             if (!connection.IsActive)
             {
-                string msg = $"Connection to {_appSettings.Server} failed.\n {connection.Error}.";
-                MessageReady?.Invoke(this, new DisplayMessageEventArgs(MsgBoxType.Info, msg, MsgBoxButton.Close, 200));
+                Message = new Message(MsgBoxType.Info, $"Connection to {_appSettings.Server} failed.\n {connection.Error}.", MsgBoxButton.Close, 200);
                 return;
             }
             if (_appSettings.ServerNameChanged && (!_appSettings.MusicCollectionFolderTokenChanged))
             {
-                var args = new DisplayMessageEventArgs(MsgBoxType.Warning, _resldr.GetString("ServerNameChanged"),
-                                                     MsgBoxButton.Close, 200);
-                MessageReady?.Invoke(this, args);
+                Message = new Message(MsgBoxType.Warning, _resldr.GetString("ServerNameChanged"), MsgBoxButton.Close, 200);
                 _appSettings.MusicCollectionFolder = string.Empty;            
                 StorageApplicationPermissions.FutureAccessList.Clear();
                 _appSettings.MusicCollectionFolderToken = String.Empty;
             }
             connection.Close();
             _appSettings.Save();
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(""));
+            Action = ControlAction.RestartServer;
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(""));
 
         }
 
@@ -166,18 +187,18 @@ namespace Balboa
 
         private async void appbtn_TestConnection_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            string message = string.Empty;
+            string msg;
+            
             Connection connection = new Connection();
 
             await connection.Open(_appSettings.Server, _appSettings.Port,_appSettings.Password);
             if (connection.IsActive)
-                message = $"Succesfully connected to {_appSettings.Server}. \n{connection.InitialResponse}";
+                msg = $"Succesfully connected to {_appSettings.Server}. \n{connection.InitialResponse}";
             else
-                message = connection.Error;
- 
+                msg = connection.Error;
+            Message =  new Message(MsgBoxType.Info, msg, MsgBoxButton.Close, 200);
             connection.Close();
-            MessageReady?.Invoke(this, new DisplayMessageEventArgs(MsgBoxType.Info, message, MsgBoxButton.Close, 200));
-        }
+         }
 
         private async void btn_SelectMusicCollectionPath_Tapped(object sender, TappedRoutedEventArgs e)
         {
