@@ -22,7 +22,23 @@ using Windows.UI.Core;
 
 namespace Balboa.Common
 {
-    public class ObservableObjectCollection<T>: System.Collections.ObjectModel.ObservableCollection<T>
+
+    public class TrackCollection<Track> : ObservableCollection<Track>
+      where Track : INotifyPropertyChanged
+    {
+        public override event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        public void NotifyCollectionChanged()
+        {
+
+            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+
+
+        }
+
+    }
+
+public class ObservableObjectCollection<T>: System.Collections.ObjectModel.ObservableCollection<T>
         where T : INotifyPropertyChanged, IUpdatable
     {
         private const string _modName = "ObservableObjectCollection.cs";

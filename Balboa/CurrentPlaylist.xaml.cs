@@ -1,22 +1,14 @@
-﻿using System;
+﻿using Balboa.Common;
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Balboa.Common;
-using Windows.UI.Core;
-using System.Text;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Text;
+using Windows.UI.Core;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
+using System.Linq;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -27,10 +19,14 @@ namespace Balboa
         public event PropertyChangedEventHandler PropertyChanged;
 
         private Server _server;
-        private ObservableCollection<Track> _playlist = new ObservableCollection<Track>();
+        private TrackCollection<Track> _playlist = new TrackCollection<Track>();
+        private ListViewItem _listViewItemInFocus;
+        private int _currentSongID = -1;
+
         public ObservableCollection<Track> Playlist => _playlist;
 
-        private ListViewItem _listViewItemInFocus;
+
+        
 
         private enum NewPlaylistNameRequestMode { SaveNewPlaylist, RenamePlaylist };
         NewPlaylistNameRequestMode _requestNewPlaylistNameMode;
@@ -85,12 +81,12 @@ namespace Balboa
         private void _server_DataReady(object sender, EventArgs e)
         {
             var mpdData = e as MpdResponse;
-            if (mpdData.Command.Op != "playlistinfo")
-                return;
-
             if (mpdData.Keyword == ResponseKeyword.OK)
-            {
-                UpdateControlData(mpdData.Content);
+            { 
+                if (mpdData.Command.Op == "playlistinfo")
+                    UpdateControlData(mpdData.Content);
+                if (mpdData.Command.Op == "currentsong")
+                    HightlightCurrentPlaingTrack(mpdData.Content);
             }
         }
 
@@ -149,20 +145,34 @@ namespace Balboa
             Update();
         }
 
-        private void HightlightCurrentPlaingTrack()
+        private void HightlightCurrentPlaingTrack(List<string> serverData)
         {
-            foreach (Track item in lv_PlayList.Items)
+            Song song = new Song();
+            song.Update(serverData);
+
+            if (_currentSongID != song.Id)
             {
-                //if (item.Id == _server.CurrentSongData.Id)
+                Track track;
+                track =  lv_PlayList.Items.FirstOrDefault(item => (item as Track).IsPlaying) as Track;
+                if (track!= null)
+                    track.IsPlaying = false;
+                track = lv_PlayList.Items.FirstOrDefault(item => (item as Track).Id == song.Id) as Track;
+                if (track != null)
+                    track.IsPlaying = true;
+                lv_PlayList.ScrollIntoView(track);
+                _playlist.NotifyCollectionChanged();
                 //{
-                //    item.IsPlaying = true;
-                //    lv_PlayList.ScrollIntoView(item);
-                //    if (lv_PlayList.SelectedItems.IndexOf(item) >= 0)
-                //        lv_PlayList.SelectedItems.Remove(item);
-                //}
-                //else
-                //{
-                //    item.IsPlaying = false;
+                //    //if (item.Id == _server.CurrentSongData.Id)
+                //    //{
+                //    //    item.IsPlaying = true;
+                //    //    lv_PlayList.ScrollIntoView(item);
+                //    //    if (lv_PlayList.SelectedItems.IndexOf(item) >= 0)
+                //    //        lv_PlayList.SelectedItems.Remove(item);
+                //    //}
+                //    //else
+                //    //{
+                //    //    item.IsPlaying = false;
+                //    //}
                 //}
             }
         }

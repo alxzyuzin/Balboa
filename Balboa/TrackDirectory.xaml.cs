@@ -26,10 +26,10 @@ namespace Balboa
         public event PropertyChangedEventHandler PropertyChanged;
         //public event EventHandler<DisplayMessageEventArgs> MessageReady;
         //public event EventHandler<CommandButtonPressedEventArgs> CommandButtonPressed;
-
+        private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
 
-        private ResourceLoader _resldr = new ResourceLoader();
+
       
         private string _currentPath = string.Empty;
         private string _parentFolderName = string.Empty;
@@ -68,11 +68,11 @@ namespace Balboa
             get { return _action; }
             private set
             {
-                if (_action!= value)
-                {
+//                if (_action!= value)
+//                {
                     _action = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Action)));
-                }
+//                }
             }
         }
 
@@ -131,11 +131,7 @@ namespace Balboa
                     _currentPath += _newPathChunck;
                     _newPathChunck = string.Empty;
 
-                    //if (_newPathChunck.Length > 0)
-                    //{
-                    //    _currentFilePath.Add(_newPathChunck);
-                    //    _newPathChunck = string.Empty;
-                    //}
+
                     appbtn_Up.IsEnabled = _currentPath.Length>0 ? true : false;
                     EmptyDirectoryMessage = _files.Count == 0 ?
                          string.Format(_resldr.GetString("NoAudioFilesInFolder"), "\""+_currentPath+ "\"") : string.Empty;
@@ -283,25 +279,7 @@ namespace Balboa
 
        
 
-        ///// <summary>
-        ///// Строит путь к файлам из элементов списка 
-        ///// </summary>
-        ///// <param name="pathitems">
-        ///// Список элементов пути
-        ///// </param>
-        ///// <returns></returns>
-        ///// 
-        //public string BuildFilePath()
-        //{
-        //    var filepath = new StringBuilder();
-        //    for (int i = 0; i < _currentFilePath.Count; i++ )
-        //    {
-        //        filepath.Append(_currentFilePath[i]);
-        //        if (i < _currentFilePath.Count - 1)
-        //            filepath.Append(@"\");
-        //    }
-        //    return filepath.ToString();
-        //}
+      
 
         private async void SetFileIcon(FileIconParams iconParams)
         {
@@ -314,45 +292,7 @@ namespace Balboa
             iconParams.File.AlbumArtWidth = new GridLength(60);
         }
 
-        private async Task<BitmapImage> GetFolderImage(string musicCollectionFolder, string folderName, string albumCoverFileNames)
-        {
-            StorageFile file = null;
-            while (musicCollectionFolder.EndsWith("\\", StringComparison.Ordinal))
-                musicCollectionFolder = musicCollectionFolder.Substring(0, musicCollectionFolder.Length - 1);
 
-            StringBuilder sb = new StringBuilder(musicCollectionFolder);
-
-            sb.Append('\\');
-            sb.Append(folderName);
-            sb.Replace('/', '\\');
-            sb.Append('\\');
-
-            int pathlength = sb.Length;
-
-            string[] CoverFileNames = albumCoverFileNames.Split(';');
-
-            foreach (string albumCoverFileName in CoverFileNames)
-            {
-                try
-                {
-                    sb.Append(albumCoverFileName);
-                    file = await StorageFile.GetFileFromPathAsync(sb.ToString());
-                    break;
-                }
-                catch (FileNotFoundException)
-                {
-                    sb.Remove(pathlength, albumCoverFileName.Length);
-                }
-            }
-            if (file == null)
-                return null;
-            using (IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
-            {
-                BitmapImage bitmapImage = new BitmapImage();
-                await bitmapImage.SetSourceAsync(fileStream);
-                return bitmapImage;
-            }
-        }
 
         private async Task<IRandomAccessStream> GetFolderImageStream(string PathToAlbumArt)
         {

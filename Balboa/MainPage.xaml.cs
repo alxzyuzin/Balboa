@@ -84,7 +84,7 @@ namespace Balboa
             
             _server.Error += OnServerError;
             _server.CriticalError += OnServerCriticalError;
-            _server.CurrentSongData.PropertyChanged += OnCurrentSongDataPropertyChanged;
+//            _server.CurrentSongData.PropertyChanged += OnCurrentSongDataPropertyChanged;
             _server.CommandCompleted += OnCommandCompleted;
 
             //////
@@ -92,6 +92,7 @@ namespace Balboa
             p_TrackDirectory.Init(_server);
             p_ControlPanel.Init(_server);
             p_CurrentPlaylist.Init(_server);
+            p_PageHeader.Init(_server);
 
 
             p_Settings.PropertyChanged += OnDataPanelPropertyChanged;
@@ -104,8 +105,8 @@ namespace Balboa
 
             // Установка контекстов для databinding
             stp_MainMenu.DataContext = _server.StatusData;
-            stackpanel_MainPanelHeader.DataContext = _server.CurrentSongData;
-            gr_CurrentTrack.DataContext = _server.CurrentSongData;
+//            stackpanel_MainPanelHeader.DataContext = _server.CurrentSongData;
+//            gr_CurrentTrack.DataContext = _server.CurrentSongData;
             gr_Stats.DataContext            = _server.StatisticData;
             gr_SavedPlaylistsContent.ItemsSource = _server.SavedPlaylistsData;
 
@@ -258,29 +259,29 @@ namespace Balboa
                 if (_server.Settings.MusicCollectionFolderToken.Length == 0)
                     return;
                 
-                string s = Utilities.ExtractFilePath(_server.CurrentSongData.File);
-                try
-                {
-                  //  image_AlbumCover.Source = image_AlbumCoverSmall.Source = await GetFolderImage(_server.Settings.MusicCollectionFolder, s, _server.Settings.AlbumCoverFileName);
-                }
-                catch (UnauthorizedAccessException )
-                {
-                    string message = string.Format(_resldr.GetString("CheckDirectoryAvailability"), _server.Settings.MusicCollectionFolder);
-                    switch (await MessageBox(_resldr.GetString("UnauthorizedAccessError"), message, MsgBoxButtons.GoToSettings | MsgBoxButtons.Exit))
-                    {
-                        case MsgBoxButtons.Exit: Application.Current.Exit(); break;
-                        case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings); ; break;
-                    }
-                }
-                catch (Exception ee)
-                {
-                    MsgBoxButtons responce = await MessageBox(_resldr.GetString("Error"), string.Format(_resldr.GetString("Exception"),ee.GetType().ToString(),ee.Message), MsgBoxButtons.Continue);
-                    switch (responce)
-                    {
-                        case MsgBoxButtons.Exit: Application.Current.Exit(); break;
-                        case MsgBoxButtons.Continue: _server.Restart(); break;
-                    }
-                }
+                //string s = Utilities.ExtractFilePath(_server.CurrentSongData.File);
+                //try
+                //{
+                //  //  image_AlbumCover.Source = image_AlbumCoverSmall.Source = await GetFolderImage(_server.Settings.MusicCollectionFolder, s, _server.Settings.AlbumCoverFileName);
+                //}
+                //catch (UnauthorizedAccessException )
+                //{
+                //    string message = string.Format(_resldr.GetString("CheckDirectoryAvailability"), _server.Settings.MusicCollectionFolder);
+                //    switch (await MessageBox(_resldr.GetString("UnauthorizedAccessError"), message, MsgBoxButtons.GoToSettings | MsgBoxButtons.Exit))
+                //    {
+                //        case MsgBoxButtons.Exit: Application.Current.Exit(); break;
+                //        case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings); ; break;
+                //    }
+                //}
+                //catch (Exception ee)
+                //{
+                //    MsgBoxButtons responce = await MessageBox(_resldr.GetString("Error"), string.Format(_resldr.GetString("Exception"),ee.GetType().ToString(),ee.Message), MsgBoxButtons.Continue);
+                //    switch (responce)
+                //    {
+                //        case MsgBoxButtons.Exit: Application.Current.Exit(); break;
+                //        case MsgBoxButtons.Continue: _server.Restart(); break;
+                //    }
+                //}
             }
         }
 
@@ -328,9 +329,6 @@ namespace Balboa
  
             }
         }
-
- 
- 
 
         private async void OnServerError(object sender, EventArgs eventArgs)
         {
@@ -426,6 +424,11 @@ namespace Balboa
             SwitchDataPanelsTo(DataPanelState.FileSystem);
         }
 
+
+
+        
+        /// ///////////////////////////////////////////////////////////////////////////////////
+        
         #endregion
 
         #region  CURRENT TRACK
@@ -643,14 +646,9 @@ namespace Balboa
        
         #endregion
 
-    
+         #endregion   ------------------------------------------------------------
 
- 
-        #endregion   ------------------------------------------------------------
-
-        #region FILE SYSTEM COMMANDS  -----------------------------------------------
-
-        #endregion --------------------------------------------------------------
+   
 
         #region SAVED PLAYLISTS COMAND
         private void btn_SavedPlayLists_Tapped(object sender, TappedRoutedEventArgs e)
@@ -868,19 +866,19 @@ namespace Balboa
              }
             if (_server.StatusData.State != "stop")
             {
-                if (state != DataPanelState.CurrentTrack)
-                {
-                    if (stackpanel_MainPanelHeader.Opacity == 0)
-                        stackpanel_MainPanelHeaderShowStoryboard.Begin();
-                }
-                else
-                    stackpanel_MainPanelHeaderHideStoryboard.Begin();
+                //if (state != DataPanelState.CurrentTrack)
+                //{
+                //    if (p_PageHeader.Opacity == 0)
+                //        stackpanel_MainPanelHeaderShowStoryboard.Begin();
+                //}
+                //else
+                //    stackpanel_MainPanelHeaderHideStoryboard.Begin();
             }
 
             if (state == DataPanelState.CurrentTrack)
-                stackpanel_MainPanelHeader.Visibility = Visibility.Collapsed;
+                p_PageHeader.Visibility = Visibility.Collapsed;
             else
-                stackpanel_MainPanelHeader.Visibility = Visibility.Visible;
+                p_PageHeader.Visibility = Visibility.Visible;
         }
 
         [Flags]
@@ -909,44 +907,8 @@ namespace Balboa
             return (MsgBoxButtons) selected.Id;
         }
         
-//        private void SetPlaybuttonPicture(string state)
-//        {
-//            // "&#xE102;" - Play
-//            // "&#xE103;" - Pause
-//
-//            if (state == "play")
-//            {
-//                appbtn_PlayPause.Content = '\xE103'; // Устанавливаем символ "Pause"
-//            }
-//            else
-//            {    
-//                appbtn_PlayPause.Content = '\xE102'; // Устанавливаем символ "Play"
-//            }
-//        }
 
-        //private void RequestNewPlaylistName()
-        //{ 
-        //    CoreWindow currentWindow = Window.Current.CoreWindow;
-        //    popup_GetPlaylistName.HorizontalOffset = (currentWindow.Bounds.Width / 2) - (400 / 2);
-        //    popup_GetPlaylistName.VerticalOffset = (currentWindow.Bounds.Height / 2) - (150 / 2);
-
-        //    Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition popuptransition = new Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition();
-        //    popup_GetPlaylistName.ChildTransitions.Add(popuptransition);
-        //    popup_GetPlaylistName.IsOpen = true;
-        //}
         #endregion
-
-        //#region VOLUME CONTROL
-        //private bool _volumeChangedByStatus = true;
-        //private void sl_Volume_ValueChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        //{
-        //    var sl = sender as Slider;
-        //    if (!_volumeChangedByStatus && _server.StatusData.State == "play")
-        //        _server.SetVolume((int)sl.Value);
-        //    _volumeChangedByStatus = false;
-        //}
-
-        //#endregion
 
        
   
@@ -958,65 +920,6 @@ namespace Balboa
                 popup_MainMenu.IsOpen = true;
         }
 
-        //private void appbtn_Volume_Tapped(object sender, TappedRoutedEventArgs e)
-        //{
-        //    var appbarbutton = sender as AppBarButton;
-        //    var ttv = appbarbutton.TransformToVisual(this);
-        //    Point screenCoords = ttv.TransformPoint(new Point(15, -340));
-
-        //    popup_VolumeControl.HorizontalOffset = screenCoords.X;
-        //    popup_VolumeControl.VerticalOffset = screenCoords.Y;
-
-        //    if (popup_VolumeControl.IsOpen)
-        //        popup_VolumeControl.IsOpen = false;
-        //    else
-        //        popup_VolumeControl.IsOpen = true;
-        //}
-
-        //private void pb_Progress_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
-        //{
-        //    var sl = sender as Slider;
-        //    var cp =  e.GetCurrentPoint((UIElement)sender) as PointerPoint;
-        //    int mouseweeldelta = cp.Properties.MouseWheelDelta/24; // считаем что каждый клик смещает позицию в треке на 5 сек
-
-        //    _currentTrackPosition = pb_Progress.Value;
-        //    if (((sl.Value + mouseweeldelta) > 0) && ((sl.Value + mouseweeldelta) < sl.Maximum))
-        //    {
-        //        string soffset = mouseweeldelta.ToString(CultureInfo.InvariantCulture);
-
-        //        if (mouseweeldelta > 0)
-        //            soffset = "+" + mouseweeldelta.ToString(CultureInfo.InvariantCulture);
-        //        _server.SeekCurrent(soffset);
-        //    }
-
-        //}
-
-        //private void pb_Progress_Tapped(object sender, TappedRoutedEventArgs e)
-        //{
-
-        //    var sl = sender as Slider;
-        //    _currentTrackPosition = pb_Progress.Value;
-        //    double offset = sl.Value - _currentTrackPosition;
-
-        //    string soffset = offset.ToString(CultureInfo.InvariantCulture);
-        //    if (offset > 0)
-        //        soffset = "+" + soffset;
-        //    _server.SeekCurrent(soffset);
-        //    _seekBarIsBeingDragged = false;
-        //}
-
-        private void sl_Volume_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
-        {
-            var sl = sender as Slider;
-            var cp = e.GetCurrentPoint((UIElement)sender) as PointerPoint;
-            int mouseweeldelta = cp.Properties.MouseWheelDelta / 12; // считаем что каждый клик смещает позицию в треке на 5 сек
-
-            int newvalue = (int)sl.Value + mouseweeldelta;
-            if ((newvalue >= 0) && (newvalue<=100))
-            {
-                _server.SetVolume(newvalue);
-            }
-        }
 
         protected virtual void Dispose(bool disposing)
         {

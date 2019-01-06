@@ -129,6 +129,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PageHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Settings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -146,7 +150,7 @@
     <Compile Include="Common\BalboaExeption.cs" />
     <Compile Include="Common\CommonGridItem.cs" />
     <Compile Include="Common\Connection.cs" />
-    <Compile Include="Common\CurrentSong.cs" />
+    <Compile Include="Common\Song.cs" />
     <Compile Include="Common\FileItemStyleSelector.cs" />
     <Compile Include="Common\GenericComparer.cs" />
     <Compile Include="Common\IUpdateble.cs" />
@@ -177,6 +181,9 @@
     <Compile Include="Common\MPDCommand.cs" />
     <Compile Include="MessageBox.xaml.cs">
       <DependentUpon>MessageBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PageHeader.xaml.cs">
+      <DependentUpon>PageHeader.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Server.cs" />

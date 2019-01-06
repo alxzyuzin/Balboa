@@ -207,6 +207,8 @@
                 <RowDefinition Height="150"/>
             </Grid.RowDefinitions>
 
+            <local:PageHeader x:Name="p_PageHeader"  Grid.Row="0" Visibility="Visible"/>
+            
              <!--   CURRENT TRACK
          -->
             <Grid  x:Name="gr_CurrentTrack" Grid.Row="1" Style="{StaticResource InformationGridStyle}" Visibility="Visible" Margin="0,0,0,10" d:IsHidden="True">
@@ -287,7 +289,7 @@
             <local:CurrentPlaylist x:Name="p_CurrentPlaylist" Grid.Row="1" Visibility="Collapsed" />
             
             <!--  FILE SYSTEM  -->
-            <local:TrackDirectory x:Name="p_TrackDirectory" Grid.Row="1" Visibility="Collapsed" />
+            <local:TrackDirectory x:Name="p_TrackDirectory" Grid.Row="1" Visibility="Collapsed" d:IsHidden="True" />
             <!--  SAVED PLAYLISTS
         -->
             <Grid  x:Name="gr_SavedPlayLists" Grid.Row="1" Style="{StaticResource InformationGridStyle}" d:IsHidden="True">
@@ -542,13 +544,14 @@
             </Grid>
 
             <!--  SETTINGS -->       
-            <local:Settings x:Name="p_Settings" Grid.Row="1" />
+            <local:Settings x:Name="p_Settings" Grid.Row="1" d:IsHidden="True" />
              <!-- Панель управления проигрыванием -->
             <local:ControlPanel x:Name="p_ControlPanel" Grid.Row="3"/>
             
         </Grid>
-
-         <Grid x:Name="stackpanel_MainPanelHeader" Grid.Row="0" Height="100"  VerticalAlignment="Top"   
+        
+        <!--
+        <Grid x:Name="stackpanel_MainPanelHeader" Grid.Row="0" Height="100"  VerticalAlignment="Top"   
                         HorizontalAlignment="Right" Opacity="0" Margin="0,0,50,0">
                 <Grid.Resources>
                     <Storyboard x:Name="stackpanel_MainPanelHeaderShowStoryboard">
@@ -585,7 +588,7 @@
                         
                     <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Grid.Row="1">
                             <TextBlock x:Uid="Artist"  Text="" FontSize="15" Margin="10,0,0,0"/>
-                        <!--TextBlock Text="Artist :"  FontSize="15" Margin="10,0,0,0"/-->
+                        
                         <TextBlock Text="{Binding Artist}" FontSize="15" Margin="10,0,0,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="20,0,0,10" Grid.Row="2">
@@ -596,6 +599,7 @@
                     </StackPanel>
                 </Grid>
             </Grid>
+        -->
         <!-- Главное меню -->
         <Grid x:Name="grid_MainMenu" Width="200"   
               HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="20,0,0,0" Background="{StaticResource MainBackgroundBrush}">

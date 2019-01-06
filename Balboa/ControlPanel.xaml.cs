@@ -27,6 +27,8 @@ namespace Balboa
 
         private Server _server;
         private Status _status = new Status();
+        private Song _song = new Song();
+        private int _currentSongID = -1;
 
         private string _extendedStatus;
         public string ExtendedStatus
@@ -151,21 +153,19 @@ namespace Balboa
         {
             _server = server;
             _server.DataReady += _server_DataReady;
-            _server.ConnectionStatusChanged += (Object obj, string status) => 
-                                                {
-                                                    ConnectionStatus = status;
-                                                };
+            _server.ConnectionStatusChanged += (Object obj, string status) => { ConnectionStatus = status; };
         }
 
         private void _server_DataReady(object sender, EventArgs e)
         {
             var mpdData = e as MpdResponse;
-            if (mpdData.Command.Op != "status")
-                return;
 
             if (mpdData.Keyword == ResponseKeyword.OK)
             {
-                UpdateControlData(mpdData.Content);
+                if (mpdData.Command.Op == "status")
+                    UpdateControlData(mpdData.Content);
+                if (mpdData.Command.Op == "currentsong")
+                    UpdateSongData(mpdData.Content);
             }
         }
 
@@ -176,13 +176,32 @@ namespace Balboa
             ExtendedStatus = _status.ExtendedStatus;
             TimeLeft    = _status.TimeLeft;
             TimeElapsed = _status.TimeElapsed;
-            Duration    = _status.Duration;
-            ProgressValue = _status.TimeElapsed / _status.Duration;
             PlayPauseButtonContent = (_status.State == "play") ? '\xE103' : '\xE102';
             Volume = _status.Volume;
 
+            if (_currentSongID != _status.SongId)
+            {
+//                Duration = _status.Duration;
+                _currentSongID = _status.SongId;
+                _server.CurrentSong();
+            }
+            if (Duration > 0)
+            {
+                TimeLeft = Duration - TimeElapsed;
+                ProgressValue = _status.TimeElapsed / Duration;
+//                pb_Progress.Value = _status.TimeElapsed / Duration;
+            }
 
         }
+
+        private void UpdateSongData(List<string> serverData)
+        {
+            _song.Update(serverData);
+            
+            Duration = _song.Duration;
+
+        }
+
 
         private void btn_PrevTrack_Tapped(object sender, TappedRoutedEventArgs e)
         {

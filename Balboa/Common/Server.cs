@@ -129,7 +129,7 @@ namespace Balboa
 
         private Statistic                                  _Statistics;
         private Status                                     _Status;
-        private CurrentSong                                _CurrentSong;
+//        private CurrentSong                                _CurrentSong;
 //        private ObservableObjectCollection<Track>          _Playlist;
         private ObservableObjectCollection<File>           _SavedPlaylists;
         private ObservableObjectCollection<CommonGridItem> _Genres;
@@ -195,7 +195,7 @@ namespace Balboa
         public bool          IsRunning           { get; private set; }=false;
         public Status        StatusData         { get { return _Status; } }
         public Statistic     StatisticData      { get { return _Statistics; } }
-        public CurrentSong   CurrentSongData { get { return _CurrentSong; } }
+//        public CurrentSong   CurrentSongData { get { return _CurrentSong; } }
 
        //
         
@@ -233,7 +233,7 @@ namespace Balboa
 
             _Statistics =   new Statistic(_mainPage);
             _Status =       new Status(_mainPage);
-            _CurrentSong =  new CurrentSong(_mainPage);
+//            _CurrentSong =  new CurrentSong(_mainPage);
 
 //            _Playlist =     new ObservableObjectCollection<Track>(_mainPage);
             _SavedPlaylists = new ObservableObjectCollection<File>(_mainPage);
@@ -468,7 +468,7 @@ namespace Balboa
                     case "update":  // в ответ на команду сервер возвращает" "updating_db: 1\n"  (Реализовано)
                     case "stats": _Statistics.Update(response); break;
                     case "status": _Status.Update(response); break;       // Реализовано
-                    case "currentsong": _CurrentSong.Update(response); break;
+ //                   case "currentsong": _CurrentSong.Update(response); break;
                     case "list":
                         switch (response.Command.Argument1)
                         {
