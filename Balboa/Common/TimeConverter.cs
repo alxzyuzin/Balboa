@@ -34,7 +34,8 @@ namespace Balboa.Common
             string _modName = "TimeConverter";
 
             if (value == null)
-                throw new BalboaNullValueException(_modName, "SecTo_HH_MM_SS", "107", "value");
+                //throw new BalboaNullValueException(_modName, "SecTo_HH_MM_SS", "107", "value");
+                return string.Empty;
 
             string res = string.Empty;
             string ss = string.Empty;

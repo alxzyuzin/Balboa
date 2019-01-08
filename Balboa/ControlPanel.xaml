@@ -17,7 +17,7 @@
         </Grid.Resources>
         <StackPanel x:Name="stp_ServerStatus">
 
-            <Grid  x:Name="gr_SongTimes"  Margin="20,0,20,0">
+            <Grid  x:Name="gr_SongTimes"  Margin="20,10,20,0">
                 <!-- Длительность трека и время от начала воспроизведения трека-->
 
                 <Grid.ColumnDefinitions>

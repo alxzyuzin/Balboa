@@ -10,7 +10,7 @@
     d:DesignHeight="100"
     d:DesignWidth="400">
 
-    <Grid x:Name="GridPageHeader" MinWidth="400" Height="100" HorizontalAlignment="Right" Margin="0,0,50,0">
+    <Grid x:Name="GridPageHeader" MinWidth="400" Height="100" HorizontalAlignment="Right" Margin="0,0,50,10">
         <Grid.Resources>
             <Storyboard x:Name="PageHeaderShowStoryboard">
                 <DoubleAnimation  Storyboard.TargetName="GridPageHeader"
@@ -34,17 +34,17 @@
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Image x:Name="image_AlbumCoverSmall"  Source="{Binding AlbumArt}" Grid.Column="0" Width="100" Height="100" Grid.ColumnSpan="2" />
+        <Image x:Name="image_AlbumCoverSmall"  Source="{Binding AlbumArt}" Grid.Column="0" Width="100" Height="100"/>
              <StackPanel  Grid.Column="2">
-                <TextBlock  Text="{Binding Title}" FontSize="35" Margin="10,0,0,0"  TextAlignment="Left"
-                                    TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Height="45"/>
+                <TextBlock  Text="{Binding Title}" FontSize="35" TextAlignment="Left"
+                                    TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Height="40"/>
 
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                    <TextBlock Text="Artist :" FontSize="15" Margin="10,0,0,0"/>
+                    <TextBlock Text="Artist :" FontSize="15"/>
                     <TextBlock Text="{Binding Artist}" FontSize="15" Margin="10,0,0,0"/>
                 </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0" >
-                    <TextBlock Text="Album :"  FontSize="15" Margin="10,0,0,0"/>
+                    <TextBlock Text="Album :"  FontSize="15" />
                     <TextBlock Text="{Binding Album}"  FontSize="15" Margin="10,0,0,0"/>
                 </StackPanel>
 

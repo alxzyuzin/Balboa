@@ -35,7 +35,7 @@ namespace Balboa
 
     public enum ControlAction {NoAction, RestartServer, SwitchToTrackDirectory, SwitchToPlaylist }
 
-    public partial class MainPage : Page, INotifyPropertyChanged, IDisposable
+    public partial class MainPage : Page, INotifyPropertyChanged //, IDisposable
     {
         //private enum NewPlaylistNameRequestMode { SaveNewPlaylist, RenamePlaylist };
 
@@ -57,11 +57,7 @@ namespace Balboa
         //    }
         //}
 
-        //private ListViewItem    _listViewItemGotFocus;
-        //private string          _currentPlaylistName = string.Empty;
-        //private string          _oldPlaylistName;
-        //private string          _newPlaylistName;
-
+ 
         //NewPlaylistNameRequestMode _requestNewPlaylistNameMode;
   
         private Server _server;
@@ -93,6 +89,8 @@ namespace Balboa
             p_ControlPanel.Init(_server);
             p_CurrentPlaylist.Init(_server);
             p_PageHeader.Init(_server);
+            p_CurrentTrack.Init(_server);
+            p_PlayMode.Init(_server);
 
 
             p_Settings.PropertyChanged += OnDataPanelPropertyChanged;
@@ -364,50 +362,13 @@ namespace Balboa
             return;
         }
  
-        #region Seek bar
-        //private bool _seekBarIsBeingDragged = false;
-        //private double _currentTrackPosition = 0;
-
-        //private void pb_Progress_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        //{
-        //    _seekBarIsBeingDragged = true;
-        //    var sl = sender as Slider;
-        //    _currentTrackPosition = sl.Value;
-        // }
-
-        //private void pb_Progress_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        //{
-        //    var sl = sender as Slider;
-        //    double offset = sl.Value - _currentTrackPosition;
-
-        //    string soffset = offset.ToString(CultureInfo.InvariantCulture);
-        //    if (offset > 0)
-        //         soffset = "+"+soffset;
-        //    _server.SeekCurrent(soffset);
-        //    _seekBarIsBeingDragged = false;
-        //}
-       
-        #endregion
-
+        
         #region Обработка событий интерфейса
 
        
         #region MAIN MENU
 
-        private void ts_Random_Toggled(object sender, RoutedEventArgs e)
-        {
-            _server.Random(((ToggleSwitch)(sender)).IsOn);
-        }
-
-        private void ts_Repeat_Toggled(object sender, RoutedEventArgs e)
-        {
-            _server.Repeat(((ToggleSwitch)(sender)).IsOn);
-        }
-
-        private void ts_Consume_Toggled(object sender, RoutedEventArgs e)
-        {
-            _server.Consume(((ToggleSwitch)(sender)).IsOn);
-        }
+       
 
         private void btn_Playlist_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -424,18 +385,13 @@ namespace Balboa
             SwitchDataPanelsTo(DataPanelState.FileSystem);
         }
 
-
-
-        
-        /// ///////////////////////////////////////////////////////////////////////////////////
-        
-        #endregion
-
-        #region  CURRENT TRACK
         private void btn_CurrentTrack_Tapped(object sender, TappedRoutedEventArgs e)
         {
             SwitchDataPanelsTo(DataPanelState.CurrentTrack);
         }
+
+
+        /// ///////////////////////////////////////////////////////////////////////////////////
 
         #endregion
 
@@ -782,14 +738,12 @@ namespace Balboa
             SolidColorBrush OrangeBrush = new SolidColorBrush(Colors.Orange);
 
             // Выключим все информационные панели
-            foreach (UIElement uielement in grid_MainPanel.Children)
-            {
-                if (uielement is Grid || 
-                    uielement is Settings || 
-                    uielement is TrackDirectory ||
-                    uielement is CurrentPlaylist)
-                    uielement.Visibility = Visibility.Collapsed;
-            }
+            p_PageHeader.Visibility = Visibility.Collapsed;
+            p_CurrentTrack.Visibility = Visibility.Collapsed;
+            p_CurrentPlaylist.Visibility = Visibility.Collapsed;
+            p_TrackDirectory.Visibility = Visibility.Collapsed;
+            p_Settings.Visibility = Visibility.Collapsed;
+
             // Изменим цвет текста во всех кнопках главного меню на белый
             foreach (UIElement uielement in stp_MainMenu.Children)
             {
@@ -819,9 +773,11 @@ namespace Balboa
                     break;
                 case DataPanelState.CurrentTrack:
                     btn_CurrentTrack.Foreground = OrangeBrush;
-                    gr_CurrentTrack.Visibility = Visibility.Visible;
                     textbox_CurrentMode.Text = _resldr.GetString("CurrentTrack");
-                    gr_CurrentTrackShowStoryboard.Begin();
+                    p_CurrentTrack.Visibility = Visibility.Visible;
+                    p_CurrentTrack.Update();
+                    //gr_CurrentTrack.Visibility = Visibility.Visible;
+                    //gr_CurrentTrackShowStoryboard.Begin();
                     break;
                 case DataPanelState.FileSystem:
                     btn_FileSystem.Foreground = OrangeBrush;
@@ -921,22 +877,22 @@ namespace Balboa
         }
 
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                // dispose managed resources
+        //protected virtual void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        // dispose managed resources
 
-            }
-            // free native resources
-            _server.Dispose();
-        }
+        //    }
+        //    // free native resources
+        //    _server.Dispose();
+        //}
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        //public void Dispose()
+        //{
+        //    Dispose(true);
+        //    GC.SuppressFinalize(this);
+        //}
 
         private async Task<MsgBoxButton> DisplayMessage(string message, MsgBoxButton button, int height)
         {
