@@ -28,6 +28,20 @@ namespace Balboa.Common
             PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private AlbumArt _albumArt = new AlbumArt();
+        public AlbumArt AlbumArt
+        {
+            get { return _albumArt; }
+            private set
+            {
+                if (_albumArt != value)
+                {
+                    _albumArt = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
+                }
+            }
+        }
+
         private string _name = string.Empty;
         public string   Name
         {

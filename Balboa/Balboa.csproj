@@ -155,6 +155,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Common\AlbumArt.cs" />
     <Compile Include="Common\BalboaExeption.cs" />
     <Compile Include="Common\CommonGridItem.cs" />
     <Compile Include="Common\Connection.cs" />

@@ -34,7 +34,7 @@
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Image x:Name="image_AlbumCoverSmall"  Source="{Binding AlbumArt}" Grid.Column="0" Width="100" Height="100"/>
+        <Image x:Name="image_AlbumCoverSmall"  Source="{Binding AlbumArt.Image}" Grid.Column="0" Width="100" Height="100"/>
              <StackPanel  Grid.Column="2">
                 <TextBlock  Text="{Binding Title}" FontSize="35" TextAlignment="Left"
                                     TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Height="40"/>

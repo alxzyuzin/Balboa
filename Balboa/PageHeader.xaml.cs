@@ -2,24 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.Storage.Streams;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -58,8 +42,8 @@ namespace Balboa
             }
         }
 
-        private BitmapImage _albumArt;
-        public BitmapImage AlbumArt
+        private AlbumArt _albumArt = new AlbumArt();
+        public AlbumArt AlbumArt
         {
             get { return _albumArt; }
             private set
@@ -69,7 +53,6 @@ namespace Balboa
                     _albumArt = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
                 }
-
             }
         }
 
@@ -154,69 +137,13 @@ namespace Balboa
             Artist = _song.Artist;
             Album = _song.Album;
             if (_song.File != null)
-                GetAlbumArt();
-
-        }
-
-        private async void GetAlbumArt()
-        {
-            string s = Utilities.ExtractFilePath(_song.File);
-            AlbumArt = await GetFolderImage(_server.MusicCollectionFolder, s, _server.AlbumCoverFileNames);
-          
-        }
-
-        private async Task<BitmapImage> GetFolderImage(string musicCollectionFolder, string folderName, string albumCoverFileNames)
-        {
-            StorageFile file = null;
-            while (musicCollectionFolder.EndsWith("\\", StringComparison.Ordinal))
-                musicCollectionFolder = musicCollectionFolder.Substring(0, musicCollectionFolder.Length - 1);
-
-            StringBuilder sb = new StringBuilder(musicCollectionFolder);
-
-            sb.Append('\\');
-            sb.Append(folderName);
-            sb.Replace('/', '\\');
-            sb.Append('\\');
-
-            int pathlength = sb.Length;
-
-            string[] CoverFileNames = albumCoverFileNames.Split(';');
-
-            foreach (string albumCoverFileName in CoverFileNames)
             {
-                try
-                {
-                    sb.Append(albumCoverFileName);
-                    file = await StorageFile.GetFileFromPathAsync(sb.ToString());
-                    break;
-                }
-                catch (FileNotFoundException)
-                {
-                    sb.Remove(pathlength, albumCoverFileName.Length);
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    string message = string.Format(_resldr.GetString("CheckDirectoryAvailability"), _server.Settings.MusicCollectionFolder);
-                    Message = new Message(MsgBoxType.Error, message, MsgBoxButton.Close, 200);
-
-
-                }
-                catch (Exception ee)
-                {
-                    Message = new Message(MsgBoxType.Error,
-                                            string.Format(_resldr.GetString("Exception"), ee.GetType().ToString(), ee.Message),
-                                            MsgBoxButton.Close, 200);
-                }
-            }
-            if (file == null)
-                return null;
-            using (IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
-            {
-                BitmapImage bitmapImage = new BitmapImage();
-                await bitmapImage.SetSourceAsync(fileStream);
-                return bitmapImage;
+                AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
+                AlbumArt.UpdateImage();
             }
         }
-    }
-    
+
+
+    } // Class PageHeader
+
 }

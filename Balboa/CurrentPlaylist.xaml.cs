@@ -76,17 +76,29 @@ namespace Balboa
         public void Update()
         {
             _server.PlaylistInfo();
+            _server.CurrentSong();
         }
 
         private void _server_DataReady(object sender, EventArgs e)
         {
             var mpdData = e as MpdResponse;
             if (mpdData.Keyword == ResponseKeyword.OK)
-            { 
+            {
                 if (mpdData.Command.Op == "playlistinfo")
+                {
                     UpdateControlData(mpdData.Content);
+                  
+                }
                 if (mpdData.Command.Op == "currentsong")
-                    HightlightCurrentPlaingTrack(mpdData.Content);
+                {
+                    Song song = new Song();
+                    song.Update(mpdData.Content);
+                   // if (_currentSongID != song.Id)
+                   // {
+                        _currentSongID = song.Id;
+                        HightlightCurrentPlaingTrack();
+                  //  }
+                }
             }
         }
 
@@ -99,9 +111,9 @@ namespace Balboa
                 track.Update(serverData);
                 _playlist.Add(track);
             }
+            _playlist.NotifyCollectionChanged();
 
         }
-
 
         private void lv_PlayList_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -116,8 +128,7 @@ namespace Balboa
                 _server.PlayId(playlistitem.Id);
             }
         }
-
-        
+       
         private void appbtn_Playlist_DeleteSelected_Tapped(object sender, TappedRoutedEventArgs e)
         {
             foreach (Track track in lv_PlayList.SelectedItems)
@@ -145,36 +156,18 @@ namespace Balboa
             Update();
         }
 
-        private void HightlightCurrentPlaingTrack(List<string> serverData)
+        private void HightlightCurrentPlaingTrack()
         {
-            Song song = new Song();
-            song.Update(serverData);
-
-            if (_currentSongID != song.Id)
-            {
-                Track track;
-                track =  lv_PlayList.Items.FirstOrDefault(item => (item as Track).IsPlaying) as Track;
-                if (track!= null)
-                    track.IsPlaying = false;
-                track = lv_PlayList.Items.FirstOrDefault(item => (item as Track).Id == song.Id) as Track;
-                if (track != null)
-                    track.IsPlaying = true;
-                lv_PlayList.ScrollIntoView(track);
-                _playlist.NotifyCollectionChanged();
-                //{
-                //    //if (item.Id == _server.CurrentSongData.Id)
-                //    //{
-                //    //    item.IsPlaying = true;
-                //    //    lv_PlayList.ScrollIntoView(item);
-                //    //    if (lv_PlayList.SelectedItems.IndexOf(item) >= 0)
-                //    //        lv_PlayList.SelectedItems.Remove(item);
-                //    //}
-                //    //else
-                //    //{
-                //    //    item.IsPlaying = false;
-                //    //}
-                //}
-            }
+            Track track;
+            track =  lv_PlayList.Items.FirstOrDefault(item => (item as Track).IsPlaying) as Track;
+            if (track!= null)
+                track.IsPlaying = false;
+            track = lv_PlayList.Items.FirstOrDefault(item => (item as Track).Id == _currentSongID) as Track;
+            if (track != null)
+                track.IsPlaying = true;
+            lv_PlayList.ScrollIntoView(track);
+            lv_PlayList.SelectedItems.Clear();
+            _playlist.NotifyCollectionChanged();
         }
 
 

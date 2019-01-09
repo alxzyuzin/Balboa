@@ -15,7 +15,7 @@ using Windows.System.Threading;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media.Imaging;
+
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -40,7 +40,7 @@ namespace Balboa
         private ObservableCollection<File> _files = new ObservableCollection<File>();
         private bool _fileIconsUpdating = false;
 
-        private Progress<FileIconParams> _progress;
+        private Progress<File> _progress;
         private ManualResetEvent _ThreadEvent = new ManualResetEvent(false);
         private CancellationTokenSource _tokenSource; 
 
@@ -95,7 +95,7 @@ namespace Balboa
         {
             this.InitializeComponent();
             DataContext = this;
-            _progress = new Progress<FileIconParams>(SetFileIcon);
+            _progress = new Progress<File>(SetFileIcon);
         }
 
         public void Init(Server server)
@@ -109,8 +109,9 @@ namespace Balboa
             _server.LsInfo( _currentPath);
         }
 
-        private  async void _server_DataReady(object sender, EventArgs e)
+        private async void _server_DataReady(object sender, EventArgs e)
         {
+            
             var mpdData = e as MpdResponse;
             if (mpdData.Command.Op != "lsinfo")
                 return;
@@ -121,16 +122,15 @@ namespace Balboa
                 {
                     _tokenSource.Cancel();
                     _ThreadEvent.WaitOne();
+                    while (_fileIconsUpdating){ await Task.Delay(100); }
                 }
-                else
-                {
+                
                     UpdateControlData(mpdData.Content);
                     HighLiteLastOpenedFolder();
                     if (_currentPath.Length>0 && _newPathChunck.Length>0)
                         _currentPath += "/";
                     _currentPath += _newPathChunck;
                     _newPathChunck = string.Empty;
-
 
                     appbtn_Up.IsEnabled = _currentPath.Length>0 ? true : false;
                     EmptyDirectoryMessage = _files.Count == 0 ?
@@ -139,9 +139,9 @@ namespace Balboa
                     _tokenSource = new CancellationTokenSource();
                     CancellationToken token = _tokenSource.Token;
                     WorkItemHandler workhandler = delegate { UpdateFilesIcons(token); };
+                    
                     await ThreadPool.RunAsync(workhandler, WorkItemPriority.High, WorkItemOptions.TimeSliced);
-                }   
-            }
+             }
             else
             {
                 _newPathChunck = string.Empty;
@@ -187,24 +187,27 @@ namespace Balboa
              }
         }
 
-        private void appbtn_Up_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void appbtn_Up_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            // Если мы не на самом верхнем уровне в дереве каталогов то удалим последний элемент 
-            // в списке каталогов
-            //if (_currentFilePath.Count > 0)
-            //{
-            //    _parentFolderName = _currentFilePath[_currentFilePath.Count - 1];
-            //    _currentFilePath.RemoveAt(_currentFilePath.Count - 1);
-            //}
+            if (_fileIconsUpdating)
+            {
+                _tokenSource.Cancel();
+                while (_fileIconsUpdating)
+                {
+                    await Task.Delay(50);
+                }
+                bool b = _ThreadEvent.WaitOne();
+            }
 
-            int i =_currentPath.LastIndexOf("/");
+            int i = _currentPath.LastIndexOf("/");
             if (i >= 0)
                 _currentPath = _currentPath.Remove(i);
-            else
-                _currentPath = string.Empty;
-            _server.LsInfo(_currentPath);
-            // Eсли мы поднялись на самый верх по дереву каталогов отключим кнопку Up
-            appbtn_Up.IsEnabled = _currentPath.Length > 0 ? true: false;
+             else
+             _currentPath = string.Empty;
+             _server.LsInfo(_currentPath);
+                // Eсли мы поднялись на самый верх по дереву каталогов отключим кнопку Up
+             appbtn_Up.IsEnabled = _currentPath.Length > 0 ? true : false;
+            
         }
 
         private void appbtn_RescanDatabase_Tapped(object sender, TappedRoutedEventArgs e)
@@ -247,7 +250,8 @@ namespace Balboa
         }
 
 
-        private  async void UpdateFilesIcons(CancellationToken token)
+
+        private async void UpdateFilesIcons(CancellationToken token)
         {
             if (_server.DisplayFolderPictures == false || _server.MusicCollectionFolder.Length == 0)
                 return;
@@ -257,40 +261,74 @@ namespace Balboa
                 foreach (File file in _files.Where(f=>f.Nature== FileNature.Directory))
                 {
                     token.ThrowIfCancellationRequested();
-                    var fullPathToAlbumArt = new StringBuilder(_server.MusicCollectionFolder);
-
-                    fullPathToAlbumArt.Append(@"\").Append(_currentPath.Replace('/','\\'));
-                    if (!fullPathToAlbumArt.ToString().EndsWith(@"\"))
-                        fullPathToAlbumArt.Append(@"\");
-                    fullPathToAlbumArt.Append(file.Name);
-
-                    IRandomAccessStream fileStream = await GetFolderImageStream(fullPathToAlbumArt.ToString());
-                    ((IProgress<FileIconParams>)_progress).Report(new FileIconParams(fileStream, file ));
+                    var PathToAlbumArt = new StringBuilder(_currentPath.Replace('/', '\\'));
+                    if (PathToAlbumArt.Length>0 && !PathToAlbumArt.ToString().EndsWith(@"\"))
+                        PathToAlbumArt.Append(@"\");
+                    PathToAlbumArt.Append(file.Name);
+                    await file.AlbumArt.LoadImageData(_server.MusicCollectionFolder, PathToAlbumArt.ToString(), _server.AlbumCoverFileNames);
+                    ((IProgress<File>)_progress).Report(file);
                 }
-                
             }
             catch (OperationCanceledException)
             {
-            
             }
             _fileIconsUpdating = false;
             _ThreadEvent.Set();
+            //            _ThreadEvent.Reset();
+            return;
         }
 
-       
-
-      
-
-        private async void SetFileIcon(FileIconParams iconParams)
+        private async void SetFileIcon(File file)
         {
-            if (iconParams.Stream == null)
-                return;
-
-            BitmapImage bmi = new BitmapImage();
-            await bmi.SetSourceAsync(iconParams.Stream);
-            iconParams.File.ImageSource = bmi;
-            iconParams.File.AlbumArtWidth = new GridLength(60);
+            await file.AlbumArt.UpdateImage();
+            file.AlbumArtWidth = new GridLength(60);
         }
+
+
+        //private async void UpdateFilesIcons(CancellationToken token)
+        //{
+        //    var aa = new AlbumArt();
+
+        //    if (_server.DisplayFolderPictures == false || _server.MusicCollectionFolder.Length == 0)
+        //        return;
+        //    try
+        //    {
+        //        _fileIconsUpdating = true;
+        //        foreach (File file in _files.Where(f => f.Nature == FileNature.Directory))
+        //        {
+        //            token.ThrowIfCancellationRequested();
+
+        //            var fullPathToAlbumArt = new StringBuilder(_server.MusicCollectionFolder);
+        //            fullPathToAlbumArt.Append(@"\").Append(_currentPath.Replace('/', '\\'));
+        //            if (!fullPathToAlbumArt.ToString().EndsWith(@"\"))
+        //                fullPathToAlbumArt.Append(@"\");
+        //            fullPathToAlbumArt.Append(file.Name);
+
+        //            IRandomAccessStream fileStream = await GetFolderImageStream(fullPathToAlbumArt.ToString());
+        //            ((IProgress<FileIconParams>)_progress).Report(new FileIconParams(fileStream, file));
+        //        }
+
+        //    }
+        //    catch (OperationCanceledException)
+        //    {
+
+        //    }
+        //    _fileIconsUpdating = false;
+        //    _ThreadEvent.Set();
+        //}
+
+
+        //private async void SetFileIcon(FileIconParams iconParams)
+        //{
+        //    if (iconParams.Stream == null)
+        //        return;
+
+        //    BitmapImage bmi = new BitmapImage();
+        //    await bmi.SetSourceAsync(iconParams.Stream);
+        //    iconParams.File.ImageSource = bmi;
+
+        //    iconParams.File.AlbumArtWidth = new GridLength(60);
+        //}
 
 
 

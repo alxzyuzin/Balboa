@@ -23,7 +23,7 @@
                     <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
                
-                <Image     Grid.Column="0" Source="{Binding ImageSource}" VerticalAlignment="Top"/>
+                <Image     Grid.Column="0" Source="{Binding AlbumArt.Image}" VerticalAlignment="Top"/>
                 <TextBlock Grid.Column="1"  Text="{Binding Icon}"  FontFamily="Segoe UI Symbol" FontSize="30" Margin="10,0,0,0" />
                 <TextBlock Grid.Column="2"  Text="{Binding Name}"  TextWrapping="WrapWholeWords" FontFamily="Segoe UI Symbol" FontSize="22" VerticalAlignment="Top" Margin="10,0,0,0" />
                 <TextBlock Grid.Column="3" />
