@@ -39,21 +39,21 @@ namespace Balboa
         public DateTime DbUpdateDT => _statistic.DbUpdateDT;
         public int Playtime => _statistic.Playtime;
 
-        public ControlAction Action
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        //public ControlAction Action
+        //{
+        //    get
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
 
-        public Message Message
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        //public Message Message
+        //{
+        //    get
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
 
         public Stats()
         {

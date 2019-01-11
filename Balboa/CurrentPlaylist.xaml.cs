@@ -49,19 +49,19 @@ namespace Balboa
         //    }
         //}
 
-        private ControlAction _action;
-        public ControlAction Action
-        {
-            get { return _action; }
-            private set
-            {
-//                if (_action != value)
-//                {
-                    _action = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Action)));
-//                }
-            }
-        }
+//        private ControlAction _action;
+//        public ControlAction Action
+//        {
+//            get { return _action; }
+//            private set
+//            {
+////                if (_action != value)
+////                {
+//                    _action = value;
+//                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Action)));
+////                }
+//            }
+//        }
         public CurrentPlaylist()
         {
             this.InitializeComponent();
@@ -148,7 +148,7 @@ namespace Balboa
 
         private void appbtn_Playlist_Add_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            Action = ControlAction.SwitchToTrackDirectory;
+            //Action = ControlAction.SwitchToTrackDirectory;
         }
 
         private void appbtn_Playlist_Shaffle_Tapped(object sender, TappedRoutedEventArgs e)

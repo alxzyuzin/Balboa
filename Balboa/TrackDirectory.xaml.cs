@@ -64,19 +64,19 @@ namespace Balboa
             }
         }
 
-        private ControlAction _action = ControlAction.NoAction;
-        public ControlAction Action
-        {
-            get { return _action; }
-            private set
-            {
-//                if (_action!= value)
-//                {
-                    _action = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Action)));
-//                }
-            }
-        }
+//        private ControlAction _action = ControlAction.NoAction;
+//        public ControlAction Action
+//        {
+//            get { return _action; }
+//            private set
+//            {
+////                if (_action!= value)
+////                {
+//                    _action = value;
+//                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Action)));
+////                }
+//            }
+//        }
 
         //private Message _message;
         //public Message Message
@@ -235,7 +235,7 @@ namespace Balboa
                 _server.Add(path + item.Name);
             }
             gr_FileSystemContent.SelectedItems.Clear();
-            Action = ControlAction.SwitchToPlaylist;
+            //Action = ControlAction.SwitchToPlaylist;
         }
 
         private void HighLiteLastOpenedFolder()

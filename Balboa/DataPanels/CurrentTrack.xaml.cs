@@ -19,13 +19,13 @@ namespace Balboa
         private Server _server;
         private Song _song = new Song();
 
-        public ControlAction Action
-        {
-            get
-            {
-                return ControlAction.NoAction;
-            }
-        }
+        //public ControlAction Action
+        //{
+        //    get
+        //    {
+        //        return ControlAction.NoAction;
+        //    }
+        //}
 
         //private Message _message;
         //public Message Message

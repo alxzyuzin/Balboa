@@ -47,19 +47,19 @@ namespace Balboa
         //    }
         //}
 
-        private ControlAction _action;
-        public ControlAction Action
-        {
-            get { return _action; }
-            private set
-            {
-                if (_action != value)
-                {
-                    _action = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-                }
-            }
-        }
+        //private ControlAction _action;
+        //public ControlAction Action
+        //{
+        //    get { return _action; }
+        //    private set
+        //    {
+        //        if (_action != value)
+        //        {
+        //            _action = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
+        //        }
+        //    }
+        //}
 
        
 
@@ -172,7 +172,7 @@ namespace Balboa
             }
             connection.Close();
             _appSettings.Save();
-            Action = ControlAction.RestartServer;
+            //Action = ControlAction.RestartServer;
             //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(""));
 
         }
