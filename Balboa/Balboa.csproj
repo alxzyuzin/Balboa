@@ -121,7 +121,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CurrentTrack.xaml">
+    <Page Include="DataPanels\CurrentTrack.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -207,7 +207,7 @@
     <Compile Include="CurrentPlaylist.xaml.cs">
       <DependentUpon>CurrentPlaylist.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CurrentTrack.xaml.cs">
+    <Compile Include="DataPanels\CurrentTrack.xaml.cs">
       <DependentUpon>CurrentTrack.xaml</DependentUpon>
     </Compile>
     <Compile Include="GenresPanel.xaml.cs">

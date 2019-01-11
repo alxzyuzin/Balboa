@@ -1,7 +1,10 @@
 ﻿using System;
 using Windows.ApplicationModel.Resources;
+using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -11,6 +14,8 @@ namespace Balboa
     {
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
+
+        public event ActionRequestedEventHandler ActionRequested;
 
         public MainMenu()
         {
@@ -27,6 +32,18 @@ namespace Balboa
         {
             throw new NotImplementedException();
         }
+
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void MenuButtonTapped(object sender, TappedRoutedEventArgs e)
+        {
+            var button = sender as Button;
+            ActionRequested?.Invoke(this, new ActionParams((sender as Button).Name));
+        }
+
 
         private void btn_Playlist_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -97,6 +114,19 @@ namespace Balboa
         private void SwitchDataPanelsTo(MainPage.DataPanelState state)
         {
 
+        }
+
+        private void ResetMenuButtonsColor()
+        {
+            SolidColorBrush WhiteBrush = new SolidColorBrush(Colors.White);
+            SolidColorBrush OrangeBrush = new SolidColorBrush(Colors.Orange);
+         // Изменим цвет текста во всех кнопках главного меню на белый
+            foreach (UIElement uielement in stp_MenuButtons.Children)
+            {
+                var button = uielement as Button;
+                if (button!=null)
+                    button.Foreground = WhiteBrush;
+            }
         }
 
  

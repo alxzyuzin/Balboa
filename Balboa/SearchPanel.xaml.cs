@@ -24,6 +24,7 @@ namespace Balboa
     public sealed partial class SearchPanel : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event ActionRequestedEventHandler ActionRequested;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
@@ -118,5 +119,9 @@ namespace Balboa
             playlastaddedtrack = true;
         }
 
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -20,7 +20,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
         </Style>
     </UserControl.Resources>
-    <Border BorderThickness="1" BorderBrush="LightGray">
+    <Border BorderThickness="1" Margin="20,0,0,0" BorderBrush="{StaticResource MainBackgroundBrush}">
         <Grid>
             <Grid.Resources>
                 <Storyboard x:Name="MainMenuShowStoryboard">
@@ -38,7 +38,6 @@
 
                     </DoubleAnimation>
                 </Storyboard>
-
             </Grid.Resources>
 
             <Grid.ChildrenTransitions>
@@ -47,9 +46,8 @@
                 </TransitionCollection>
             </Grid.ChildrenTransitions>
 
-            <StackPanel VerticalAlignment="Stretch">
-                <TextBlock                        Height="30"/>
-                <Button x:Name="btn_CurrentTrack_popup" Content="Current track"    Style="{StaticResource MainMenuItemStyle}" Tapped="btn_CurrentTrack_Tapped"/>
+            <StackPanel x:Name="stp_MenuButtons" VerticalAlignment="Stretch">
+                <Button x:Name="CurrentTrack" Content="Current track"    Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
                 <Button x:Name="btn_Playlist_popup"     Content="Current playlist" Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Playlist_Tapped"/>
                 <Button x:Name="btn_FileSystem_popup"   Content="File system"      Style="{StaticResource MainMenuItemStyle}" Tapped="btn_FileSystem_Tapped"/>
                 <Button x:Name="btn_PlayLists_popup"    Content="Playlists"        Style="{StaticResource MainMenuItemStyle}" Tapped="btn_SavedPlayLists_Tapped" />
@@ -58,9 +56,7 @@
                 <Button x:Name="btn_Search_popup"       Content="Search"           Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Search_Tapped"/>
                 <Button x:Name="btn_Stats_popup"        Content="Statistic"        Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Stats_Tapped"/>
                 <Button x:Name="btn_Settings_popup"     Content="Settings"         Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Settings_Tapped"/>
-                <TextBlock                        Height="20"/>
             </StackPanel>
-
         </Grid>
 
     </Border>

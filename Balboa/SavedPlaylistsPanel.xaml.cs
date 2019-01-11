@@ -14,11 +14,14 @@ namespace Balboa
     public sealed partial class SavedPlaylistsPanel : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event ActionRequestedEventHandler ActionRequested;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
         private ObservableCollection<CommonGridItem> _items = new ObservableCollection<CommonGridItem>();
         public ObservableCollection<CommonGridItem> Items => _items;
+
+        //_currentPlaylistName = _resldr.GetString("NewPlaylist");
 
         public SavedPlaylistsPanel()
         {
@@ -101,6 +104,11 @@ namespace Balboa
             //    //    _requestNewPlaylistNameMode = NewPlaylistNameRequestMode.RenamePlaylist;
             //    //    RequestNewPlaylistName();
             //}
+        }
+
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
         }
     }
 }

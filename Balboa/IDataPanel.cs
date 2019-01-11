@@ -8,25 +8,51 @@ using Balboa.Common;
 
 namespace Balboa
 {
-    public interface IDataPanel
+    [Flags]
+    public enum ActionType
     {
-        void Init(Server server);
-        void Update();
+        DisplayMessage = 1,
+        ActivateDataPanel = 2
     }
 
-    public class Message
+    public delegate void ActionRequestedEventHandler(object sender, ActionParams actionParams);
+
+    public interface IDataPanel
     {
-        public Message(MsgBoxType type, string messageText, MsgBoxButton buttons, int boxHeight)
+        /// <summary>
+        ///    Occurs when a command button pressed.
+        /// </summary>
+        event ActionRequestedEventHandler ActionRequested;
+        void Init(Server server);
+        void Update();
+        void HandleUserResponse(MsgBoxButton pressedButton);
+    }
+
+    public class ActionParams
+    {
+        public ActionParams( Message message)
         {
-            Type = type;
-            Text = messageText;
-            Buttons = buttons;
-            BoxHeight = boxHeight;
+            ActionType = ActionType.DisplayMessage;
+            Message = message;
         }
-        public MsgBoxType Type { get; private set; }
-        public string Text { get; private set; }
-        public MsgBoxButton Buttons { get; private set; } = MsgBoxButton.Close;
-        public int BoxHeight { get; private set; } = 200;
+
+        public ActionParams(string panelClassName)
+        {
+            ActionType = ActionType.ActivateDataPanel;
+            PanelClassName = panelClassName;
+        }
+
+        public ActionType ActionType { get; private set; }
+        public Message Message { get; private set; }
+        public string PanelClassName { get; private set; } = string.Empty;
+    }
+
+    public struct Message
+    {
+        public MsgBoxType Type;
+        public string Text;
+        public MsgBoxButton Buttons;
+        public int BoxHeight;
     }
 
 }

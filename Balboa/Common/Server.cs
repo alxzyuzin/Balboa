@@ -7,19 +7,17 @@
  *
   --------------------------------------------------------------------------*/
 
+using Balboa.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Balboa.Common;
-using Windows.Storage.Streams;
+using Windows.ApplicationModel.Resources;
+using Windows.Networking.Sockets;
 using Windows.System.Threading;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media.Imaging;
-using Windows.ApplicationModel.Resources;
-using Windows.Networking.Sockets;
 
 namespace Balboa
 {

@@ -24,26 +24,28 @@ namespace Balboa
     public sealed partial class Settings : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler   PropertyChanged;
-//        public event EventHandler<DisplayMessageEventArgs>  MessageReady;
+        public event ActionRequestedEventHandler ActionRequested;
+
+        //        public event EventHandler<DisplayMessageEventArgs>  MessageReady;
 
         private AppSettings _appSettings;
         private Server _server;
         private List<Output> _outputs =  new List<Output>();
         private ResourceLoader _resldr = new ResourceLoader();
 
-        private Message _message;
-        public Message Message
-        {
-            get { return _message; }
-            private set
-            {
-                if (_message != value)
-                {
-                    _message = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-                }
-            }
-        }
+        //private Message _message;
+        //public Message Message
+        //{
+        //    get { return _message; }
+        //    private set
+        //    {
+        //        if (_message != value)
+        //        {
+        //            _message = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
+        //        }
+        //    }
+        //}
 
         private ControlAction _action;
         public ControlAction Action
@@ -122,7 +124,7 @@ namespace Balboa
 
             if (Regex.IsMatch(_appSettings.Port, notNumber) || _appSettings.Port.Length == 0)
             {
-                Message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeNumber"), MsgBoxButton.Close, 200);
+                //Message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeNumber"), MsgBoxButton.Close, 200);
                 return;
             }
             else
@@ -130,14 +132,14 @@ namespace Balboa
                 int port = int.Parse(_appSettings.Port);
                 if (port > 65535)
                 {
-                    Message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeLess65536"), MsgBoxButton.Close, 200);
+                  //  Message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeLess65536"), MsgBoxButton.Close, 200);
                     return;
                 }
             }
 
             if (Regex.IsMatch(_appSettings.ViewUpdateInterval, notNumber) || _appSettings.ViewUpdateInterval.Length == 0)
             {
-                Message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustNumber"), MsgBoxButton.Close, 200);
+                //Message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustNumber"), MsgBoxButton.Close, 200);
                 return;
             }
             else
@@ -145,7 +147,7 @@ namespace Balboa
                 int updateinterval = int.Parse(_appSettings.ViewUpdateInterval);
                 if (updateinterval < 100)
                 {
-                    Message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustBe100"), MsgBoxButton.Close, 200);
+                  //  Message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustBe100"), MsgBoxButton.Close, 200);
                     return;
                 }
             }
@@ -158,12 +160,12 @@ namespace Balboa
             
             if (!connection.IsActive)
             {
-                Message = new Message(MsgBoxType.Info, $"Connection to {_appSettings.Server} failed.\n {connection.Error}.", MsgBoxButton.Close, 200);
+                //Message = new Message(MsgBoxType.Info, $"Connection to {_appSettings.Server} failed.\n {connection.Error}.", MsgBoxButton.Close, 200);
                 return;
             }
             if (_appSettings.ServerNameChanged && (!_appSettings.MusicCollectionFolderTokenChanged))
             {
-                Message = new Message(MsgBoxType.Warning, _resldr.GetString("ServerNameChanged"), MsgBoxButton.Close, 200);
+                //Message = new Message(MsgBoxType.Warning, _resldr.GetString("ServerNameChanged"), MsgBoxButton.Close, 200);
                 _appSettings.MusicCollectionFolder = string.Empty;            
                 StorageApplicationPermissions.FutureAccessList.Clear();
                 _appSettings.MusicCollectionFolderToken = String.Empty;
@@ -196,7 +198,7 @@ namespace Balboa
                 msg = $"Succesfully connected to {_appSettings.Server}. \n{connection.InitialResponse}";
             else
                 msg = connection.Error;
-            Message =  new Message(MsgBoxType.Info, msg, MsgBoxButton.Close, 200);
+            //Message =  new Message(MsgBoxType.Info, msg, MsgBoxButton.Close, 200);
             connection.Close();
          }
 
@@ -232,5 +234,9 @@ namespace Balboa
             _server.Halt();
         }
 
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

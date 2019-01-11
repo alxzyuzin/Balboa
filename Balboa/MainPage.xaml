@@ -20,165 +20,41 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-    
-        <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
-        <x:String x:Key="AppName">Balboa</x:String>
-
-        <!-- Определение класса TimeConverter в виде статического ресурса для подключения к TexstBlock  Converter={StaticResource Converter1}-->
-        <common:TimeConverter  x:Key="TimeConverter"/>
-       
-        <!-- common:FileItemStyleSelector x:Key="FileItemStyleSelector" / -->
-
-        
-        
- 
-
-  
-
-        <Style x:Key="LibraryMenuItemStyle" TargetType="Button">
-            <Setter Property="FontSize" Value="25"/>
-            <Setter Property="Width" Value="170"/>
-            <Setter Property="Height" Value="60" />
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontWeight" Value="Light"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        </Style>
-
-        <Style x:Name="ToggleSwitchStyle" TargetType="ToggleSwitch">
-            <Setter Property="Width" Value="200"/>
-            <Setter Property="Height" Value="80"/>
-            <Setter Property="OffContent" Value="Off"/>
-            <Setter Property="OnContent" Value="On"/>
-            <Setter Property="FontSize" Value="18"/>
-        </Style>
-
-        <Style x:Key="InformationGridStyle" TargetType="Grid">
-            <Setter Property="Margin" Value="0,100,0,20"/>
-            <Setter Property="Background" Value="{StaticResource MainBackgroundBrush}"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="Visibility" Value="Collapsed"/>
-        </Style>
-
-      
-
+         <x:String x:Key="AppName">Balboa</x:String>
     </Page.Resources>
     
-
-    <!--StaticResource ResourceKey="ListViewItemSelectedBackgroundThemeBrush"/-->
-   
     <Grid x:Name="grid_Main"  Background="{StaticResource MainBackgroundBrush}">
-        
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="90"/>
             <RowDefinition Height="150"/>
         </Grid.RowDefinitions>
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-       
-        
         <!--  PЗАГОЛОВОК ОКНА-->
         <local:PageHeader x:Name="p_PageHeader"  Grid.Row="0" Grid.Column="1" Visibility="Visible"/>
-        <local:MainMenu x:Name="p_MainMenu"    Grid.Row="0" Grid.Column="0" Visibility="Visible" Grid.RowSpan="2"/>
-        <!--   CURRENT TRACK  -->
-        <local:CurrentTrack x:Name="p_CurrentTrack" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Visibility="Collapsed" />
-        <!--   CURRENT PLAYLIST -->
-        <local:CurrentPlaylist x:Name="p_CurrentPlaylist" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed" />
-        <!--  FILE SYSTEM  -->
-        <local:TrackDirectory x:Name="p_TrackDirectory" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
-        <!--  SAVED PLAYLISTS  -->
-        <local:SavedPlaylistsPanel x:Name="p_SavedPlaylistsPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>    
-        <!--  GENRE  -->
-        <local:GenresPanel x:Name="p_GenresPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
-
-        <!--  ARTISTS
-        
-            <Grid  x:Name="gr_Artists" Grid.Row="1" Style="{StaticResource InformationGridStyle}" 
-                   Visibility="Collapsed" d:IsHidden="True">
-                <Grid.Resources>
-                    <Storyboard x:Name="gr_ArtistsShowStoryboard">
-                        <DoubleAnimation  Storyboard.TargetName="gr_Artists"
-                                          Storyboard.TargetProperty="Opacity"
-                                          From="0.0" To="1.0" Duration="0:0:1"/>
-                    </Storyboard>
-                </Grid.Resources>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="35"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="87"/>
-                </Grid.RowDefinitions>
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
-                <Border Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"  BorderBrush="{StaticResource MainBackgroundBrush}" BorderThickness="4" Margin="0,-4,0,-4"/>
-                <TextBlock Text="Artists" Grid.Row="0" Grid.Column="0" FontSize="22" Foreground="Orange" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Text="Artist albums" Grid.Row="0" Grid.Column="1" FontSize="22" Foreground="Orange" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
-                <TextBlock Text="Album tracks" Grid.Row="0" Grid.Column="2" FontSize="22" Foreground="Orange" HorizontalAlignment="Center"  VerticalAlignment="Center"/>
-                <common:ListViewExtended x:Name="listview_Arists"  Grid.Row="1" Grid.Column="0" VerticalContentAlignment="Stretch"  
-                                     Margin="10,0,0,0"
-                                          ItemBackground="#10F0F0F0" 
-                                          ItemTemplate="{StaticResource CommonListItemTemplate}" 
-                                          SelectionMode="Single"
-                                          Tapped="listview_Arists_Tapped"/>
-
-                <common:ListViewExtended x:Name="listview_Albums"  Grid.Row="1" Grid.Column="1" VerticalContentAlignment="Stretch"  
-                                     Margin="10,0,0,0"
-                                     ItemBackground="#10F0F0F0"      
-                                     ItemTemplate="{StaticResource CommonListItemTemplate}" 
-                                          SelectionMode="Single"
-                                          Tapped="listview_Albums_Tapped"/>
-
-                <common:ListViewExtended x:Name="listview_Tracks"  Grid.Row="1" Grid.Column="2" VerticalContentAlignment="Stretch"  
-                                     Margin="10,0,0,0" 
-                                     ItemBackground="#10F0F0F0"      
-                                     ItemTemplate="{StaticResource TrackListItemTemplate}" 
-                                          SelectionMode="Multiple"/>
-
-                <StackPanel  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  
-                         Margin="5,0,5,5" Background="{StaticResource MainBackgroundBrush}"/>
-                <StackPanel  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"   
-                        Orientation="Horizontal" Margin="40,5,5,5" Background="{StaticResource MainBackgroundBrush}">
-                    <TextBlock x:Name="textblock_ArtistSearch"  Grid.Row="2" Grid.Column="0" Text="Scroll to artist" 
-                       FontSize="22" Margin="20,0,20,0" Height="30"  />
-                    <TextBox x:Name="textbox_ArtistSearch"  Grid.Row="2" Grid.Column="0" Text="Artist name"
-                       FontSize="20"   Height="40" Width="200" 
-                       GotFocus="textbox_ArtistSearch_GotFocus" 
-                       LostFocus="textbox_ArtistSearch_LostFocus"
-                       TextChanged="textbox_ArtistSearch_TextChanged"/>
-                </StackPanel>
-
-
-                <StackPanel  Grid.Row="2" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
-                    <AppBarButton x:Name="appbtn_Artist_AddToPaylist" Icon="Add"   Label="Add to playlist" Tapped="appbtn_Artist_AddToPaylist_Tapped" />
-                </StackPanel>
-            </Grid>
--->
-
-        <!--  SEARCH  -->
-        <local:SearchPanel x:Name="p_Search" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
-         
-        <!--  STATS  -->
-        <local:Stats x:Name="p_Stats" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed" />
-        <!--  SETTINGS -->
-        <local:Settings x:Name="p_Settings" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" d:IsHidden="True" />
+        <!-- Главное меню -->
+        <local:MainMenu x:Name="p_MainMenu"    Grid.Row="0" Grid.Column="0" Visibility="Visible" Grid.RowSpan="2" Margin="0,50,0,0"/>
+        <Border x:Name="DataPanel" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3"/>
+        <!--
+            <local:CurrentTrack x:Name="p_CurrentTrack" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Visibility="Collapsed" />
+            <local:CurrentPlaylist x:Name="p_CurrentPlaylist" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed" />
+            <local:TrackDirectory x:Name="p_TrackDirectory" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
+            <local:SavedPlaylistsPanel x:Name="p_SavedPlaylistsPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>    
+            <local:GenresPanel x:Name="p_GenresPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
+            <local:SearchPanel x:Name="p_Search" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
+            <local:Stats x:Name="p_Stats" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed" />
+            <local:Settings x:Name="p_Settings" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" d:IsHidden="True" />
+        -->
+        <!-- PLAY MODES --> 
+        <local:PlayMode x:Name="p_PlayMode" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2"/>
         <!-- Панель управления проигрыванием -->
         <local:ControlPanel x:Name="p_ControlPanel" Grid.Row="3" Grid.Column="1"/>
-        <local:PlayMode x:Name="p_PlayMode" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2"/>
-        
-            <!-- Главное меню -->
-        
 
         <local:MessageBox x:Name="MsgBox" Visibility="Collapsed"/>
-        
-
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="VisualStateGroup">
@@ -454,8 +330,5 @@
             </VisualStateGroup>
 
         </VisualStateManager.VisualStateGroups>
-
     </Grid>
-
-
 </Page>

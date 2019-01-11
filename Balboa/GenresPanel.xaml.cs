@@ -14,6 +14,7 @@ namespace Balboa
     public sealed partial class GenresPanel : UserControl, IDataPanel, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event ActionRequestedEventHandler ActionRequested;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
@@ -166,6 +167,11 @@ namespace Balboa
                 _server.Tracks.ClearAndNotify();
                 _server.Search("album", si.Name);
             }
+        }
+
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Balboa
     public sealed partial class CurrentPlaylist : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event ActionRequestedEventHandler ActionRequested;
 
         private Server _server;
         private TrackCollection<Track> _playlist = new TrackCollection<Track>();
@@ -34,19 +35,19 @@ namespace Balboa
         private string _oldPlaylistName;
         private string _newPlaylistName;
 
-        private Message _message;
-        public Message Message
-        {
-            get { return _message; }
-            private set
-            {
-                if (_message != value)
-                {
-                    _message = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-                }
-            }
-        }
+        //private Message _message;
+        //public Message Message
+        //{
+        //    get { return _message; }
+        //    private set
+        //    {
+        //        if (_message != value)
+        //        {
+        //            _message = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
+        //        }
+        //    }
+        //}
 
         private ControlAction _action;
         public ControlAction Action
@@ -223,6 +224,11 @@ namespace Balboa
             Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition popuptransition = new Windows.UI.Xaml.Media.Animation.AddDeleteThemeTransition();
             popup_GetPlaylistName.ChildTransitions.Add(popuptransition);
             popup_GetPlaylistName.IsOpen = true;
+        }
+
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
         }
     }
 }

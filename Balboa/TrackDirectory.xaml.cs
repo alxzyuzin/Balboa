@@ -24,6 +24,8 @@ namespace Balboa
     public sealed partial class TrackDirectory : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event ActionRequestedEventHandler ActionRequested;
+
         //public event EventHandler<DisplayMessageEventArgs> MessageReady;
         //public event EventHandler<CommandButtonPressedEventArgs> CommandButtonPressed;
         private ResourceLoader _resldr = new ResourceLoader();
@@ -76,19 +78,19 @@ namespace Balboa
             }
         }
 
-        private Message _message;
-        public Message Message
-        {
-            get { return _message; }
-            private set
-            {
-                if (_message != value)
-                {
-                    _message = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-                }
-            }
-        }
+        //private Message _message;
+        //public Message Message
+        //{
+        //    get { return _message; }
+        //    private set
+        //    {
+        //        if (_message != value)
+        //        {
+        //            _message = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
+        //        }
+        //    }
+        //}
 
 
         public TrackDirectory()
@@ -224,7 +226,7 @@ namespace Balboa
             //    path = _currentPath;
             if (gr_FileSystemContent.SelectedItems.Count == 0)
             {
-                Message = new Message(MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButton.Close, 200);
+                //Message = new Message(MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButton.Close, 200);
                 return;
             }
             foreach (File item in gr_FileSystemContent.SelectedItems)
@@ -358,6 +360,11 @@ namespace Balboa
                 return null;
             return fileStream;
             
+        }
+
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
         }
 
         private struct FileIconParams

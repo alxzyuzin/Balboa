@@ -1,19 +1,19 @@
-﻿using System.ComponentModel;
-using Windows.ApplicationModel.Resources;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
-using Balboa.Common;
+﻿using Balboa.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using Windows.ApplicationModel.Resources;
+using Windows.UI.Xaml.Controls;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Balboa
 {
-    public sealed partial class CurrentTrack : UserControl, INotifyPropertyChanged
+    public sealed partial class CurrentTrack : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event ActionRequestedEventHandler ActionRequested;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
@@ -27,22 +27,22 @@ namespace Balboa
             }
         }
 
-        private Message _message;
-        public Message Message
-        {
-            get
-            {
-                return _message;
-            }
-            set
-            {
-                if (_message != value)
-                {
-                    _message = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-                }
-            }
-        }
+        //private Message _message;
+        //public Message Message
+        //{
+        //    get
+        //    {
+        //        return _message;
+        //    }
+        //    set
+        //    {
+        //        if (_message != value)
+        //        {
+        //            _message = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
+        //        }
+        //    }
+        //}
 
         //private BitmapImage _albumArt;
         //public BitmapImage AlbumArt
@@ -273,6 +273,11 @@ namespace Balboa
                 AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
                 AlbumArt.UpdateImage();
             }
+        }
+
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
         }
     }
 }

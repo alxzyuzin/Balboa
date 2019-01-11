@@ -13,6 +13,7 @@ namespace Balboa
     public sealed partial class PageHeader : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public event ActionRequestedEventHandler ActionRequested;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
@@ -26,22 +27,22 @@ namespace Balboa
             }
         }
 
-        private Message _message;
-        public Message Message
-        {
-            get
-            {
-                return _message;
-            }
-            set
-            {
-                if (_message!=value)
-                {
-                    _message = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-                }
-            }
-        }
+        //private Message _message;
+        //public Message Message
+        //{
+        //    get
+        //    {
+        //        return _message;
+        //    }
+        //    set
+        //    {
+        //        if (_message!=value)
+        //        {
+        //            _message = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
+        //        }
+        //    }
+        //}
 
         private AlbumArt _albumArt = new AlbumArt();
         public AlbumArt AlbumArt
@@ -131,7 +132,7 @@ namespace Balboa
             }
         }
 
-        private void  UpdateControlData(List<string> serverData)
+        private async void  UpdateControlData(List<string> serverData)
         {
             _song.Update(serverData);
             Title = _song.Title;
@@ -139,10 +140,23 @@ namespace Balboa
             Album = _song.Album;
             if (_song.File != null)
             {
-                AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
-                AlbumArt.UpdateImage();
+                await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
+                await AlbumArt.UpdateImage();
             }
         }
+
+
+        // TO DO Гасить заголовок если проигрывание трека остановлено
+        //if (_server.StatusData.State != "stop")
+        //{
+        //    //if (state != DataPanelState.CurrentTrack)
+        //    //{
+        //    //    if (p_PageHeader.Opacity == 0)
+        //    //        stackpanel_MainPanelHeaderShowStoryboard.Begin();
+        //    //}
+        //    //else
+        //    //    stackpanel_MainPanelHeaderHideStoryboard.Begin();
+        //}
 
         private void textblock_MainMenu_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -152,7 +166,10 @@ namespace Balboa
             //    popup_MainMenu.IsOpen = true;
         }
 
-
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
+        }
     } // Class PageHeader
 
 }
