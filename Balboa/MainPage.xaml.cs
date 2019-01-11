@@ -62,7 +62,7 @@ namespace Balboa
   
         private Server _server;
 
-        private enum DataPanelState {CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings} 
+        public enum DataPanelState {CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings} 
 
         public MainPage()
         {
@@ -84,6 +84,8 @@ namespace Balboa
             _server.CommandCompleted += OnCommandCompleted;
 
             //////
+            p_MainMenu.Init(_server);
+
             p_Settings.Init(_server);
             p_TrackDirectory.Init(_server);
             p_ControlPanel.Init(_server);
@@ -91,6 +93,10 @@ namespace Balboa
             p_PageHeader.Init(_server);
             p_CurrentTrack.Init(_server);
             p_PlayMode.Init(_server);
+            p_Stats.Init(_server);
+            p_Search.Init(_server);
+            p_GenresPanel.Init(_server);
+
 
 
             p_Settings.PropertyChanged += OnDataPanelPropertyChanged;
@@ -102,20 +108,20 @@ namespace Balboa
 
 
             // Установка контекстов для databinding
-            stp_MainMenu.DataContext = _server.StatusData;
+//            stp_MainMenu.DataContext = _server.StatusData;
 //            stackpanel_MainPanelHeader.DataContext = _server.CurrentSongData;
 //            gr_CurrentTrack.DataContext = _server.CurrentSongData;
-            gr_Stats.DataContext            = _server.StatisticData;
-            gr_SavedPlaylistsContent.ItemsSource = _server.SavedPlaylistsData;
+//            gr_Stats.DataContext            = _server.StatisticData;
+//            gr_SavedPlaylistsContent.ItemsSource = _server.SavedPlaylistsData;
 
-            listview_Genres.ItemsSource = _server.Genres;
-            listview_Arists.ItemsSource = _server.Artists;
-            listview_Albums.ItemsSource = _server.Albums;
-            listview_Tracks.ItemsSource = _server.Tracks;
-            listview_GenreArists.ItemsSource = _server.Artists;
-            listview_GenreAlbums.ItemsSource = _server.Albums;
-            listview_GenreTracks.ItemsSource = _server.Tracks;
-            listview_Search.ItemsSource = _server.Tracks;
+//            listview_Genres.ItemsSource = _server.Genres;
+//            listview_Arists.ItemsSource = _server.Artists;
+//            listview_Albums.ItemsSource = _server.Albums;
+//            listview_Tracks.ItemsSource = _server.Tracks;
+//            listview_GenreArists.ItemsSource = _server.Artists;
+//            listview_GenreAlbums.ItemsSource = _server.Albums;
+//            listview_GenreTracks.ItemsSource = _server.Tracks;
+//            listview_Search.ItemsSource = _server.Tracks;
 
             if (_server.Initialized)
             {
@@ -179,27 +185,27 @@ namespace Balboa
         {
 
             var panel = sender as IDataPanel;
-                switch (eventArgs.PropertyName)
-                {
-                    case "Message":
-                        await DisplayMessage(panel.Message);
-                        break;
-                case "Action":
-                    switch(panel.Action)
-                    {
-                        case ControlAction.RestartServer:
-                            _server.Restart();
-                            break;
-                        case ControlAction.SwitchToTrackDirectory:
-                            SwitchDataPanelsTo(DataPanelState.FileSystem);
-                            break;
-                        case ControlAction.SwitchToPlaylist:
-                            SwitchDataPanelsTo(DataPanelState.CurrentPlaylist);
-                            break;
+                //switch (eventArgs.PropertyName)
+                //{
+                //    case "Message":
+                //        await DisplayMessage(panel.Message);
+                //        break;
+                //case "Action":
+                //    switch(panel.Action)
+                //    {
+                //        case ControlAction.RestartServer:
+                //            _server.Restart();
+                //            break;
+                //        case ControlAction.SwitchToTrackDirectory:
+                //            SwitchDataPanelsTo(DataPanelState.FileSystem);
+                //            break;
+                //        case ControlAction.SwitchToPlaylist:
+                //            SwitchDataPanelsTo(DataPanelState.CurrentPlaylist);
+                //            break;
 
-                    }
-                    break;
-                }
+                //    }
+                //    break;
+                //}
                 
             
         }
@@ -207,81 +213,7 @@ namespace Balboa
 
         #region Обработчики событий объекта Server
 
-        //private void OnStatusDataPropertyChanged(object sender, PropertyChangedEventArgs e)
-        //{
-        //    switch (e.PropertyName)
-        //    {
-        //        case "TimeElapsed":
-        //            if(!_seekBarIsBeingDragged)
-        //                pb_Progress.Value = _server.StatusData.TimeElapsed;
-        //            break;
-        //        case "SongId": _server.CurrentSong();break;
-        //        case "PlaylistId": _server.PlaylistInfo(); break;
-        //        case "State": // "&#xE102;" - Play, "&#xE103;" - Pause
-        //            appbtn_PlayPause.Content = (_server.StatusData.State == "play") ? '\xE103' : '\xE102';
-                    
-        //            if (_server.StatusData.State == "stop")
-        //            {
-        //                if (stackpanel_MainPanelHeader.Opacity != 0)
-        //                    stackpanel_MainPanelHeaderHideStoryboard.Begin();
-        //            }
-        //            else
-        //            {
-        //                if (stackpanel_MainPanelHeader.Opacity == 0)
-        //                    stackpanel_MainPanelHeaderShowStoryboard.Begin();
-        //            }
-        //            break;
-        //        case "Volume":
-        //            _volumeChangedByStatus = true;
-        //            sl_Volume.Value = _server.StatusData.Volume;
-        //            sl_VerticalVolume.Value = _server.StatusData.Volume;
-        //            break;
-        //    }
-        //}
-
-        /// <summary>
-        /// Устанавливает свойство IsPlaying для текущего проигрываемого трека равным true
-        /// и для предыдущего трека равным false
-        /// В зависимости от значения свойства устанавливается стиль отображения трека в Playlist
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void OnCurrentSongDataPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Id")
-            {
- //               _server.StatusData.Duration = _server.CurrentSongData.Duration;
-//                pb_Progress.Maximum = _server.CurrentSongData.Duration;
-                //HightlightCurrentPlaingTrack();
-
-                if (_server.Settings.MusicCollectionFolderToken.Length == 0)
-                    return;
-                
-                //string s = Utilities.ExtractFilePath(_server.CurrentSongData.File);
-                //try
-                //{
-                //  //  image_AlbumCover.Source = image_AlbumCoverSmall.Source = await GetFolderImage(_server.Settings.MusicCollectionFolder, s, _server.Settings.AlbumCoverFileName);
-                //}
-                //catch (UnauthorizedAccessException )
-                //{
-                //    string message = string.Format(_resldr.GetString("CheckDirectoryAvailability"), _server.Settings.MusicCollectionFolder);
-                //    switch (await MessageBox(_resldr.GetString("UnauthorizedAccessError"), message, MsgBoxButtons.GoToSettings | MsgBoxButtons.Exit))
-                //    {
-                //        case MsgBoxButtons.Exit: Application.Current.Exit(); break;
-                //        case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings); ; break;
-                //    }
-                //}
-                //catch (Exception ee)
-                //{
-                //    MsgBoxButtons responce = await MessageBox(_resldr.GetString("Error"), string.Format(_resldr.GetString("Exception"),ee.GetType().ToString(),ee.Message), MsgBoxButtons.Continue);
-                //    switch (responce)
-                //    {
-                //        case MsgBoxButtons.Exit: Application.Current.Exit(); break;
-                //        case MsgBoxButtons.Continue: _server.Restart(); break;
-                //    }
-                //}
-            }
-        }
+            
 
         private       void OnCommandCompleted(object sender, EventArgs eventArgs)
         {
@@ -301,29 +233,29 @@ namespace Balboa
                         //   string.Format(CultureInfo.CurrentCulture, _resldr.GetString("PlaylistError"), _currentPlaylistName, args.Message));
                     }
                     break; 
-                case "search":
-                    if (_server.Tracks.Count == 0)
-                          textblock_SearchResult.Text = _resldr.GetString("SearchComplete");
-                    else
-                        textblock_SearchResult.Text = "";
-                    break;
+                //case "search":
+                //    if (_server.Tracks.Count == 0)
+                //          textblock_SearchResult.Text = _resldr.GetString("SearchComplete");
+                //    else
+                //        textblock_SearchResult.Text = "";
+                //    break;
 
-                case "playlistinfo":
- //                   if (_server.PlaylistData.Count == 0)
-                        playlastaddedtrack = false;
-                    //textblock_PlaylistContent.Text = _resldr.GetString("PlaylistIsEmpty");
- //                   else
- //                   { 
-                        //textblock_PlaylistContent.Text = string.Empty;
-                        if (playlastaddedtrack)
-                        {
-                          //  var track = lv_PlayList.Items[lv_PlayList.Items.Count-1] as Track;
-                          //  _server.PlayId(track.Id);
-                            playlastaddedtrack = false;
-                        }
-                        //HightlightCurrentPlaingTrack();
-//                    }
-                    break;
+//                case "playlistinfo":
+// //                   if (_server.PlaylistData.Count == 0)
+//                        playlastaddedtrack = false;
+//                    //textblock_PlaylistContent.Text = _resldr.GetString("PlaylistIsEmpty");
+// //                   else
+// //                   { 
+//                        //textblock_PlaylistContent.Text = string.Empty;
+//                        if (playlastaddedtrack)
+//                        {
+//                          //  var track = lv_PlayList.Items[lv_PlayList.Items.Count-1] as Track;
+//                          //  _server.PlayId(track.Id);
+//                            playlastaddedtrack = false;
+//                        }
+//                        //HightlightCurrentPlaingTrack();
+////                    }
+//                    break;
  
             }
         }
@@ -365,145 +297,16 @@ namespace Balboa
         
         #region Обработка событий интерфейса
 
-       
-        #region MAIN MENU
-
-       
-
-        private void btn_Playlist_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SwitchDataPanelsTo(DataPanelState.CurrentPlaylist);
-        }
-
-        /// <summary>
-        /// Отображает содержимое закладки File system (Содержимое корневого каталога MPD )
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btn_FileSystem_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SwitchDataPanelsTo(DataPanelState.FileSystem);
-        }
-
-        private void btn_CurrentTrack_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SwitchDataPanelsTo(DataPanelState.CurrentTrack);
-        }
-
-
-        /// ///////////////////////////////////////////////////////////////////////////////////
-
-        #endregion
 
         #region GENRES
 
-        private void btn_Genres_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SwitchDataPanelsTo(DataPanelState.Genres);
-    
-            if (_server.Genres.Count == 0)
-                _server.List("genre");
 
-            _server.Artists.ClearAndNotify();
-            _server.Albums.ClearAndNotify();
-            _server.Tracks.ClearAndNotify();
-         }
-
-        private void listview_Genres_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            var lv = sender as ListViewExtended;
-            var si = lv.SelectedItem as CommonGridItem;
-            if (si != null)
-            {
-                _server.Artists.ClearAndNotify();
-                _server.Albums.ClearAndNotify();
-                _server.Tracks.ClearAndNotify();
-                _server.List("artist", "genre", si.Name);
-            }
-        }
-
-        private async void appbtn_Genre_AddToPaylist_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            if (listview_GenreTracks.SelectedItems.Count > 0)
-            {
-                foreach (Track track in listview_GenreTracks.SelectedItems)
-                    _server.Add(track.File);
-            }
-            else
-            {
-                if (listview_GenreAlbums.SelectedItems.Count > 0)
-                {
-                    var si = listview_GenreAlbums.SelectedItem as CommonGridItem;
-                    if (si!=null)
-                        _server.SearchAdd("album", si.Name);
-                }
-                else
-                {
-                    if (listview_GenreArists.SelectedItems.Count > 0)
-                    {
-                        var si = listview_GenreArists.SelectedItem as CommonGridItem;
-                        if (si != null)
-                            _server.SearchAdd("artist", si.Name);
-                    }
-                    else
-                    {
-                        if (listview_Genres.SelectedItems.Count > 0)
-                        {
-                            var si = listview_Genres.SelectedItem as CommonGridItem;
-                            if (si != null)
-                                _server.SearchAdd("genre", si.Name);
-                        }
-                        else
-                        {
-                            await MessageBox(_resldr.GetString("AddingTrackToPlaylist"), 
-                                _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButtons.Continue);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void textbox_GenreSearch_GotFocus(object sender, RoutedEventArgs e)
-        {
-            var textbox = sender as TextBox;
-            textbox.Text = string.Empty;
-        }
-
-        private void textbox_GenreSearch_LostFocus(object sender, RoutedEventArgs e)
-        {
-            var textbox = sender as TextBox;
-            textbox.Text = _resldr.GetString("TypeGenreNameHere");
-        }
-
-        private void textbox_GenreSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (textbox_GenreSearch.Text.Length > 0)
-            {
-                int genrescount = listview_Genres.Items.Count;
-                for (int i = 0; i < genrescount; i++)
-                {
-                    var genre = listview_Genres.Items[i] as CommonGridItem;
-                    if (genre.Name.StartsWith(textbox_GenreSearch.Text, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        var lastgenre = listview_Genres.Items[genrescount - 1];
-                        listview_Genres.ScrollIntoView(lastgenre);
-                        listview_Genres.ScrollIntoView(genre);
-                        break;
-                    }
-                }
-            }
-        }
+ 
         #endregion
 
         #region ARTISTS
 
-        private void btn_Artists_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SwitchDataPanelsTo(DataPanelState.Artists);
-            _server.Albums.ClearAndNotify();
-            _server.Tracks.ClearAndNotify();
-            _server.List("artist");
-         }
+ 
 
         private void listview_Arists_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -511,7 +314,7 @@ namespace Balboa
             var si = lv.SelectedItem as CommonGridItem;
             if (si!=null)
             {
-                _server.Albums.ClearAndNotify();
+//                _server.Albums.ClearAndNotify();
                 _server.Tracks.ClearAndNotify();
                 _server.List("album", "artist", si.Name);
             }
@@ -530,51 +333,51 @@ namespace Balboa
 
         private async void appbtn_Artist_AddToPaylist_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (listview_Tracks.SelectedItems.Count>0)
-            {
-                foreach (Track track in listview_Tracks.SelectedItems)
-                    _server.Add(track.File);
-            }
-            else
-            {
-                if (listview_Albums.SelectedItems.Count > 0)
-                {
-                    var si = listview_Albums.SelectedItem as CommonGridItem;
-                    _server.SearchAdd("album", si.Name);
-                }
-                else
-                {
-                    if (listview_Arists.SelectedItems.Count > 0)
-                    {
-                        var si = listview_Arists.SelectedItem as CommonGridItem;
-                        _server.SearchAdd("artist", si.Name);
-                    }
-                    else
-                    {
-                        await MessageBox(_resldr.GetString("AddingTrackToPlaylist"), 
-                            _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButtons.Continue);
-                    }
-                }
-            }
+            //if (listview_Tracks.SelectedItems.Count>0)
+            //{
+            //    foreach (Track track in listview_Tracks.SelectedItems)
+            //        _server.Add(track.File);
+            //}
+            //else
+            //{
+            //    if (listview_Albums.SelectedItems.Count > 0)
+            //    {
+            //        var si = listview_Albums.SelectedItem as CommonGridItem;
+            //        _server.SearchAdd("album", si.Name);
+            //    }
+            //    else
+            //    {
+            //        if (listview_Arists.SelectedItems.Count > 0)
+            //        {
+            //            var si = listview_Arists.SelectedItem as CommonGridItem;
+            //            _server.SearchAdd("artist", si.Name);
+            //        }
+            //        else
+            //        {
+            //            await MessageBox(_resldr.GetString("AddingTrackToPlaylist"), 
+            //                _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButtons.Continue);
+            //        }
+            //    }
+            //}
         }
 
         private void textbox_ArtistSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (textbox_ArtistSearch.Text.Length > 0)
-            {
-                for (int i = 0; i < listview_Arists.Items.Count; i++)
-                {
-                    var artist = (CommonGridItem)(listview_Arists.Items[i]);
-                    if (artist.Name.StartsWith(textbox_ArtistSearch.Text, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        var lastartist = (CommonGridItem)(listview_Arists.Items[listview_Arists.Items.Count-1]);
-//                        var firstartist = (CommonGridItem)(listview_Arists.Items[0]);
-                        listview_Arists.ScrollIntoView(lastartist);
-                        listview_Arists.ScrollIntoView(artist);
-                        break;
-                     }
-                }
-            }
+//            if (textbox_ArtistSearch.Text.Length > 0)
+//            {
+//                for (int i = 0; i < listview_Arists.Items.Count; i++)
+//                {
+//                    var artist = (CommonGridItem)(listview_Arists.Items[i]);
+//                    if (artist.Name.StartsWith(textbox_ArtistSearch.Text, StringComparison.CurrentCultureIgnoreCase))
+//                    {
+//                        var lastartist = (CommonGridItem)(listview_Arists.Items[listview_Arists.Items.Count-1]);
+////                        var firstartist = (CommonGridItem)(listview_Arists.Items[0]);
+//                        listview_Arists.ScrollIntoView(lastartist);
+//                        listview_Arists.ScrollIntoView(artist);
+//                        break;
+//                     }
+//                }
+//            }
         }
 
         private void textbox_ArtistSearch_GotFocus(object sender, RoutedEventArgs e)
@@ -590,149 +393,24 @@ namespace Balboa
         }
         #endregion
 
-        #region SETTINGS
-       
-        private void btn_Settings_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            // Прочитаем список доступных выходов и добавим их в список параметров
-            if (_server.IsConnected)
-                _server.Outputs();
-            SwitchDataPanelsTo(DataPanelState.Settings);
-        }
-       
-        #endregion
-
-         #endregion   ------------------------------------------------------------
+          #endregion   ------------------------------------------------------------
 
    
 
         #region SAVED PLAYLISTS COMAND
-        private void btn_SavedPlayLists_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SwitchDataPanelsTo(DataPanelState.Playlists);
-            _server.ListPlaylists();
-        }
+
       
-        private async void appbtn_SavedPlaylistLoad_Click(object sender, RoutedEventArgs e)
-        {
-            File fi = gr_SavedPlaylistsContent.SelectedItem as File;
-            if (fi == null)
-            {
-                await MessageBox(_resldr.GetString("PlaylistLoading"),
-                                 _resldr.GetString("PlaylisNotSelectedForLoad"), MsgBoxButtons.Continue);
-            }
-            else
-            {
-                //_currentPlaylistName = fi.Name;
-                _server.Load(fi.Name);
-            }
-        }
-
-        private async void appbtn_SavedPlaylistDelete_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            File fi = gr_SavedPlaylistsContent.SelectedItem as File;
-            if (fi == null)
-            {
-                await MessageBox(_resldr.GetString("PlaylistDeleting"),
-                                 _resldr.GetString("PlaylistNotSelectedForDelete"), MsgBoxButtons.Continue);
-            }
-            else
-            {
-                _server.Rm(fi.Name);
-                _server.ListPlaylists();
-            }
-        }
-
-        private async void appbtn_SavedPlaylistRename_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            File fi = gr_SavedPlaylistsContent.SelectedItem as File;
-            if (fi == null)
-            {
-                await MessageBox(_resldr.GetString("PlaylistRename"),
-                                 _resldr.GetString("PlaylistNotSelectedForRename"), MsgBoxButtons.Continue);
-            }
-            else
-            {
-            //    _oldPlaylistName = fi.Name;
-            //    tbx_PlaylistName.Text = _oldPlaylistName;
-            //    _requestNewPlaylistNameMode = NewPlaylistNameRequestMode.RenamePlaylist;
-            //    RequestNewPlaylistName();
-            }
-        }
+       
         #endregion
 
-        #region STATS COMMANDS
-
-        private void btn_Stats_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SwitchDataPanelsTo(DataPanelState.Statistic);
-            _server.Stats();
-        }
-        #endregion
-
-        #region SEARCH COMMANDS
-
-        private void btn_Search_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            SwitchDataPanelsTo(DataPanelState.Search);
-            textblock_SearchResult.Text = string.Empty;
-        }
-
-        private void appbtn_Search_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            if (textbox_Search.Text.Length > 0)
-            {
-                textblock_SearchResult.Text = _resldr.GetString("Searching");
-                _server.Tracks.ClearAndNotify();
-                _server.Search("any", textbox_Search.Text);
-            }
-        }
-
-        private async void appbtn_Search_AddToPaylist_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            if (listview_Search.SelectedItems.Count > 0)
-            {
-                foreach (Track track in listview_Search.SelectedItems)
-                    _server.Add(track.File);
-            }
-           else
-            {
-                await MessageBox(_resldr.GetString("AddingTrackToPlaylist"), 
-                    _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButtons.Continue);
-            }
-        }
-
-        private void appbtn_Search_SelectAll_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            listview_Search.SelectAll();
-        }
-
-        private void appbtn_Search_DeSelectAll_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-           listview_Search.SelectedItems.Clear();
-        }
-
-        private void listview_Search_GotFocus(object sender, RoutedEventArgs e)
-        {
-           // _listViewItemGotFocus = e.OriginalSource as ListViewItem;
-        }
-
-        private bool playlastaddedtrack = false;
-        private void listview_Search_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        {
-            //Track track = _listViewItemGotFocus.Content as Track;
-            //_server.Add(track.File);
-            playlastaddedtrack = true;
-         }
-        #endregion
 
         #region UTILS
         
         
         private void SwitchDataPanelsTo(DataPanelState state)
         {
-            if (popup_MainMenu.IsOpen)
-                popup_MainMenu.IsOpen = false;
+            //if (popup_MainMenu.IsOpen)
+            //    popup_MainMenu.IsOpen = false;
 
             SolidColorBrush WhiteBrush = new SolidColorBrush(Colors.White);
             SolidColorBrush OrangeBrush = new SolidColorBrush(Colors.Orange);
@@ -743,14 +421,17 @@ namespace Balboa
             p_CurrentPlaylist.Visibility = Visibility.Collapsed;
             p_TrackDirectory.Visibility = Visibility.Collapsed;
             p_Settings.Visibility = Visibility.Collapsed;
+            p_Stats.Visibility = Visibility.Collapsed;
+            p_Search.Visibility = Visibility.Collapsed;
+            p_GenresPanel.Visibility = Visibility.Collapsed;
 
             // Изменим цвет текста во всех кнопках главного меню на белый
-            foreach (UIElement uielement in stp_MainMenu.Children)
-            {
-                var button = uielement as Button;
-                if (button!=null)
-                    button.Foreground = WhiteBrush;
-            }
+            //foreach (UIElement uielement in stp_MainMenu.Children)
+            //{
+            //    var button = uielement as Button;
+            //    if (button!=null)
+            //        button.Foreground = WhiteBrush;
+            //}
 
             // Включим нужную панель
             // Изменим цвет текста в соответствующей кнопке на оранжевый
@@ -759,49 +440,49 @@ namespace Balboa
             switch (state)
             {
                 case DataPanelState.Artists:
-                    btn_Artists.Foreground = OrangeBrush;
-                    gr_Artists.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = _resldr.GetString("Artists");
-                    gr_ArtistsShowStoryboard.Begin();
+//                    btn_Artists.Foreground = OrangeBrush;
+//                    gr_Artists.Visibility = Visibility.Visible;
+//                    textbox_CurrentMode.Text = _resldr.GetString("Artists");
+//                    gr_ArtistsShowStoryboard.Begin();
                     break;
                 case DataPanelState.CurrentPlaylist:
-                    btn_Playlist.Foreground = OrangeBrush;
-                    textbox_CurrentMode.Text = _resldr.GetString("PlaylistCurrent");
+//                    btn_Playlist.Foreground = OrangeBrush;
+//                    textbox_CurrentMode.Text = _resldr.GetString("PlaylistCurrent");
                     p_CurrentPlaylist.Visibility = Visibility.Visible;
                     p_CurrentPlaylist.Update();
                     //gr_CurrentPlaylistShowStoryboard.Begin();
                     break;
                 case DataPanelState.CurrentTrack:
-                    btn_CurrentTrack.Foreground = OrangeBrush;
-                    textbox_CurrentMode.Text = _resldr.GetString("CurrentTrack");
+//                    btn_CurrentTrack.Foreground = OrangeBrush;
+//                    textbox_CurrentMode.Text = _resldr.GetString("CurrentTrack");
                     p_CurrentTrack.Visibility = Visibility.Visible;
                     p_CurrentTrack.Update();
                     //gr_CurrentTrack.Visibility = Visibility.Visible;
                     //gr_CurrentTrackShowStoryboard.Begin();
                     break;
                 case DataPanelState.FileSystem:
-                    btn_FileSystem.Foreground = OrangeBrush;
-                    textbox_CurrentMode.Text = _resldr.GetString("FilesAndFolders");
+//                    btn_FileSystem.Foreground = OrangeBrush;
+//                    textbox_CurrentMode.Text = _resldr.GetString("FilesAndFolders");
                     p_TrackDirectory.Visibility = Visibility.Visible;
                     p_TrackDirectory.Update();
                     break;
                 case DataPanelState.Genres:
-                    btn_Genres.Foreground = OrangeBrush;
-                    gr_Genres.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = _resldr.GetString("Genres");
-                    gr_GenresShowStoryboard.Begin();
+//                    btn_Genres.Foreground = OrangeBrush;
+                    p_GenresPanel.Visibility = Visibility.Visible;
+//                    textbox_CurrentMode.Text = _resldr.GetString("Genres");
+                    //gr_GenresShowStoryboard.Begin();
                     break;
                 case DataPanelState.Playlists:
-                    btn_SavedPlayLists.Foreground = OrangeBrush;
-                    gr_SavedPlayLists.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = _resldr.GetString("Playlist");
-                    gr_SavedPlayListsShowStoryboard.Begin();
+//                    btn_SavedPlayLists.Foreground = OrangeBrush;
+                    p_SavedPlaylistsPanel.Visibility = Visibility.Visible;
+//                    textbox_CurrentMode.Text = _resldr.GetString("Playlist");
+                    //gr_SavedPlayListsShowStoryboard.Begin();
                     break;
                 case DataPanelState.Search:
-                    btn_Search.Foreground = OrangeBrush;
-                    gr_Search.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = _resldr.GetString("Search");
-                    gr_SearchShowStoryboard.Begin();
+//                    btn_Search.Foreground = OrangeBrush;
+                    p_Search.Visibility = Visibility.Visible;
+//                    textbox_CurrentMode.Text = _resldr.GetString("Search");
+                    //gr_SearchShowStoryboard.Begin();
                     break;
                 case DataPanelState.Settings:
                     //              tbx_MusicCollectionPath.Text = _appSettings.MusicCollectionFolder;
@@ -809,27 +490,27 @@ namespace Balboa
                     //gr_Settings.Visibility = Visibility.Visible;
                     //gr_SettingsShowStoryboard.Begin();
 
-                    btn_Settings.Foreground = OrangeBrush;
-                    textbox_CurrentMode.Text = _resldr.GetString("Settings");
+//                    btn_Settings.Foreground = OrangeBrush;
+//                    textbox_CurrentMode.Text = _resldr.GetString("Settings");
                     p_Settings.Visibility = Visibility.Visible;
                     break;
                 case DataPanelState.Statistic:
-                    btn_Stats.Foreground = OrangeBrush;
-                    gr_Stats.Visibility = Visibility.Visible;
-                    textbox_CurrentMode.Text = _resldr.GetString("Statistic");
-                    gr_StatsShowStoryboard.Begin();
-                         break;
+//                    btn_Stats.Foreground = OrangeBrush;
+                    p_Stats.Visibility = Visibility.Visible;
+//                    textbox_CurrentMode.Text = _resldr.GetString("Statistic");
+                    //gr_StatsShowStoryboard.Begin();
+                    break;
              }
-            if (_server.StatusData.State != "stop")
-            {
-                //if (state != DataPanelState.CurrentTrack)
-                //{
-                //    if (p_PageHeader.Opacity == 0)
-                //        stackpanel_MainPanelHeaderShowStoryboard.Begin();
-                //}
-                //else
-                //    stackpanel_MainPanelHeaderHideStoryboard.Begin();
-            }
+            //if (_server.StatusData.State != "stop")
+            //{
+            //    //if (state != DataPanelState.CurrentTrack)
+            //    //{
+            //    //    if (p_PageHeader.Opacity == 0)
+            //    //        stackpanel_MainPanelHeaderShowStoryboard.Begin();
+            //    //}
+            //    //else
+            //    //    stackpanel_MainPanelHeaderHideStoryboard.Begin();
+            //}
 
             if (state == DataPanelState.CurrentTrack)
                 p_PageHeader.Visibility = Visibility.Collapsed;
@@ -868,14 +549,6 @@ namespace Balboa
 
        
   
-        private void textblock_MainMenu_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-             if (popup_MainMenu.IsOpen)
-                popup_MainMenu.IsOpen = false;
-            else
-                popup_MainMenu.IsOpen = true;
-        }
-
 
         //protected virtual void Dispose(bool disposing)
         //{

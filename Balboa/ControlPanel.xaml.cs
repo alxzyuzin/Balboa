@@ -289,37 +289,37 @@ namespace Balboa
 
         #endregion
 
-        private void OnStatusDataPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "TimeElapsed":
-                    if (!_seekBarIsBeingDragged)
-                        pb_Progress.Value = _server.StatusData.TimeElapsed;
-                    break;
-                case "SongId": _server.CurrentSong(); break;
-                case "PlaylistId": _server.PlaylistInfo(); break;
-                case "State": // "&#xE102;" - Play, "&#xE103;" - Pause
-                    appbtn_PlayPause.Content = (_server.StatusData.State == "play") ? '\xE103' : '\xE102';
+//        private void OnStatusDataPropertyChanged(object sender, PropertyChangedEventArgs e)
+//        {
+//            switch (e.PropertyName)
+//            {
+//                case "TimeElapsed":
+//                    if (!_seekBarIsBeingDragged)
+//                        pb_Progress.Value = _server.StatusData.TimeElapsed;
+//                    break;
+//                case "SongId": _server.CurrentSong(); break;
+//                case "PlaylistId": _server.PlaylistInfo(); break;
+//                case "State": // "&#xE102;" - Play, "&#xE103;" - Pause
+//                    appbtn_PlayPause.Content = (_server.StatusData.State == "play") ? '\xE103' : '\xE102';
 
-                    if (_server.StatusData.State == "stop")
-                    {
-//                        if (stackpanel_MainPanelHeader.Opacity != 0)
-//                            stackpanel_MainPanelHeaderHideStoryboard.Begin();
-                    }
-                    else
-                    {
-//                        if (stackpanel_MainPanelHeader.Opacity == 0)
-//                            stackpanel_MainPanelHeaderShowStoryboard.Begin();
-                    }
-                    break;
-                case "Volume":
-//                    _volumeChangedByStatus = true;
-                    sl_Volume.Value = _server.StatusData.Volume;
-//                    sl_VerticalVolume.Value = _server.StatusData.Volume;
-                    break;
-            }
-        }
+//                    if (_server.StatusData.State == "stop")
+//                    {
+////                        if (stackpanel_MainPanelHeader.Opacity != 0)
+////                            stackpanel_MainPanelHeaderHideStoryboard.Begin();
+//                    }
+//                    else
+//                    {
+////                        if (stackpanel_MainPanelHeader.Opacity == 0)
+////                            stackpanel_MainPanelHeaderShowStoryboard.Begin();
+//                    }
+//                    break;
+//                case "Volume":
+////                    _volumeChangedByStatus = true;
+//                    sl_Volume.Value = _server.StatusData.Volume;
+////                    sl_VerticalVolume.Value = _server.StatusData.Volume;
+//                    break;
+//            }
+//        }
 
 
 

@@ -10,12 +10,8 @@ namespace Balboa
 {
     public interface IDataPanel
     {
-        ControlAction Action { get; }
-        Message Message { get; }
-
         void Init(Server server);
         void Update();
-        
     }
 
     public class Message

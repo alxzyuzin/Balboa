@@ -1,0 +1,67 @@
+﻿<UserControl
+    x:Class="Balboa.MainMenu"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Balboa"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="250">
+
+    <UserControl.Resources>
+        <Style  x:Key="MainMenuItemStyle" TargetType ="Button" >
+            <Setter Property="Width" Value="250"/>
+            <Setter Property="Height" Value="45" />
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Content" Value=""/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+    </UserControl.Resources>
+    <Border BorderThickness="1" BorderBrush="LightGray">
+        <Grid>
+            <Grid.Resources>
+                <Storyboard x:Name="MainMenuShowStoryboard">
+                    <DoubleAnimation   Storyboard.TargetName="stp_MainMenu_Landscape"
+                                        Storyboard.TargetProperty="Opacity"
+                                         From="0.0" To="1.0" Duration="00:00:0.2">
+
+                    </DoubleAnimation>
+                </Storyboard>
+                <Storyboard x:Name="MainMenuHideStoryboard">
+                    <DoubleAnimation Storyboard.TargetName="stp_MainMenu_Landscape"
+                                        Storyboard.TargetProperty="Opacity"
+                                         From="1.0" To="0.0" Duration="00:00:0.2" 
+                                          FillBehavior="HoldEnd">
+
+                    </DoubleAnimation>
+                </Storyboard>
+
+            </Grid.Resources>
+
+            <Grid.ChildrenTransitions>
+                <TransitionCollection>
+                    <EdgeUIThemeTransition Edge="Left"/>
+                </TransitionCollection>
+            </Grid.ChildrenTransitions>
+
+            <StackPanel VerticalAlignment="Stretch">
+                <TextBlock                        Height="30"/>
+                <Button x:Name="btn_CurrentTrack_popup" Content="Current track"    Style="{StaticResource MainMenuItemStyle}" Tapped="btn_CurrentTrack_Tapped"/>
+                <Button x:Name="btn_Playlist_popup"     Content="Current playlist" Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Playlist_Tapped"/>
+                <Button x:Name="btn_FileSystem_popup"   Content="File system"      Style="{StaticResource MainMenuItemStyle}" Tapped="btn_FileSystem_Tapped"/>
+                <Button x:Name="btn_PlayLists_popup"    Content="Playlists"        Style="{StaticResource MainMenuItemStyle}" Tapped="btn_SavedPlayLists_Tapped" />
+                <Button x:Name="btn_Artists_popup"      Content="Artists"          Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Artists_Tapped"/>
+                <Button x:Name="btn_Genres_popup"       Content="Genres"           Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Genres_Tapped"/>
+                <Button x:Name="btn_Search_popup"       Content="Search"           Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Search_Tapped"/>
+                <Button x:Name="btn_Stats_popup"        Content="Statistic"        Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Stats_Tapped"/>
+                <Button x:Name="btn_Settings_popup"     Content="Settings"         Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Settings_Tapped"/>
+                <TextBlock                        Height="20"/>
+            </StackPanel>
+
+        </Grid>
+
+    </Border>
+</UserControl>

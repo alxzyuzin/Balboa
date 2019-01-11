@@ -7,11 +7,12 @@
  * Элемент списка не требующий специального списка полей
  *
   --------------------------------------------------------------------------*/
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Balboa.Common
 {
-    public sealed class CommonGridItem: INotifyPropertyChanged, IUpdatable
+    public sealed class CommonGridItem: INotifyPropertyChanged
     {
         private const string _fileName = "CommonGridItem.cs";
 
@@ -38,19 +39,34 @@ namespace Balboa.Common
             }
         }
 
-        public void Update(MpdResponseCollection response)
+        //public void Update(MpdResponseCollection response)
+        //{
+        //    if (response == null)
+        //    {
+        //        throw new BalboaException(_fileName, this.GetType().FullName,"Update","43","Parameter 'response' is null");
+        //    }
+
+        //   string[] items = response[0].Split(':');
+        //    if (items.Length > 1)
+        //        Name = items[1].Trim();
+        //    else
+        //        Name = "Undefined";
+        //   response.RemoveAt(0);
+        //}
+
+        public void Update(List<string> response)
         {
             if (response == null)
             {
-                throw new BalboaException(_fileName, this.GetType().FullName,"Update","43","Parameter 'response' is null");
+                throw new BalboaException(_fileName, this.GetType().FullName, "Update", "43", "Parameter 'response' is null");
             }
 
-           string[] items = response[0].Split(':');
+            string[] items = response[0].Split(':');
             if (items.Length > 1)
                 Name = items[1].Trim();
             else
                 Name = "Undefined";
-           response.RemoveAt(0);
+            response.RemoveAt(0);
         }
     }
 }

@@ -11,6 +11,7 @@ using System;
 using System.Globalization;
 using System.ComponentModel;
 using Windows.UI.Core;
+using System.Collections.Generic;
 
 namespace Balboa.Common
 {
@@ -22,11 +23,11 @@ namespace Balboa.Common
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private async void NotifyPropertyChanged(string propertyName)
+        private void NotifyPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
             {
-                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); });
+               // await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); });
             }
         }
 
@@ -151,8 +152,39 @@ namespace Balboa.Common
         {
             _mainPage = mainPage;
         }
-  
-        public void Update(MpdResponseCollection statsInfo)
+
+        public Statistic()
+        {
+            
+        }
+        //public void Update(MpdResponseCollection statsInfo)
+        //{
+        //    if (statsInfo == null)
+        //        throw new BalboaNullValueException(_modName, "Update", "158", "statsinfo");
+
+
+        //    foreach (string item in statsInfo)
+        //    {
+        //        string[] statsitem = item.Split(':');
+        //        switch (statsitem[0])
+        //        {
+        //          case "artists": Artists = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+        //          case "albums": Albums = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+        //          case "songs": Songs = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+        //          case "uptime": Uptime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+        //          case "db_playtime": DbPlaytime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+        //          case "db_update":
+        //                  DbUpdate = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture);
+        //                    // Unix timestamp is seconds past epoch
+        //                  DateTime db_update_dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        //                  DbUpdateDT = db_update_dt.AddSeconds(DbUpdate).ToLocalTime();
+        //                  break;
+        //          case "playtime": Playtime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+        //         }
+        //     }
+        //}
+
+        public void Update(List<string> statsInfo)
         {
             if (statsInfo == null)
                 throw new BalboaNullValueException(_modName, "Update", "158", "statsinfo");
@@ -163,20 +195,20 @@ namespace Balboa.Common
                 string[] statsitem = item.Split(':');
                 switch (statsitem[0])
                 {
-                  case "artists": Artists = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
-                  case "albums": Albums = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
-                  case "songs": Songs = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
-                  case "uptime": Uptime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
-                  case "db_playtime": DbPlaytime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
-                  case "db_update":
-                          DbUpdate = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture);
-                            // Unix timestamp is seconds past epoch
-                          DateTime db_update_dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                          DbUpdateDT = db_update_dt.AddSeconds(DbUpdate).ToLocalTime();
-                          break;
-                  case "playtime": Playtime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
-                 }
-             }
+                    case "artists": Artists = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                    case "albums": Albums = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                    case "songs": Songs = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                    case "uptime": Uptime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                    case "db_playtime": DbPlaytime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                    case "db_update":
+                        DbUpdate = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture);
+                        // Unix timestamp is seconds past epoch
+                        DateTime db_update_dt = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                        DbUpdateDT = db_update_dt.AddSeconds(DbUpdate).ToLocalTime();
+                        break;
+                    case "playtime": Playtime = int.Parse(statsitem[1], NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                }
+            }
         }
     }
 }

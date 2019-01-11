@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -141,6 +142,14 @@ namespace Balboa
                 AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
                 AlbumArt.UpdateImage();
             }
+        }
+
+        private void textblock_MainMenu_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            // if (popup_MainMenu.IsOpen)
+            //    popup_MainMenu.IsOpen = false;
+            //else
+            //    popup_MainMenu.IsOpen = true;
         }
 
 

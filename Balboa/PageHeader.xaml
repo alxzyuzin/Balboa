@@ -30,20 +30,27 @@
 
         </Grid.Resources>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Image x:Name="image_AlbumCoverSmall"  Source="{Binding AlbumArt.Image}" Grid.Column="0" Width="100" Height="100"/>
-             <StackPanel  Grid.Column="2">
+
+        <StackPanel x:Name="stackpanel_PageHeader" Margin="20,0,20,0" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <TextBlock x:Name="textblock_MainMenu" Text="&#xE14C;"  FontSize="50" FontFamily="Segoe UI Symbol"  Tapped="textblock_MainMenu_Tapped" />
+            <TextBlock x:Name="textbox_CurrentMode" x:Uid="cp" Text="" FontSize="25" FontWeight="ExtraLight" VerticalAlignment="Top" Margin="0,10,0,0"/>
+        </StackPanel>
+
+        <Image x:Name="image_AlbumCoverSmall"  Source="{Binding AlbumArt.Image}" Grid.Column="1" Width="100" Height="100"/>
+             <StackPanel  Grid.Column="3">
                 <TextBlock  Text="{Binding Title}" FontSize="35" TextAlignment="Left"
                                     TextWrapping="WrapWholeWords" HorizontalAlignment="Left" Height="40"/>
 
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                     <TextBlock Text="Artist :" FontSize="15"/>
                     <TextBlock Text="{Binding Artist}" FontSize="15" Margin="10,0,0,0"/>
                 </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0" >
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0" >
                     <TextBlock Text="Album :"  FontSize="15" />
                     <TextBlock Text="{Binding Album}"  FontSize="15" Margin="10,0,0,0"/>
                 </StackPanel>

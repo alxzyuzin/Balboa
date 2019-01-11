@@ -125,11 +125,31 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="GenresPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MessageBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OutputsPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SavedPlaylistsPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SearchPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -142,6 +162,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Settings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Stats.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -186,13 +210,29 @@
     <Compile Include="CurrentTrack.xaml.cs">
       <DependentUpon>CurrentTrack.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GenresPanel.xaml.cs">
+      <DependentUpon>GenresPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="IDataPanel.cs" />
+    <Compile Include="IPropertyChanged.cs" />
+    <Compile Include="MainMenu.xaml.cs">
+      <DependentUpon>MainMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\MPDCommand.cs" />
     <Compile Include="MessageBox.xaml.cs">
       <DependentUpon>MessageBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OutputsPanel.xaml.cs">
+      <DependentUpon>OutputsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SavedPlaylistsPanel.xaml.cs">
+      <DependentUpon>SavedPlaylistsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SearchPanel.xaml.cs">
+      <DependentUpon>SearchPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="PageHeader.xaml.cs">
       <DependentUpon>PageHeader.xaml</DependentUpon>
@@ -204,6 +244,9 @@
     <Compile Include="Common\Server.cs" />
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Stats.xaml.cs">
+      <DependentUpon>Stats.xaml</DependentUpon>
     </Compile>
     <Compile Include="TrackDirectory.xaml.cs">
       <DependentUpon>TrackDirectory.xaml</DependentUpon>

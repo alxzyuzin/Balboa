@@ -127,14 +127,14 @@ namespace Balboa
         private Queue<MpdCommand>   _SentCommandQueue = new Queue<MpdCommand>();
 
 
-        private Statistic                                  _Statistics;
-        private Status                                     _Status;
+//        private Statistic                                  _Statistics;
+//        private Status                                     _Status;
 //        private CurrentSong                                _CurrentSong;
 //        private ObservableObjectCollection<Track>          _Playlist;
         private ObservableObjectCollection<File>           _SavedPlaylists;
-        private ObservableObjectCollection<CommonGridItem> _Genres;
-        private ObservableObjectCollection<CommonGridItem> _Artists;
-        private ObservableObjectCollection<CommonGridItem> _Albums;
+//        private ObservableObjectCollection<CommonGridItem> _Genres;
+//        private ObservableObjectCollection<CommonGridItem> _Artists;
+//        private ObservableObjectCollection<CommonGridItem> _Albums;
         private ObservableObjectCollection<Track>          _Tracks;
 
         private string _Response;
@@ -193,8 +193,8 @@ namespace Balboa
 
 
         public bool          IsRunning           { get; private set; }=false;
-        public Status        StatusData         { get { return _Status; } }
-        public Statistic     StatisticData      { get { return _Statistics; } }
+//        public Status        StatusData         { get { return _Status; } }
+//        public Statistic     StatisticData      { get { return _Statistics; } }
 //        public CurrentSong   CurrentSongData { get { return _CurrentSong; } }
 
        //
@@ -202,9 +202,9 @@ namespace Balboa
 
 //        public ObservableObjectCollection<Track>  PlaylistData { get { return _Playlist; } }
         public ObservableObjectCollection<File>   SavedPlaylistsData { get { return _SavedPlaylists; } }
-        public ObservableObjectCollection<CommonGridItem> Artists { get { return _Artists; } }
-        public ObservableObjectCollection<CommonGridItem> Genres { get { return _Genres; } }
-        public ObservableObjectCollection<CommonGridItem> Albums { get { return _Albums; } }
+//        public ObservableObjectCollection<CommonGridItem> Artists { get { return _Artists; } }
+//        public ObservableObjectCollection<CommonGridItem> Genres { get { return _Genres; } }
+//        public ObservableObjectCollection<CommonGridItem> Albums { get { return _Albums; } }
         public ObservableObjectCollection<Track> Tracks { get { return _Tracks; } }
 
         #endregion
@@ -231,15 +231,15 @@ namespace Balboa
 
             _mainPage = mainPage;
 
-            _Statistics =   new Statistic(_mainPage);
-            _Status =       new Status(_mainPage);
+//            _Statistics =   new Statistic(_mainPage);
+//            _Status =       new Status(_mainPage);
 //            _CurrentSong =  new CurrentSong(_mainPage);
 
 //            _Playlist =     new ObservableObjectCollection<Track>(_mainPage);
             _SavedPlaylists = new ObservableObjectCollection<File>(_mainPage);
-            _Artists =      new ObservableObjectCollection<CommonGridItem>(_mainPage);
-            _Genres =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
-            _Albums =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
+//            _Artists =      new ObservableObjectCollection<CommonGridItem>(_mainPage);
+//            _Genres =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
+//            _Albums =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
             _Tracks =       new ObservableObjectCollection<Track>(_mainPage);
 
             _Connection.PropertyChanged += (object obj, PropertyChangedEventArgs args )=> 
@@ -327,9 +327,9 @@ namespace Balboa
             _Response = string.Empty;
 //            _Playlist.ClearAndNotify();
             _SavedPlaylists.ClearAndNotify();
-            _Artists.ClearAndNotify();
-            _Genres.ClearAndNotify();
-            _Albums.ClearAndNotify();
+//            _Artists.ClearAndNotify();
+//            _Genres.ClearAndNotify();
+//            _Albums.ClearAndNotify();
             _Tracks.ClearAndNotify();
          }
         /// <summary>
@@ -465,20 +465,20 @@ namespace Balboa
             {
                 switch (response.Command.Op)
                 {
-                    case "update":  // в ответ на команду сервер возвращает" "updating_db: 1\n"  (Реализовано)
-                    case "stats": _Statistics.Update(response); break;
-                    case "status": _Status.Update(response); break;       // Реализовано
+//                    case "update":  // в ответ на команду сервер возвращает" "updating_db: 1\n"  (Реализовано)
+//                    case "stats": _Statistics.Update(response); break;
+//                    case "status": _Status.Update(response); break;       // Реализовано
  //                   case "currentsong": _CurrentSong.Update(response); break;
                     case "list":
                         switch (response.Command.Argument1)
                         {
-                            case "genre": _Genres.Update(response); break;
-                            case "artist": _Artists.Update(response); break;
-                            case "album": _Albums.Update(response); break;
+//                            case "genre": _Genres.Update(response); break;
+//                            case "artist": _Artists.Update(response); break;
+//                            case "album": _Albums.Update(response); break;
                             case "title": _Tracks.Update(response); break;
                         }
                         break;
-                    case "search": _Tracks.Update(response); break;
+//                    case "search": _Tracks.Update(response); break;
 //                    case "playlistinfo": _Playlist.Update(response); break;
                     case "listplaylists": _SavedPlaylists.Update(response); break;
                     case "config":
