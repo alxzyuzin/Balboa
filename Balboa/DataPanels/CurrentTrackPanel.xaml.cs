@@ -19,46 +19,6 @@ namespace Balboa
         private Server _server;
         private Song _song = new Song();
 
-        //public ControlAction Action
-        //{
-        //    get
-        //    {
-        //        return ControlAction.NoAction;
-        //    }
-        //}
-
-        //private Message _message;
-        //public Message Message
-        //{
-        //    get
-        //    {
-        //        return _message;
-        //    }
-        //    set
-        //    {
-        //        if (_message != value)
-        //        {
-        //            _message = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-        //        }
-        //    }
-        //}
-
-        //private BitmapImage _albumArt;
-        //public BitmapImage AlbumArt
-        //{
-        //    get { return _albumArt; }
-        //    private set
-        //    {
-        //        if (_albumArt != value)
-        //        {
-        //            _albumArt = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
-        //        }
-
-        //    }
-        //}
-
         private AlbumArt _albumArt = new AlbumArt();
         public AlbumArt AlbumArt
         {
@@ -254,7 +214,7 @@ namespace Balboa
             }
         }
 
-        private void UpdateControlData(List<string> serverData)
+        private async  void UpdateControlData(List<string> serverData)
         {
             _song.Update(serverData);
             Title       = _song.Title;
@@ -270,8 +230,8 @@ namespace Balboa
             File        = _song.File;
             if (_song.File != null)
             {
-                AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
-                AlbumArt.UpdateImage();
+               await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
+               await AlbumArt.UpdateImage();
             }
         }
 

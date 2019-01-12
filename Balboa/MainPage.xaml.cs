@@ -39,7 +39,6 @@ namespace Balboa
             Application.Current.Resuming += OnResuming;
             this.SizeChanged += MainPage_SizeChanged;
 
-//            DataContext = this;
             _server = new Server(this);
 
             _server.Error += OnServerError;
@@ -67,7 +66,6 @@ namespace Balboa
                 MsgBoxButton pressedButton = MsgBoxButton.Close;// = await DisplayMessage(actionParams.Message);
                 ((IDataPanel)sender).HandleUserResponse(pressedButton);
             }
-
         }
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
