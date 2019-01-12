@@ -1,7 +1,6 @@
 ﻿using Balboa.Common;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -21,7 +20,7 @@ namespace Balboa
 
     
 
-    public sealed partial class Settings : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class SettingsPanel : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler   PropertyChanged;
         public event ActionRequestedEventHandler ActionRequested;
@@ -63,7 +62,7 @@ namespace Balboa
 
        
 
-        public Settings()
+        public SettingsPanel()
         {
             this.InitializeComponent();
         }

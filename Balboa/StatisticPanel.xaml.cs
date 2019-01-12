@@ -20,7 +20,7 @@ using Windows.ApplicationModel.Resources;
 
 namespace Balboa
 {
-    public sealed partial class Stats : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class StatisticPanel : UserControl, INotifyPropertyChanged, IDataPanel
     {
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -55,7 +55,7 @@ namespace Balboa
         //    }
         //}
 
-        public Stats()
+        public StatisticPanel()
         {
             this.InitializeComponent();
             this.DataContext = this;

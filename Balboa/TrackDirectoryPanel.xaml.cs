@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Input;
 
 namespace Balboa
 {
-    public sealed partial class TrackDirectory : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class TrackDirectoryPanel : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler ActionRequested;
@@ -93,7 +93,7 @@ namespace Balboa
         //}
 
 
-        public TrackDirectory()
+        public TrackDirectoryPanel()
         {
             this.InitializeComponent();
             DataContext = this;

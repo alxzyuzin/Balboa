@@ -46,7 +46,7 @@ namespace Balboa
 
         public void Update()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         private void _server_DataReady(object sender, EventArgs e)

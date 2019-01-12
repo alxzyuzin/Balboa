@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace Balboa
 {
-    public sealed partial class CurrentPlaylist : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class PlaylistPanel : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler ActionRequested;
@@ -62,7 +62,7 @@ namespace Balboa
 ////                }
 //            }
 //        }
-        public CurrentPlaylist()
+        public PlaylistPanel()
         {
             this.InitializeComponent();
             DataContext = this;

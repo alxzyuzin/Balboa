@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Input;
 
 namespace Balboa
 {
-    public sealed partial class GenresPanel : UserControl, IDataPanel, INotifyPropertyChanged
+    public sealed partial class DatabaseExplorerPanel : UserControl, IDataPanel, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler ActionRequested;
@@ -21,7 +21,7 @@ namespace Balboa
         private ObservableCollection<CommonGridItem> _foundItems = new ObservableCollection<CommonGridItem>();
         public  ObservableCollection<CommonGridItem> Items => _foundItems;
         
-        public GenresPanel()
+        public DatabaseExplorerPanel()
         {
             this.InitializeComponent();
             this.DataContext = this;

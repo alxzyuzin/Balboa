@@ -30,7 +30,7 @@ namespace Balboa
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
 
-        public enum DataPanelState {CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings} 
+        public enum DataPanelState { CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings }
 
         public MainPage()
         {
@@ -39,17 +39,21 @@ namespace Balboa
             Application.Current.Resuming += OnResuming;
             this.SizeChanged += MainPage_SizeChanged;
 
-            DataContext = this;
+//            DataContext = this;
             _server = new Server(this);
 
             _server.Error += OnServerError;
             _server.CriticalError += OnServerCriticalError;
 
             p_MainMenu.Init(_server);
+            p_PageHeader.Init(_server);
+            p_PlayMode.Init(_server);
+            p_ControlPanel.Init(_server);
+
             p_MainMenu.ActionRequested += OnDataPanelActionRequested;
 
             if (_server.Initialized)
-                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
+                _server.Start();         // Запускаем сеанс взаимодействия с MPD
         }
 
         private void OnDataPanelActionRequested(Object sender, ActionParams actionParams)
@@ -122,8 +126,8 @@ namespace Balboa
             //{
             //    case MsgBoxButtons.Exit: Application.Current.Exit(); break;
             //    case MsgBoxButtons.Retry: _server.Start(); break;
-//                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
-//            }
+            //                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
+            //            }
         }
 
         private async void OnServerCriticalError(object sender, EventArgs eventArgs)
@@ -134,14 +138,15 @@ namespace Balboa
             //{
             //    case MsgBoxButtons.CloseApplication: Application.Current.Exit();break;
             //    case MsgBoxButtons.Retry: _server.Restart();break;
-//                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
-//            }
+            //                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
+            //            }
         }
 
-         #endregion
+        #endregion
         private void ActivatePanel(string panelClassName)
         {
-            Type t = Type.GetType("Balboa."+panelClassName);
+            Type t = Type.GetType("Balboa." + panelClassName);
+            if (t == null)  throw new ArgumentNullException($"Class '{panelClassName}' does not exist.");
             UserControl panel = Activator.CreateInstance(t) as UserControl;
             if (DataPanel.Child != null)
             {

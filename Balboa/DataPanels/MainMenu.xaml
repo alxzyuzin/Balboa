@@ -6,13 +6,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="300"
+    d:DesignHeight="450"
     d:DesignWidth="250">
 
     <UserControl.Resources>
         <Style  x:Key="MainMenuItemStyle" TargetType ="Button" >
-            <Setter Property="Width" Value="250"/>
-            <Setter Property="Height" Value="45" />
+            <Setter Property="Width" Value="230"/>
+            <Setter Property="Height" Value="50" />
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Content" Value=""/>
             <Setter Property="FontSize" Value="25"/>
@@ -47,15 +47,15 @@
             </Grid.ChildrenTransitions>
 
             <StackPanel x:Name="stp_MenuButtons" VerticalAlignment="Stretch">
-                <Button x:Name="CurrentTrack" Content="Current track"    Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
-                <Button x:Name="btn_Playlist_popup"     Content="Current playlist" Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Playlist_Tapped"/>
-                <Button x:Name="btn_FileSystem_popup"   Content="File system"      Style="{StaticResource MainMenuItemStyle}" Tapped="btn_FileSystem_Tapped"/>
-                <Button x:Name="btn_PlayLists_popup"    Content="Playlists"        Style="{StaticResource MainMenuItemStyle}" Tapped="btn_SavedPlayLists_Tapped" />
-                <Button x:Name="btn_Artists_popup"      Content="Artists"          Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Artists_Tapped"/>
-                <Button x:Name="btn_Genres_popup"       Content="Genres"           Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Genres_Tapped"/>
-                <Button x:Name="btn_Search_popup"       Content="Search"           Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Search_Tapped"/>
-                <Button x:Name="btn_Stats_popup"        Content="Statistic"        Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Stats_Tapped"/>
-                <Button x:Name="btn_Settings_popup"     Content="Settings"         Style="{StaticResource MainMenuItemStyle}" Tapped="btn_Settings_Tapped"/>
+                <Button x:Name="CurrentTrackPanel"      Content="Current track"    Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
+                <Button x:Name="PlaylistPanel"          Content="Current playlist" Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
+                <Button x:Name="TrackDirectoryPanel"    Content="File system"      Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
+                <Button x:Name="SavedPlaylistsPanel"    Content="Saved Playlists"  Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped" />
+                <Button x:Name="DatabaseExplorerPanel"  Content="Explore Database" Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
+                <Button x:Name="SearchPanel"            Content="Search"           Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
+                <Button x:Name="StatisticPanel"         Content="Statistic"        Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
+                <Button x:Name="OutputsPanel"           Content="Outputs "         Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
+                <Button x:Name="SettingsPanel"          Content="Settings"         Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
             </StackPanel>
         </Grid>
 

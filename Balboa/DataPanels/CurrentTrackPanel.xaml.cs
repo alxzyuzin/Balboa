@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Balboa
 {
-    public sealed partial class CurrentTrack : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class CurrentTrackPanel : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler ActionRequested;
@@ -227,7 +227,7 @@ namespace Balboa
             }
         }
 
-        public CurrentTrack()
+        public CurrentTrackPanel()
         {
             this.InitializeComponent();
             DataContext = this;
