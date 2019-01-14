@@ -34,11 +34,10 @@
             <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <!--  PЗАГОЛОВОК ОКНА-->
-        <local:PageHeader x:Name="p_PageHeader"  Grid.Row="0" Grid.Column="1" Visibility="Visible"/>
-        <!-- Главное меню -->
-        <local:MainMenu x:Name="p_MainMenu"    Grid.Row="0" Grid.Column="0" Visibility="Visible" Grid.RowSpan="2" Margin="0,50,0,0"/>
-        <Border x:Name="DataPanel" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3"/>
+        <!--  PЗАГОЛОВОК ОКНА row=0 column=1 -->
+        <!-- Главное меню row = 0 column = 0 -->
+        <!-- local:MainMenu x:Name="p_MainMenu"    Grid.Row="0" Grid.Column="0" Visibility="Visible" Grid.RowSpan="2" Margin="0,50,0,0"/ -->
+        <Border x:Name="DataPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"/>
         <!--
             <local:CurrentTrack x:Name="p_CurrentTrack" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Visibility="Collapsed" />
             <local:CurrentPlaylist x:Name="p_CurrentPlaylist" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed" />

@@ -8,6 +8,7 @@
  --------------------------------------------------------------------------*/
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Resources;
@@ -20,6 +21,15 @@ using Windows.UI.Xaml.Controls;
 
 namespace Balboa
 {
+
+    //public static IEnumerable<T> ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
+    //{
+    //    foreach (T item in enumeration)
+    //    {
+    //        action(item);
+    //        yield return item;
+    //    }
+    //}
     // Change the current culture to the French culture,
     // and parsing the same string yields a different value.
     //  Thread.CurrentThread.CurrentCulture = new CultureInfo("Fr-fr", true);
@@ -44,12 +54,14 @@ namespace Balboa
             _server.Error += OnServerError;
             _server.CriticalError += OnServerCriticalError;
 
-            p_MainMenu.Init(_server);
-            p_PageHeader.Init(_server);
+            var mainMenu = new MainMenu(_server);
+            mainMenu.ActionRequested += OnDataPanelActionRequested;
+            grid_Main.Children.Add(mainMenu); 
+            grid_Main.Children.Add(new PageHeader(_server));
+            
+
             p_PlayMode.Init(_server);
             p_ControlPanel.Init(_server);
-
-            p_MainMenu.ActionRequested += OnDataPanelActionRequested;
 
             if (_server.Initialized)
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD

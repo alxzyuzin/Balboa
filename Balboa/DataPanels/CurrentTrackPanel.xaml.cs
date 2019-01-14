@@ -190,7 +190,7 @@ namespace Balboa
         public CurrentTrackPanel()
         {
             this.InitializeComponent();
-            DataContext = this;
+            //DataContext = this;
         }
 
         public void Init(Server server)
