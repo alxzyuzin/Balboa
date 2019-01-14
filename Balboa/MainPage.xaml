@@ -25,7 +25,7 @@
     
     <Grid x:Name="grid_Main"  Background="{StaticResource MainBackgroundBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="120"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="90"/>
             <RowDefinition Height="150"/>
@@ -37,6 +37,7 @@
         <!--  PЗАГОЛОВОК ОКНА row=0 column=1 -->
         <!-- Главное меню row = 0 column = 0 -->
         <!-- local:MainMenu x:Name="p_MainMenu"    Grid.Row="0" Grid.Column="0" Visibility="Visible" Grid.RowSpan="2" Margin="0,50,0,0"/ -->
+        <!-- Grid.Column="1" Grid.Row="0"/ -->
         <Border x:Name="DataPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"/>
         <!--
             <local:CurrentTrack x:Name="p_CurrentTrack" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Visibility="Collapsed" />

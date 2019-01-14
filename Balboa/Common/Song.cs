@@ -7,6 +7,7 @@
  *
  --------------------------------------------------------------------------*/
 
+using System;
 using System.Collections.Generic;
 
 namespace Balboa.Common
@@ -16,10 +17,10 @@ namespace Balboa.Common
         public string File { get; private set; }
         public string LastModified { get; private set; }
         public float  Duration { get; private set; }
-        public string Artist { get; private set; }
+        public string Artist { get; private set; } = " Unknown artist";
         public string Title { get; private set; }
-        public string Album { get; private set; }
-        public string Date { get; private set; }
+        public string Album { get; private set; } = " Unknown album";
+        public string Date { get; private set; }  = " Unknown year";
         public string Track { get; private set; }
         public string Genre { get; private set; }
         public string Composer { get; private set; }
@@ -35,11 +36,9 @@ namespace Balboa.Common
 
         public void Update(List<string> response)
         {
-            // Заполним пустые параметры значениями по умолчанию
-            Title = string.Empty;
-            Artist = string.Empty;
-            Album = string.Empty;
-            Date = string.Empty;
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
+            Clear();
 
             foreach (string item in response)
             {
@@ -53,10 +52,10 @@ namespace Balboa.Common
                     case "file": File = tagvalue; break;
                     case "Last-Modified": LastModified = tagvalue; break;
                     case "Time": Duration = float.Parse(tagvalue, System.Globalization.CultureInfo.InvariantCulture); break;
-                    case "Artist": Artist = tagvalue; break;
-                    case "Title": Title = tagvalue; break;
-                    case "Album": Album = tagvalue; break;
-                    case "Date": Date = tagvalue; break;
+                    case "Artist": Artist = tagvalue.Length > 0 ? tagvalue: " Unknown artist"; break;
+                    case "Title": Title = tagvalue.Length>0 ? tagvalue : Utilities.ExtractFileName(File ?? "", true); break;
+                    case "Album": Album = tagvalue.Length > 0 ? tagvalue : " Unknown album"; break;
+                    case "Date": Date = tagvalue.Length > 0 ? tagvalue : " Unknown year"; break;
                     case "Track": Track = tagvalue; break;
                     case "Genre": Genre = tagvalue; break;
                     case "Composer": Composer = tagvalue; break;
@@ -66,11 +65,25 @@ namespace Balboa.Common
                     case "Id": Id = int.Parse(tagvalue, System.Globalization.CultureInfo.InvariantCulture); break;
                 }
             }
-            // Заполним пустые параметры значениями по умолчанию
-            if (Title.Length == 0) Title = Utilities.ExtractFileName(File ?? "", true);
-            if (Artist.Length == 0) Artist = " Unknown artist";
-            if (Album.Length == 0) Album = " Unknown album";
-            if (Date.Length == 0) Date = " Unknown year";
+        }
+
+        private void Clear()
+        {
+            File = string.Empty;
+            LastModified = string.Empty;
+            Duration = 0;
+            Artist = " Unknown artist";
+            Title = string.Empty;
+            Album = " Unknown album"; 
+            Date = " Unknown year";
+            Track = string.Empty;
+            Genre = string.Empty;
+            Composer = string.Empty;
+            AlbumArtist = string.Empty;
+            Disc = string.Empty;
+            Position = string.Empty;
+            Id = -1;
+
         }
     }
 }
