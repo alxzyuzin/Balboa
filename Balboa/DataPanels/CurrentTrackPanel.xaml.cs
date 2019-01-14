@@ -13,8 +13,7 @@ namespace Balboa
     public sealed partial class CurrentTrackPanel : UserControl, INotifyPropertyChanged, IDataPanel
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public event ActionRequestedEventHandler ActionRequested;
-
+ 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
         private Song _song = new Song();
@@ -190,18 +189,26 @@ namespace Balboa
         public CurrentTrackPanel()
         {
             this.InitializeComponent();
-            //DataContext = this;
+         }
+
+        public CurrentTrackPanel(Server server):this()
+        {
+            if (server == null) throw new ArgumentNullException(nameof(server));
+            _server = server;
+            _server.DataReady += _server_DataReady;
+            _server.CurrentSong();
         }
 
         public void Init(Server server)
         {
+            if (server == null) throw new ArgumentNullException(nameof(server));
             _server = server;
             _server.DataReady += _server_DataReady;
         }
 
         public void Update()
         {
-            _server.CurrentSong();
+            _server?.CurrentSong();
         }
 
         private void _server_DataReady(object sender, EventArgs e)

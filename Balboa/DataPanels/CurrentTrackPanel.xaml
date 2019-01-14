@@ -13,19 +13,10 @@
     <UserControl.Resources>
         <!-- Определение класса TimeConverter в виде статического ресурса для подключения к TexstBlock  Converter={StaticResource Converter1}-->
         <common:TimeConverter  x:Key="TimeConverter"/>
-
-        <Style x:Key="InformationGridStyle" TargetType="Grid">
-            <Setter Property="Margin" Value="0,100,0,20"/>
-            <Setter Property="Background" Value="{StaticResource MainBackgroundBrush}"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="Visibility" Value="Collapsed"/>
-        </Style>
     </UserControl.Resources>
     
-    <Grid  x:Name="gr_CurrentTrack" Grid.Row="1" Style="{StaticResource InformationGridStyle}" Visibility="Visible" Margin="0,0,0,10" d:IsHidden="True">
-
+    <Grid>
         <Grid.Resources>
-        
             <Style x:Key="CurrentTrackTextBlockStyle" TargetType="TextBlock" >
                 <Setter Property="TextAlignment" Value="Left" />
                 <Setter Property="FontSize" Value="18"/>
@@ -67,7 +58,7 @@
                        Style="{StaticResource  CurrentTrackTextBlockStyle}"  FontSize="35" Margin="0,30,10,0" 
                            Height="90" TextWrapping="WrapWholeWords" Grid.RowSpan="2" Grid.Column="1" 
                            VerticalAlignment="Top" />
-        <Grid x:Name="grid_CurrentTrackData" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="40,120,0,0" d:IsHidden="True" >
+        <Grid x:Name="grid_CurrentTrackData" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="40,120,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="2*" />

@@ -19,13 +19,18 @@ namespace Balboa
 
     public interface IDataPanel
     {
+        void Init(Server server);
+        void Update();
+        void HandleUserResponse(MsgBoxButton pressedButton);
+    }
+
+    public interface IActionRequested
+    {
         /// <summary>
         ///    Occurs when a command button pressed.
         /// </summary>
         event ActionRequestedEventHandler ActionRequested;
-        void Init(Server server);
-        void Update();
-        void HandleUserResponse(MsgBoxButton pressedButton);
+        
     }
 
     public class ActionParams

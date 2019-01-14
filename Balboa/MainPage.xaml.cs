@@ -155,17 +155,16 @@ namespace Balboa
         #endregion
         private void ActivatePanel(string panelClassName)
         {
+            if (DataPanel.Child != null)
+                ((IActionRequested)DataPanel.Child).ActionRequested -= OnDataPanelActionRequested;
+
             Type t = Type.GetType("Balboa." + panelClassName);
             if (t == null)  throw new ArgumentNullException($"Class '{panelClassName}' does not exist.");
-            UserControl panel = Activator.CreateInstance(t) as UserControl;
-            if (DataPanel.Child != null)
-            {
-                ((IDataPanel)panel).ActionRequested -= OnDataPanelActionRequested;
-            }
-            DataPanel.Child = panel;
-            ((IDataPanel)panel).Init(_server);
-            ((IDataPanel)panel).Update();
-            ((IDataPanel)panel).ActionRequested += OnDataPanelActionRequested;
+            IDataPanel panel = Activator.CreateInstance(t, _server) as IDataPanel;
+            DataPanel.Child = panel as UserControl;
+            //((IDataPanel)panel).Init(_server);
+            //((IDataPanel)panel).Update();
+            //((IActionRequested)panel).ActionRequested += OnDataPanelActionRequested;
 
             //if (state == DataPanelState.CurrentTrack)
             //    p_PageHeader.Visibility = Visibility.Collapsed;
