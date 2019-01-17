@@ -21,17 +21,14 @@ using Windows.UI.Xaml.Input;
 
 namespace Balboa
 {
-    public sealed partial class TrackDirectoryPanel : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class TrackDirectoryPanel : UserControl, INotifyPropertyChanged, IDataPanel, 
+                                                                   IRequestAction, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public event ActionRequestedEventHandler ActionRequested;
+        public event ActionRequestedEventHandler RequestAction;
 
-        //public event EventHandler<DisplayMessageEventArgs> MessageReady;
-        //public event EventHandler<CommandButtonPressedEventArgs> CommandButtonPressed;
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
-
-
       
         private string _currentPath = string.Empty;
         private string _parentFolderName = string.Empty;
@@ -64,44 +61,29 @@ namespace Balboa
             }
         }
 
-//        private ControlAction _action = ControlAction.NoAction;
-//        public ControlAction Action
-//        {
-//            get { return _action; }
-//            private set
-//            {
-////                if (_action!= value)
-////                {
-//                    _action = value;
-//                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Action)));
-////                }
-//            }
-//        }
-
-        //private Message _message;
-        //public Message Message
-        //{
-        //    get { return _message; }
-        //    private set
-        //    {
-        //        if (_message != value)
-        //        {
-        //            _message = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-        //        }
-        //    }
-        //}
-
 
         public TrackDirectoryPanel()
         {
-            this.InitializeComponent();
-            DataContext = this;
+            InitializeComponent();
             _progress = new Progress<File>(SetFileIcon);
+        }
+
+        public TrackDirectoryPanel(Server server) : this()
+        {
+            if (server == null) throw new ArgumentNullException(nameof(server));
+
+            _server = server;
+            _server.DataReady += _server_DataReady;
+            if (_currentPath.Length == 0)
+                _server.LsInfo();
+            else
+                _server.LsInfo(_currentPath);
         }
 
         public void Init(Server server)
         {
+            if (server == null) throw new ArgumentNullException(nameof(server));
+
             _server = server;
             _server.DataReady += _server_DataReady;
         }
@@ -113,7 +95,6 @@ namespace Balboa
 
         private async void _server_DataReady(object sender, EventArgs e)
         {
-            
             var mpdData = e as MpdResponse;
             if (mpdData.Command.Op != "lsinfo")
                 return;
@@ -226,6 +207,11 @@ namespace Balboa
             //    path = _currentPath;
             if (gr_FileSystemContent.SelectedItems.Count == 0)
             {
+                var message = new Message();
+                message.Buttons = MsgBoxButton.Continue;
+                message.Text = _resldr.GetString("NoSelectedItemsToAdd");
+                message.BoxHeight = 100;
+                RequestAction?.Invoke(this, new ActionParams(message));
                 //Message = new Message(MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButton.Close, 200);
                 return;
             }
@@ -235,7 +221,7 @@ namespace Balboa
                 _server.Add(path + item.Name);
             }
             gr_FileSystemContent.SelectedItems.Clear();
-            //Action = ControlAction.SwitchToPlaylist;
+            RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel, Panels.PlaylistPanel));
         }
 
         private void HighLiteLastOpenedFolder()
@@ -364,7 +350,12 @@ namespace Balboa
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            _server.DataReady -= _server_DataReady;
         }
 
         private struct FileIconParams

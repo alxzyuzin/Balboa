@@ -12,7 +12,9 @@ namespace Balboa
     public enum ActionType
     {
         DisplayMessage = 1,
-        ActivateDataPanel = 2
+        ActivateDataPanel = 2,
+        DisplayPanel = 4,
+        HidePanel =8
     }
 
     public delegate void ActionRequestedEventHandler(object sender, ActionParams actionParams);
@@ -21,16 +23,15 @@ namespace Balboa
     {
         void Init(Server server);
         void Update();
-        void HandleUserResponse(MsgBoxButton pressedButton);
     }
 
-    public interface IActionRequested
+    public interface IRequestAction
     {
         /// <summary>
         ///    Occurs when a command button pressed.
         /// </summary>
-        event ActionRequestedEventHandler ActionRequested;
-        
+        event ActionRequestedEventHandler RequestAction;
+        void HandleUserResponse(MsgBoxButton pressedButton);
     }
 
     public class ActionParams
@@ -41,15 +42,15 @@ namespace Balboa
             Message = message;
         }
 
-        public ActionParams(string panelClassName)
+        public ActionParams(ActionType action, Panels panelClass)
         {
-            ActionType = ActionType.ActivateDataPanel;
-            PanelClassName = panelClassName;
+            ActionType = action;
+            PanelClass = panelClass;
         }
 
         public ActionType ActionType { get; private set; }
         public Message Message { get; private set; }
-        public string PanelClassName { get; private set; } = string.Empty;
+        public Panels PanelClass { get; private set; }
     }
 
     public struct Message
@@ -60,4 +61,4 @@ namespace Balboa
         public int BoxHeight;
     }
 
-}
+} // class ActionParams

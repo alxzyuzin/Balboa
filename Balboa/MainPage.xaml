@@ -54,7 +54,8 @@
         <!-- Панель управления проигрыванием -->
         <local:ControlPanel x:Name="p_ControlPanel" Grid.Row="3" Grid.Column="1"/>
 
-        <local:MessageBox x:Name="MsgBox" Visibility="Collapsed"/>
+        <local:MessageBox x:Name="MsgBox" Grid.Row="0" Grid.Column="0" 
+                          Grid.ColumnSpan="2" Grid.RowSpan="4" Visibility="Collapsed"/>
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="VisualStateGroup">

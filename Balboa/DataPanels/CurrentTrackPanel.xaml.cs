@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace Balboa
 {
-    public sealed partial class CurrentTrackPanel : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class CurrentTrackPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
  
@@ -191,13 +191,16 @@ namespace Balboa
             this.InitializeComponent();
          }
 
-        public CurrentTrackPanel(Server server):this()
+
+        public CurrentTrackPanel(Server server) : this()
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
             _server = server;
             _server.DataReady += _server_DataReady;
             _server.CurrentSong();
         }
+
+            
 
         public void Init(Server server)
         {
@@ -245,6 +248,11 @@ namespace Balboa
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            _server.DataReady -= _server_DataReady;
         }
     }
 }

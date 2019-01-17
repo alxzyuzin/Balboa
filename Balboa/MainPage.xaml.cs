@@ -39,6 +39,7 @@ namespace Balboa
     {
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
+        private MainMenu _mainMenu;
 
         public enum DataPanelState { CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings }
 
@@ -54,9 +55,10 @@ namespace Balboa
             _server.Error += OnServerError;
             _server.CriticalError += OnServerCriticalError;
 
-            var mainMenu = new MainMenu(_server);
-            mainMenu.ActionRequested += OnDataPanelActionRequested;
-            grid_Main.Children.Add(mainMenu); 
+            _mainMenu = new MainMenu(_server);
+            _mainMenu.RequestAction += OnDataPanelActionRequested;
+            grid_Main.Children.Add(_mainMenu);
+
             grid_Main.Children.Add(new PageHeader(_server));
             
 
@@ -67,16 +69,16 @@ namespace Balboa
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
         }
 
-        private void OnDataPanelActionRequested(Object sender, ActionParams actionParams)
+        private async void OnDataPanelActionRequested(Object sender, ActionParams actionParams)
         {
             if (actionParams.ActionType.HasFlag(ActionType.ActivateDataPanel))
             {
-                ActivatePanel(actionParams.PanelClassName);
+                ActivatePanel(actionParams.PanelClass);
             }
             if (actionParams.ActionType.HasFlag(ActionType.DisplayMessage))
             {
-                MsgBoxButton pressedButton = MsgBoxButton.Close;// = await DisplayMessage(actionParams.Message);
-                ((IDataPanel)sender).HandleUserResponse(pressedButton);
+                MsgBoxButton pressedButton = await DisplayMessage(actionParams.Message);
+                ((IRequestAction)sender).HandleUserResponse(pressedButton);
             }
         }
 
@@ -153,23 +155,28 @@ namespace Balboa
         }
 
         #endregion
-        private void ActivatePanel(string panelClassName)
+        private void ActivatePanel(Panels panelClass)
         {
             if (DataPanel.Child != null)
-                ((IActionRequested)DataPanel.Child).ActionRequested -= OnDataPanelActionRequested;
+            {
+                if (DataPanel.Child as IRequestAction != null)
+                    ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
+                ((IDisposable)DataPanel.Child).Dispose();
+            }
+            Type t = Type.GetType("Balboa." + panelClass.ToString());
+            if (t == null)  throw new ArgumentNullException($"Class '{panelClass.ToString()}' does not exist.");
+            var panel = Activator.CreateInstance(t, _server) as UserControl;
+            if (panel as IRequestAction != null)
+                ((IRequestAction)panel).RequestAction += OnDataPanelActionRequested;
+            DataPanel.Child = panel;
+            _mainMenu.SelectItem(panelClass);
 
-            Type t = Type.GetType("Balboa." + panelClassName);
-            if (t == null)  throw new ArgumentNullException($"Class '{panelClassName}' does not exist.");
-            IDataPanel panel = Activator.CreateInstance(t, _server) as IDataPanel;
-            DataPanel.Child = panel as UserControl;
-            //((IDataPanel)panel).Init(_server);
-            //((IDataPanel)panel).Update();
-            //((IActionRequested)panel).ActionRequested += OnDataPanelActionRequested;
 
-            //if (state == DataPanelState.CurrentTrack)
-            //    p_PageHeader.Visibility = Visibility.Collapsed;
-            //else
-            //    p_PageHeader.Visibility = Visibility.Visible;
+
+                //if (state == DataPanelState.CurrentTrack)
+                //    p_PageHeader.Visibility = Visibility.Collapsed;
+                //else
+                //    p_PageHeader.Visibility = Visibility.Visible;
         }
 
 

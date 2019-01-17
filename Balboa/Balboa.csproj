@@ -117,7 +117,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PlaylistPanel.xaml">
+    <Page Include="DataPanels\PlaylistPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,7 +169,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TrackDirectoryPanel.xaml">
+    <Page Include="DataPanels\TrackDirectoryPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -204,7 +204,7 @@
     <Compile Include="ControlPanel.xaml.cs">
       <DependentUpon>ControlPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PlaylistPanel.xaml.cs">
+    <Compile Include="DataPanels\PlaylistPanel.xaml.cs">
       <DependentUpon>PlaylistPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataPanels\CurrentTrackPanel.xaml.cs">
@@ -248,7 +248,7 @@
     <Compile Include="StatisticPanel.xaml.cs">
       <DependentUpon>StatisticPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TrackDirectoryPanel.xaml.cs">
+    <Compile Include="DataPanels\TrackDirectoryPanel.xaml.cs">
       <DependentUpon>TrackDirectoryPanel.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
