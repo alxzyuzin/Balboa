@@ -176,9 +176,10 @@ namespace Balboa
         public AppSettings Settings { get { return _appSettings; } }
         public string MusicCollectionFolder => _appSettings.MusicCollectionFolder;
         public string AlbumCoverFileNames => _appSettings.AlbumCoverFileName;
+
         
-
-
+        public string PlaylistName { get; set; }
+        
         public bool Initialized { get; private set; } = false;
         private string      _strConnectionState;
         

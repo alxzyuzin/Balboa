@@ -7,12 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <UserControl.Resources>
         <!-- ШАБЛОН для представления элемента SAVED PLAYLIST -->
         <DataTemplate x:Key="SavedPlaylistItemTemplate">
-            <Grid x:Name="gr_FileSystemItemTemplate" Margin="20,5,0,5">
+            <Grid Margin="20,5,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="60" />
                     <ColumnDefinition Width="*" />
@@ -20,7 +21,8 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock  Grid.Column="0"  Text="{Binding Icon}"  FontFamily="Segoe UI Symbol" FontSize="30"  />
-                <TextBlock  Grid.Column="1"  Text="{Binding Name}"  TextWrapping="WrapWholeWords" FontFamily="Segoe UI Symbol" FontSize="22" VerticalAlignment="Top" />
+                <TextBlock  Grid.Column="1"  Text="{Binding Name}"  TextWrapping="WrapWholeWords" FontFamily="Segoe UI Symbol" 
+                            FontSize="22" VerticalAlignment="Top" />
                 <TextBlock  Grid.Column="2" />
             </Grid>
         </DataTemplate>
@@ -48,20 +50,16 @@
         <RowDefinition Height="87"/>
     </Grid.RowDefinitions>
 
-    <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="100"/>
-        <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
-    <GridView x:Name="gr_SavedPlaylistsContent" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                      SelectionMode="Single" 
+  
+    <GridView x:Name="gr_SavedPlaylists" Grid.Row="0" SelectionMode="Single" Margin="0,0,20,0" 
                       ItemTemplate="{StaticResource SavedPlaylistItemTemplate}" 
-                      ItemContainerStyle="{StaticResource GridViewItemStyle}"/>
-    <StackPanel  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch"  
-                         Margin="5,0,5,5" Background="{StaticResource MainBackgroundBrush}"/>
-    <StackPanel  Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-        <AppBarButton x:Name="appbtn_SavedPlaylistLoad" Icon="OpenFile" Label="Load" Click="appbtn_SavedPlaylistLoad_Click" />
-        <AppBarButton x:Name="appbtn_SavedPlaylistDelete" Icon="Delete" Label="Delete" Tapped="appbtn_SavedPlaylistDelete_Tapped"/>
-        <AppBarButton x:Name="appbtn_SavedPlaylistRename" Icon="Rename" Label="Rename" Tapped="appbtn_SavedPlaylistRename_Tapped"/>
+                      ItemContainerStyle="{StaticResource GridViewItemStyle}"
+                      ItemsSource="{Binding Items}"  />
+   
+    <StackPanel  Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+        <AppBarButton Icon="OpenFile" Label="Load" Click="appbtn_SavedPlaylistLoad_Click" />
+        <AppBarButton Icon="Delete" Label="Delete" Tapped="appbtn_SavedPlaylistDelete_Tapped"/>
+        <AppBarButton Icon="Rename" Label="Rename" Tapped="appbtn_SavedPlaylistRename_Tapped"/>
     </StackPanel>
 
     </Grid>

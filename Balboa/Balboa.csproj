@@ -145,7 +145,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SavedPlaylistsPanel.xaml">
+    <Page Include="DataPanels\SavedPlaylistsPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -228,7 +228,7 @@
     <Compile Include="OutputsPanel.xaml.cs">
       <DependentUpon>OutputsPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SavedPlaylistsPanel.xaml.cs">
+    <Compile Include="DataPanels\SavedPlaylistsPanel.xaml.cs">
       <DependentUpon>SavedPlaylistsPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="SearchPanel.xaml.cs">

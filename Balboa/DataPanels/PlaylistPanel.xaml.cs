@@ -80,10 +80,12 @@ namespace Balboa
                 {
                     _loadedPlaylistName = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LoadedPlaylistName)));
+
+                    PlaylistNameVisibility = _loadedPlaylistName?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
         }
-        
+
         public PlaylistPanel()
         {
             InitializeComponent();
@@ -98,6 +100,9 @@ namespace Balboa
 
             _server.PlaylistInfo();
             _server.CurrentSong();
+
+            LoadedPlaylistName = _server.PlaylistName;
+//            PlaylistNameVisibility = _loadedPlaylistName.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void Init(Server server)
@@ -179,7 +184,9 @@ namespace Balboa
             _playlist.Clear();
             _playlist.NotifyCollectionChanged();
             _server.Clear();
-          
+
+            LoadedPlaylistName = _server.PlaylistName = TemporaryPlaylistName = string.Empty;
+
             //Update();
         }
 
@@ -255,14 +262,13 @@ namespace Balboa
         {
             if (_popupLastPressedBatton == popupLastPressedButton.Save)
             {
-                LoadedPlaylistName = TemporaryPlaylistName;
+                LoadedPlaylistName = _server.PlaylistName = TemporaryPlaylistName;
                 string str = _temporaryPlaylistName;
                 Encoding encoding = Encoding.Unicode;
                 byte[] encBytes = encoding.GetBytes(str);
                 byte[] utf8Bytes = Encoding.Convert(encoding, Encoding.UTF8, encBytes);
                 str = Encoding.UTF8.GetString(utf8Bytes, 0, utf8Bytes.Length);
                 _server.Save(str);
-                PlaylistNameVisibility = _loadedPlaylistName.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
             }
         }
     }

@@ -11,10 +11,11 @@ using Windows.UI.Xaml;
 
 namespace Balboa
 {
-    public sealed partial class SavedPlaylistsPanel : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class SavedPlaylistsPanel : UserControl, INotifyPropertyChanged, IDataPanel,
+                                                                   IRequestAction, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public event ActionRequestedEventHandler ActionRequested;
+        public event ActionRequestedEventHandler RequestAction;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
@@ -26,11 +27,23 @@ namespace Balboa
         public SavedPlaylistsPanel()
         {
             this.InitializeComponent();
-            this.DataContext = this;
+        }
+
+
+        public SavedPlaylistsPanel(Server server):this()
+        {
+            if (server == null) throw new ArgumentNullException(nameof(server));
+
+            _server = server;
+            _server.DataReady += _server_DataReady;
+
+            _server.ListPlaylists();
         }
 
         public void Init(Server server)
         {
+            if (server == null) throw new ArgumentNullException(nameof(server));
+
             _server = server;
             _server.DataReady += _server_DataReady;
         }
@@ -54,44 +67,45 @@ namespace Balboa
                         commonGridItem.Update(mpdData.Content);
                         _items.Add(commonGridItem);
                     }
-                    //_foundTracks.NotifyCollectionChanged();
                 }
             }
         }
 
-        private async void appbtn_SavedPlaylistLoad_Click(object sender, RoutedEventArgs e)
+        private void appbtn_SavedPlaylistLoad_Click(object sender, RoutedEventArgs e)
         {
-            //File fi = gr_SavedPlaylistsContent.SelectedItem as File;
-            //if (fi == null)
-            //{
-            //    await MessageBox(_resldr.GetString("PlaylistLoading"),
-            //                     _resldr.GetString("PlaylisNotSelectedForLoad"), MsgBoxButtons.Continue);
-            //}
-            //else
-            //{
-            //    //_currentPlaylistName = fi.Name;
-            //    _server.Load(fi.Name);
-            //}
+            if (gr_SavedPlaylists.SelectedItems.Count == 0)
+            {
+                var message = new Message(MsgBoxType.Info, _resldr.GetString("PlaylisNotSelectedForLoad"), 
+                                          MsgBoxButton.Continue, 150);
+                RequestAction?.Invoke(this, new ActionParams(message));
+            }
+            else
+            {
+                _server.PlaylistName = (gr_SavedPlaylists.SelectedItem as CommonGridItem).Name;
+                _server.Load(_server.PlaylistName);
+                RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel, Panels.PlaylistPanel));
+            }
         }
 
-        private async void appbtn_SavedPlaylistDelete_Tapped(object sender, TappedRoutedEventArgs e)
+        private void appbtn_SavedPlaylistDelete_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //File fi = gr_SavedPlaylistsContent.SelectedItem as File;
-            //if (fi == null)
-            //{
-            //    await MessageBox(_resldr.GetString("PlaylistDeleting"),
-            //                     _resldr.GetString("PlaylistNotSelectedForDelete"), MsgBoxButtons.Continue);
-            //}
-            //else
-            //{
-            //    _server.Rm(fi.Name);
-            //    _server.ListPlaylists();
-            //}
+
+            if (gr_SavedPlaylists.SelectedItems.Count == 0)
+            {
+                var message = new Message(MsgBoxType.Info, _resldr.GetString("PlaylistNotSelectedForDelete"),
+                                          MsgBoxButton.Continue, 150);
+                RequestAction?.Invoke(this, new ActionParams(message));
+            }
+            else
+            {
+                _server.Rm((gr_SavedPlaylists.SelectedItem as CommonGridItem).Name);
+                _server.ListPlaylists();
+            }
         }
 
-        private async void appbtn_SavedPlaylistRename_Tapped(object sender, TappedRoutedEventArgs e)
+        private void appbtn_SavedPlaylistRename_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            File fi = gr_SavedPlaylistsContent.SelectedItem as File;
+            File fi = gr_SavedPlaylists.SelectedItem as File;
             //if (fi == null)
             //{
             //    await MessageBox(_resldr.GetString("PlaylistRename"),
@@ -108,7 +122,12 @@ namespace Balboa
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            _server.DataReady -= _server_DataReady;
         }
     }
 }

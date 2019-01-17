@@ -207,12 +207,9 @@ namespace Balboa
             //    path = _currentPath;
             if (gr_FileSystemContent.SelectedItems.Count == 0)
             {
-                var message = new Message();
-                message.Buttons = MsgBoxButton.Continue;
-                message.Text = _resldr.GetString("NoSelectedItemsToAdd");
-                message.BoxHeight = 100;
+                var message = new Message( MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"),
+                                           MsgBoxButton.Continue, 150);
                 RequestAction?.Invoke(this, new ActionParams(message));
-                //Message = new Message(MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButton.Close, 200);
                 return;
             }
             foreach (File item in gr_FileSystemContent.SelectedItems)

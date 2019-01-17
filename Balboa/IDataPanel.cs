@@ -53,12 +53,20 @@ namespace Balboa
         public Panels PanelClass { get; private set; }
     }
 
-    public struct Message
+    public class Message
     {
-        public MsgBoxType Type;
-        public string Text;
-        public MsgBoxButton Buttons;
-        public int BoxHeight;
+        public Message(MsgBoxType type, string text, MsgBoxButton buttons, int height)
+        {
+            Type = type;
+            Text = text;
+            Buttons = buttons;
+            BoxHeight = height;
+    }
+        
+        public MsgBoxType Type { get; private set; }
+        public string Text { get; private set; }
+        public MsgBoxButton Buttons { get; private set; }
+        public int BoxHeight { get; private set; }
     }
 
 } // class ActionParams
