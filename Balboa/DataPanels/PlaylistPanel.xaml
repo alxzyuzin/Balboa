@@ -69,6 +69,8 @@
         </Grid.RowDefinitions>
 
         
+
+
         <common:ListViewExtended x:Name="lv_PlayList"  Grid.Row="0"  VerticalContentAlignment="Stretch"  
                                            ItemBackground="#10F0F0F0" 
                                            ItemTemplate="{StaticResource ItemTemplate}" 
@@ -83,51 +85,33 @@
                    VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" TextWrapping="WrapWholeWords" 
                    Visibility="{Binding PlaylistContentVisibility}"
                    Margin="20,20,20,20"/>
-        <Border BorderBrush="Red" BorderThickness="2" Grid.Row="1">
-            <StackPanel  Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
-                <Popup x:Name="popup_GetPlaylistName" Closed="popup_GetPlaylistName_Closed">
-                <Popup.ChildTransitions>
-                    <TransitionCollection>
-                        <!--EntranceThemeTransition FromHorizontalOffset="200"/-->
 
-                        <!-- Окно въезжает сверху из непонятной позиции и останавливается в заданной позиции-->
-                        <!--EdgeUIThemeTransition Edge="Left"/-->
+        
 
-                        <!-- Окно въезжает справа и останавливается в заданной позиции-->
-                        <!--ContentThemeTransition HorizontalOffset="140"/-->
 
-                        <!-- Окно въезжает справа и останавливается в заданной позиции-->
-                        <!--EntranceThemeTransition IsStaggeringEnabled="True" FromHorizontalOffset="200" VirtualizingStackPanel.VirtualizationMode="Recycling"/-->
-
-                        <!-- Окно выезжает из заданной границы элемента управления-->
-                            <PaneThemeTransition Edge="Bottom"/>
-
-                            <!-- Окно постепенно проявляется -->
-                        <!--AddDeleteThemeTransition / -->
-
-                    </TransitionCollection>
-                </Popup.ChildTransitions>
-                <Border BorderThickness="2" BorderBrush="LightGray">
-                    <Grid Height="150" Width="400" Background="{StaticResource MainBackgroundBrush}">
-                        <TextBlock Text="Enter playlist name"  Margin="10,10,10,110"   Width="380" Height="30" FontSize="20"/>
-                        <TextBox   Text="{Binding TemporaryPlaylistName, Mode=TwoWay}"   Margin="18,40,23,70" Height="40" FontSize="22"/>
-                        <Button    Content="Save"              Margin="166,87,0,16"   Width="98"   
-                               Style="{StaticResource UtilityButtonStyle}"  Tapped="btn_PlaylistNameSave_Tapped"/>
-                        <Button    Content="Cancel"            Margin="280,87,0,16"  Width="100" 
-                               Style="{StaticResource UtilityButtonStyle}"  Tapped="btn_PlaylistNameCancel_Tapped"/>
-                    </Grid>
-                </Border>
-            </Popup>
-            </StackPanel>
-        </Border>
+       
+        
 
 
         <StackPanel  Grid.Row="2" HorizontalAlignment="Stretch" Visibility="{Binding PlaylistNameVisibility}">
             <TextBlock  Text="Playlist name : " FontSize="22"   VerticalAlignment="Center" Margin="20,10,0,0"/>
             <TextBlock  Text="{Binding LoadedPlaylistName}"    FontSize="22"   VerticalAlignment="Center" Margin="20,5,0,0"/>
+            
         </StackPanel>
 
-         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+       
+
+        <StackPanel x:Name="AppBarButtons" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <StackPanel>
+                <Popup x:Name="popup_GetPlaylistName" VerticalOffset="-155" HorizontalOffset="-150">
+                    <Popup.ChildTransitions>
+                        <TransitionCollection>
+                            <PaneThemeTransition Edge="Bottom"/>
+                        </TransitionCollection>
+                    </Popup.ChildTransitions>
+                </Popup>
+            </StackPanel>
+
             <AppBarButton Icon="Save"    Label="Save"               Tapped="appbtn_Playlist_Save_Tapped"/>
             <AppBarButton Icon="Delete"  Label="Delete Selected"    Tapped="appbtn_Playlist_DeleteSelected_Tapped"/>
             <AppBarButton Icon="Clear"   Label="Clear"              Tapped="appbtn_Playlist_Clear_Tapped"/>

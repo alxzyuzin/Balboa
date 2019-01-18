@@ -8,6 +8,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using System.Linq;
+using Windows.UI.Xaml.Controls.Primitives;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -42,20 +43,8 @@ namespace Balboa
             }
         }
 
-        private string _temporaryPlaylistName = string.Empty;
-        public string TemporaryPlaylistName
-        {
-            get { return _temporaryPlaylistName; }
-            set
-            {
-                if (_temporaryPlaylistName != value)
-                {
-                    _temporaryPlaylistName = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TemporaryPlaylistName)));
-                }
-            }
-        }
-
+        //private string _temporaryPlaylistName = string.Empty;
+        
         public Visibility _playlistNameVisibility = Visibility.Collapsed;
         public Visibility PlaylistNameVisibility
         {
@@ -185,7 +174,7 @@ namespace Balboa
             _playlist.NotifyCollectionChanged();
             _server.Clear();
 
-            LoadedPlaylistName = _server.PlaylistName = TemporaryPlaylistName = string.Empty;
+            LoadedPlaylistName = _server.PlaylistName = string.Empty;
 
             //Update();
         }
@@ -217,30 +206,43 @@ namespace Balboa
 
         private void appbtn_Playlist_Save_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            TemporaryPlaylistName = LoadedPlaylistName;
-            RequestNewPlaylistName();
-        }
+            if (popup_GetPlaylistName.IsOpen)
+            {
+                popup_GetPlaylistName.IsOpen = false;
+                return;
+            }
+            var playlistNameInput = new PlaylistNameInput(LoadedPlaylistName);
 
-        private popupLastPressedButton _popupLastPressedBatton;
-        private void btn_PlaylistNameSave_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _popupLastPressedBatton = popupLastPressedButton.Save;
-            popup_GetPlaylistName.IsOpen = false;
-        }
-
-        private void btn_PlaylistNameCancel_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            _popupLastPressedBatton = popupLastPressedButton.Cancel;
-            popup_GetPlaylistName.IsOpen = false;
-        }
-
-        private void RequestNewPlaylistName()
-        {
-//            CoreWindow currentWindow = Window.Current.CoreWindow;
-            popup_GetPlaylistName.VerticalOffset = -155;
+            
+            playlistNameInput.PropertyChanged += (object snd, PropertyChangedEventArgs args) =>
+            {
+                if (args.PropertyName == "PlaylistName")
+                {
+                    if (playlistNameInput.PlaylistName.Length > 0)
+                    {
+                        _server.PlaylistName = LoadedPlaylistName = playlistNameInput.PlaylistName;
+                        _server.Save(playlistNameInput.PlaylistNameUTF8);
+                    }
+                }
+            };
+            popup_GetPlaylistName.Child = playlistNameInput;
             popup_GetPlaylistName.IsOpen = true;
-
         }
+
+        //private void RequestNewPlaylistName()
+        //{
+        //    var playlistNameInput = new PlaylistNameInput(LoadedPlaylistName);
+        //    playlistNameInput.PropertyChanged += (object sender, PropertyChangedEventArgs args) =>
+        //    {
+        //        if (args.PropertyName == "PlaylistName")
+        //        {
+        //            _server.PlaylistName = LoadedPlaylistName = playlistNameInput.PlaylistName;
+        //            _server.Save(playlistNameInput.PlaylistNameUTF8);
+        //        }
+        //    };
+        //    popup_GetPlaylistName.Child = playlistNameInput;
+        //    popup_GetPlaylistName.IsOpen = true;
+        //}
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
@@ -251,25 +253,5 @@ namespace Balboa
         {
             _server.DataReady -= _server_DataReady;
         }
-
-        private enum popupLastPressedButton
-        {
-            Save,
-            Cancel
-        }
-       
-        private void popup_GetPlaylistName_Closed(object sender, object e)
-        {
-            if (_popupLastPressedBatton == popupLastPressedButton.Save)
-            {
-                LoadedPlaylistName = _server.PlaylistName = TemporaryPlaylistName;
-                string str = _temporaryPlaylistName;
-                Encoding encoding = Encoding.Unicode;
-                byte[] encBytes = encoding.GetBytes(str);
-                byte[] utf8Bytes = Encoding.Convert(encoding, Encoding.UTF8, encBytes);
-                str = Encoding.UTF8.GetString(utf8Bytes, 0, utf8Bytes.Length);
-                _server.Save(str);
-            }
-        }
-    }
+    } // class PlaylistPanel
 }

@@ -149,6 +149,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PlaylistNameInput.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SearchPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -230,6 +234,9 @@
     </Compile>
     <Compile Include="DataPanels\SavedPlaylistsPanel.xaml.cs">
       <DependentUpon>SavedPlaylistsPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PlaylistNameInput.xaml.cs">
+      <DependentUpon>PlaylistNameInput.xaml</DependentUpon>
     </Compile>
     <Compile Include="SearchPanel.xaml.cs">
       <DependentUpon>SearchPanel.xaml</DependentUpon>
