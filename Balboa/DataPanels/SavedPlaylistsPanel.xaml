@@ -55,12 +55,23 @@
                       ItemTemplate="{StaticResource SavedPlaylistItemTemplate}" 
                       ItemContainerStyle="{StaticResource GridViewItemStyle}"
                       ItemsSource="{Binding Items}"  />
-   
+
+    <TextBlock Grid.Row="0" Text="No saved playlists found."
+                   VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" TextWrapping="WrapWholeWords" 
+                   Visibility="{Binding SavedPlaylistsContentVisibility}"
+                   Margin="20,20,20,20"/>
+        
     <StackPanel  Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Popup x:Name="popup_GetPlaylistName" VerticalOffset="-155" HorizontalOffset="-120">
+           <Popup.ChildTransitions>
+               <TransitionCollection>
+                   <PaneThemeTransition Edge="Bottom"/>
+               </TransitionCollection>
+           </Popup.ChildTransitions>
+        </Popup>
         <AppBarButton Icon="OpenFile" Label="Load" Click="appbtn_SavedPlaylistLoad_Click" />
         <AppBarButton Icon="Delete" Label="Delete" Tapped="appbtn_SavedPlaylistDelete_Tapped"/>
         <AppBarButton Icon="Rename" Label="Rename" Tapped="appbtn_SavedPlaylistRename_Tapped"/>
     </StackPanel>
-
     </Grid>
 </UserControl>

@@ -13,7 +13,6 @@
 
      <Grid>
         <Grid.Resources>
-
             <common:TimeConverter  x:Key="TimeConverter"/>
             <common:PlaylistItemStyleSelector x:Key="PlaylistItemStyleSelector"/>
 
@@ -64,12 +63,8 @@
         
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="0"/>
             <RowDefinition Height="85"/>
         </Grid.RowDefinitions>
-
-        
-
 
         <common:ListViewExtended x:Name="lv_PlayList"  Grid.Row="0"  VerticalContentAlignment="Stretch"  
                                            ItemBackground="#10F0F0F0" 
@@ -86,32 +81,19 @@
                    Visibility="{Binding PlaylistContentVisibility}"
                    Margin="20,20,20,20"/>
 
-        
-
-
-       
-        
-
-
-        <StackPanel  Grid.Row="2" HorizontalAlignment="Stretch" Visibility="{Binding PlaylistNameVisibility}">
+        <StackPanel  Grid.Row="1" HorizontalAlignment="Stretch" Visibility="{Binding PlaylistNameVisibility}">
             <TextBlock  Text="Playlist name : " FontSize="22"   VerticalAlignment="Center" Margin="20,10,0,0"/>
             <TextBlock  Text="{Binding LoadedPlaylistName}"    FontSize="22"   VerticalAlignment="Center" Margin="20,5,0,0"/>
-            
         </StackPanel>
 
-       
-
-        <StackPanel x:Name="AppBarButtons" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <StackPanel>
-                <Popup x:Name="popup_GetPlaylistName" VerticalOffset="-155" HorizontalOffset="-150">
-                    <Popup.ChildTransitions>
-                        <TransitionCollection>
-                            <PaneThemeTransition Edge="Bottom"/>
-                        </TransitionCollection>
-                    </Popup.ChildTransitions>
-                </Popup>
-            </StackPanel>
-
+        <StackPanel x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+             <Popup x:Name="popup_GetPlaylistName" VerticalOffset="-155" HorizontalOffset="-150">
+               <Popup.ChildTransitions>
+                   <TransitionCollection>
+                       <PaneThemeTransition Edge="Bottom"/>
+                   </TransitionCollection>
+               </Popup.ChildTransitions>
+            </Popup>
             <AppBarButton Icon="Save"    Label="Save"               Tapped="appbtn_Playlist_Save_Tapped"/>
             <AppBarButton Icon="Delete"  Label="Delete Selected"    Tapped="appbtn_Playlist_DeleteSelected_Tapped"/>
             <AppBarButton Icon="Clear"   Label="Clear"              Tapped="appbtn_Playlist_Clear_Tapped"/>
@@ -119,6 +101,4 @@
             <AppBarButton Icon="Shuffle" Label="Shuffle"            Tapped="appbtn_Playlist_Shaffle_Tapped"/>
         </StackPanel>
     </Grid>
-    
-    
 </UserControl>

@@ -22,7 +22,19 @@ namespace Balboa
         private ObservableCollection<CommonGridItem> _items = new ObservableCollection<CommonGridItem>();
         public ObservableCollection<CommonGridItem> Items => _items;
 
-        //_currentPlaylistName = _resldr.GetString("NewPlaylist");
+        private Visibility _savedPlaylistsContentVisibility = Visibility.Collapsed;
+        public Visibility SavedPlaylistsContentVisibility
+        {
+            get{ return _savedPlaylistsContentVisibility; }
+            set
+            {
+                if (_savedPlaylistsContentVisibility != value)
+                {
+                    _savedPlaylistsContentVisibility = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SavedPlaylistsContentVisibility)));
+                }
+            }
+        }
 
         public SavedPlaylistsPanel()
         {
@@ -69,6 +81,7 @@ namespace Balboa
                     }
                 }
             }
+            SavedPlaylistsContentVisibility = _items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void appbtn_SavedPlaylistLoad_Click(object sender, RoutedEventArgs e)
@@ -105,19 +118,28 @@ namespace Balboa
 
         private void appbtn_SavedPlaylistRename_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            File fi = gr_SavedPlaylists.SelectedItem as File;
-            //if (fi == null)
-            //{
-            //    await MessageBox(_resldr.GetString("PlaylistRename"),
-            //                     _resldr.GetString("PlaylistNotSelectedForRename"), MsgBoxButtons.Continue);
-            //}
-            //else
-            //{
-            //    //    _oldPlaylistName = fi.Name;
-            //    //    tbx_PlaylistName.Text = _oldPlaylistName;
-            //    //    _requestNewPlaylistNameMode = NewPlaylistNameRequestMode.RenamePlaylist;
-            //    //    RequestNewPlaylistName();
-            //}
+            if (popup_GetPlaylistName.IsOpen)
+                return;
+
+            if (gr_SavedPlaylists.SelectedItems.Count == 0)
+            {
+                var message = new Message(MsgBoxType.Info, _resldr.GetString("PlaylistNotSelectedForRename"),
+                                          MsgBoxButton.Continue, 150);
+                RequestAction?.Invoke(this, new ActionParams(message));
+                return;
+            }
+
+            var playlistNameInput = new PlaylistNameInput((gr_SavedPlaylists.SelectedItem as CommonGridItem).Name);
+            playlistNameInput.PropertyChanged += (object snd, PropertyChangedEventArgs args) =>
+            {
+                if (args.PropertyName == "PlaylistName")
+                {
+                    _server.Rename((gr_SavedPlaylists.SelectedItem as CommonGridItem).Name, playlistNameInput.PlaylistNameUTF8);
+                    _server.ListPlaylists();
+                }
+            };
+            popup_GetPlaylistName.Child = playlistNameInput;
+            popup_GetPlaylistName.IsOpen = true;
         }
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
