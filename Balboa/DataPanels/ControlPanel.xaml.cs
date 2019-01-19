@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace Balboa
 {
-    public sealed partial class ControlPanel : UserControl, INotifyPropertyChanged
+    public sealed partial class ControlPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -146,7 +146,13 @@ namespace Balboa
         public ControlPanel()
         {
             this.InitializeComponent();
-            DataContext = this;
+        }
+
+        public ControlPanel(Server server)
+        {
+            _server = server;
+            _server.DataReady += _server_DataReady;
+            _server.ConnectionStatusChanged += (Object obj, string status) => { ConnectionStatus = status; };
         }
 
         public void Init(Server server)
@@ -154,6 +160,12 @@ namespace Balboa
             _server = server;
             _server.DataReady += _server_DataReady;
             _server.ConnectionStatusChanged += (Object obj, string status) => { ConnectionStatus = status; };
+        }
+
+        public void Update()
+        {
+            _server.CurrentSong();
+            _server.Status();
         }
 
         private void _server_DataReady(object sender, EventArgs e)
@@ -247,6 +259,13 @@ namespace Balboa
         {
             _server.Stop();
         }
+
+        private void btn_Restart_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            _server.Restart();
+        }
+
+
 
         #region VOLUME CONTROL
         private void appbtn_Volume_Tapped(object sender, TappedRoutedEventArgs e)
@@ -377,10 +396,17 @@ namespace Balboa
             _server.SeekCurrent(soffset);
             _seekBarIsBeingDragged = false;
         }
+
+       
+        
         #endregion
 
 
-      
+        public void Dispose()
+        {
+            _server.DataReady += _server_DataReady;
+            _server.ConnectionStatusChanged += (Object obj, string status) => { ConnectionStatus = status; };
+        }
 
     }
 }

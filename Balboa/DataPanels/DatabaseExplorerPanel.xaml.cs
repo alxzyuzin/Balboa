@@ -11,10 +11,11 @@ using Windows.UI.Xaml.Input;
 
 namespace Balboa
 {
-    public sealed partial class DatabaseExplorerPanel : UserControl, IDataPanel, INotifyPropertyChanged
+    public sealed partial class DatabaseExplorerPanel : UserControl, IDataPanel, INotifyPropertyChanged,
+                                                                     IRequestAction, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public event ActionRequestedEventHandler ActionRequested;
+        public event ActionRequestedEventHandler RequestAction;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
@@ -24,8 +25,15 @@ namespace Balboa
         public DatabaseExplorerPanel()
         {
             this.InitializeComponent();
-            this.DataContext = this;
         }
+
+        public DatabaseExplorerPanel(Server server):this()
+        {
+            _server = server;
+            _server.DataReady += _server_DataReady;
+            _server.List("Album");
+        }
+
 
         public void Init(Server server)
         {
@@ -143,9 +151,6 @@ namespace Balboa
             }
         }
 
-
-      
-
         private void listview_Arists_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var lv = sender as ListViewExtended;
@@ -171,7 +176,12 @@ namespace Balboa
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
-            throw new NotImplementedException();
+           // throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            _server.DataReady -= _server_DataReady;
         }
     }
 }

@@ -8,18 +8,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="140"
-    d:DesignWidth="600">
+    d:DesignWidth="800"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
     
     <Grid>
         <Grid.Resources>
             <common:TimeConverter  x:Key="TimeConverter"/>
-            
         </Grid.Resources>
         <StackPanel x:Name="stp_ServerStatus">
-
-            <Grid  x:Name="gr_SongTimes"  Margin="20,10,20,0">
-                <!-- Длительность трека и время от начала воспроизведения трека-->
-
+            <!-- Длительность трека и время от начала воспроизведения трека-->
+            <Grid Margin="20,10,20,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="70"/>
                     <ColumnDefinition Width="*"/>
@@ -35,16 +33,18 @@
                      ManipulationCompleted="pb_Progress_ManipulationCompleted" 
                      Tapped="pb_Progress_Tapped"
                      PointerWheelChanged="pb_Progress_PointerWheelChanged"  
-                        d:IsLocked="True"   ManipulationMode="TranslateX" />
-                <TextBlock Grid.Column="0"  TextAlignment="Left"   Text="{Binding TimeLeft, Converter={StaticResource TimeConverter}}"  FontSize="15" HorizontalAlignment="Left"/>
-                <TextBlock Grid.Column="2"  TextAlignment="Right"  Text="{Binding TimeElapsed, Converter={StaticResource TimeConverter}}" FontSize="15" />
-                <TextBlock Grid.Column="3"  TextAlignment="Center" Text="/" FontSize="15"  />
-                <TextBlock Grid.Column="4"  TextAlignment="Left"   Text="{Binding Duration, Converter={StaticResource TimeConverter}}" FontSize="15"/>
+                     ManipulationMode="TranslateX"/>
+                <TextBlock Grid.Column="0"  TextAlignment="Left" FontSize="15" HorizontalAlignment="Left"
+                           Text="{Binding TimeLeft, Converter={StaticResource TimeConverter}}"  />
+                <TextBlock Grid.Column="2"  TextAlignment="Right" FontSize="15" 
+                           Text="{Binding TimeElapsed, Converter={StaticResource TimeConverter}}" />
+                <TextBlock Grid.Column="3" TextAlignment="Center"  FontSize="15"  
+                           Text="/" />
+                <TextBlock Grid.Column="4"  TextAlignment="Left"  FontSize="15"
+                           Text="{Binding Duration, Converter={StaticResource TimeConverter}}"/>
             </Grid>
-
+            <!-- Кнопки управления воспроизведением-->
             <Grid  x:Name="grid_PlayControls" Height="80" Margin="0,20,0,0" >
-                <!-- Кнопки управления воспроизведением-->
-          
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="40*" x:Name="grid_PlayControls_VolumeColumn"/>
@@ -53,6 +53,7 @@
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="20*"/>
                     <ColumnDefinition Width="100" x:Name="grid_PlayControls_StopColumn"/>
+                    <ColumnDefinition Width="100" x:Name="grid_PlayControls_RestartColumn"/>
                     <ColumnDefinition Width="10*"/>
                 </Grid.ColumnDefinitions>
 
@@ -67,6 +68,7 @@
                 <Button       x:Name="appbtn_PlayPause" Grid.Column="3"  Content="{Binding PlayPauseButtonContent}" Tapped="btn_PlayPause_Tapped" Style="{StaticResource PlayButtonStyle}"/>
                 <AppBarButton x:Name="appbtn_NextTrack" Grid.Column="4" Icon="Next"      Tapped="btn_NextTrack_Tapped"  FontWeight="Light" />
                 <AppBarButton x:Name="appbtn_Stop"      Grid.Column="6" Icon="Stop"      Tapped="btn_Stop_Tapped"  FontWeight="Light"/>
+                <AppBarButton x:Name="appbtn_Restart"   Grid.Column="7" Icon="Link"      Tapped="btn_Restart_Tapped"  FontWeight="Light"/>
             </Grid>
             <Grid Height="25">
                 <!-- Параметры воспроизведения и статус соединения -->
@@ -87,17 +89,7 @@
                 </TransitionCollection>
             </Popup.ChildTransitions>
 
-            <Border BorderThickness="0" BorderBrush="LightGray">
-                <Grid Height="350" Width="70" Background="Gray">
-                    <Slider  x:Name="sl_VerticalVolume" Grid.Row="0" Grid.Column="1"  
-                             HorizontalAlignment="Stretch"  Orientation="Vertical"
-                             Margin="0,10,15,10"   VerticalAlignment="Stretch" Height="300"  Width="22"
-                             Foreground="Orange"  Background="LightGray"
-                             Minimum="0" Maximum="100" Value="{Binding Volume}"
-                             ValueChanged="sl_Volume_ValueChanged"
-                             PointerWheelChanged="sl_Volume_PointerWheelChanged"/>
-                </Grid>
-            </Border>
+            
         </Popup>
 
     </Grid>

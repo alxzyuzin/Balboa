@@ -10,7 +10,6 @@
 <Page
     x:Name="pageRoot"
     x:Class="Balboa.MainPage"
-    DataContext="{Binding Server, RelativeSource={RelativeSource Self}}"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Balboa"
@@ -35,6 +34,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <!--  PЗАГОЛОВОК ОКНА row=0 column=1 -->
+        <local:PageHeader x:Name="PageHeaderPanel" Grid.Row="0" Grid.Column="1"/>
         <!-- Главное меню row = 0 column = 0 -->
         <!-- local:MainMenu x:Name="p_MainMenu"    Grid.Row="0" Grid.Column="0" Visibility="Visible" Grid.RowSpan="2" Margin="0,50,0,0"/ -->
         <!-- Grid.Column="1" Grid.Row="0"/ -->
@@ -50,9 +50,9 @@
             <local:Settings x:Name="p_Settings" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" d:IsHidden="True" />
         -->
         <!-- PLAY MODES --> 
-        <local:PlayMode x:Name="p_PlayMode" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2"/>
+        <local:PlayMode x:Name="PlayModePanel" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2"/>
         <!-- Панель управления проигрыванием -->
-        <local:ControlPanel x:Name="p_ControlPanel" Grid.Row="3" Grid.Column="1"/>
+        <local:ControlPanel x:Name="PlayControlPanel" Grid.Row="3" Grid.Column="1"/>
 
         <local:MessageBox x:Name="MsgBox" Grid.Row="0" Grid.Column="0" 
                           Grid.ColumnSpan="2" Grid.RowSpan="4" Visibility="Collapsed"/>

@@ -1,27 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Balboa.Common;
+using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Balboa.Common;
-using System.Collections.ObjectModel;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Balboa
 {
-    public sealed partial class SearchPanel : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class SearchPanel : UserControl, INotifyPropertyChanged, IDataPanel,
+        IDisposable
+
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler ActionRequested;
@@ -35,7 +27,12 @@ namespace Balboa
         public SearchPanel()
         {
             this.InitializeComponent();
-            this.DataContext = this;
+        }
+
+        public SearchPanel(Server server):this()
+        {
+            _server = server;
+            _server.DataReady += _server_DataReady;
         }
 
         public void Init(Server server)
@@ -82,7 +79,7 @@ namespace Balboa
             }
         }
 
-        private async void appbtn_Search_AddToPaylist_Tapped(object sender, TappedRoutedEventArgs e)
+        private void appbtn_Search_AddToPaylist_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (listview_Search.SelectedItems.Count > 0)
             {
@@ -121,7 +118,12 @@ namespace Balboa
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
-            throw new NotImplementedException();
+          //  throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            _server.DataReady -= _server_DataReady;
         }
     }
 }

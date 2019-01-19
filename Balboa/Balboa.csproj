@@ -113,7 +113,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ControlPanel.xaml">
+    <Page Include="DataPanels\ControlPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -125,7 +125,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DatabaseExplorerPanel.xaml">
+    <Page Include="DataPanels\DatabaseExplorerPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -153,7 +153,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SearchPanel.xaml">
+    <Page Include="DataPanels\SearchPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -169,11 +169,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="StatisticPanel.xaml">
+    <Page Include="DataPanels\StatisticPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="DataPanels\TrackDirectoryPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="VolumeInput.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -205,7 +209,7 @@
     <Compile Include="Common\Status.cs" />
     <Compile Include="Common\TimeConverter.cs" />
     <Compile Include="Common\Utils.cs" />
-    <Compile Include="ControlPanel.xaml.cs">
+    <Compile Include="DataPanels\ControlPanel.xaml.cs">
       <DependentUpon>ControlPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataPanels\PlaylistPanel.xaml.cs">
@@ -214,7 +218,7 @@
     <Compile Include="DataPanels\CurrentTrackPanel.xaml.cs">
       <DependentUpon>CurrentTrackPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DatabaseExplorerPanel.xaml.cs">
+    <Compile Include="DataPanels\DatabaseExplorerPanel.xaml.cs">
       <DependentUpon>DatabaseExplorerPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="IDataPanel.cs" />
@@ -238,7 +242,7 @@
     <Compile Include="PlaylistNameInput.xaml.cs">
       <DependentUpon>PlaylistNameInput.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SearchPanel.xaml.cs">
+    <Compile Include="DataPanels\SearchPanel.xaml.cs">
       <DependentUpon>SearchPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataPanels\PageHeader.xaml.cs">
@@ -252,11 +256,14 @@
     <Compile Include="SettingsPanel.xaml.cs">
       <DependentUpon>SettingsPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="StatisticPanel.xaml.cs">
+    <Compile Include="DataPanels\StatisticPanel.xaml.cs">
       <DependentUpon>StatisticPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataPanels\TrackDirectoryPanel.xaml.cs">
       <DependentUpon>TrackDirectoryPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VolumeInput.xaml.cs">
+      <DependentUpon>VolumeInput.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
