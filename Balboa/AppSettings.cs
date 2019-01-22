@@ -47,7 +47,7 @@ namespace Balboa
         }
 
         private string _server = "localhost";
-        public string Server
+        public string ServerName
         {
             get
             {
@@ -209,7 +209,7 @@ namespace Balboa
                 return;
 
             value = LocalSettings.Values["Server"];
-            if (value != null) Server = (string)value;
+            if (value != null) ServerName = (string)value;
 
             value = LocalSettings.Values["Port"];
             if (value != null) Port = (string)value;
@@ -239,7 +239,7 @@ namespace Balboa
             InitialSetupDone = false;
             ApplicationDataContainer LocalSettings = ApplicationData.Current.LocalSettings;
                 
-            LocalSettings.Values["Server"] = Server;
+            LocalSettings.Values["ServerName"] = ServerName;
             LocalSettings.Values["Port"] = Port;
             LocalSettings.Values["ViewUpdateInterval"] = ViewUpdateInterval;
             LocalSettings.Values["Password"] = Password;
@@ -248,7 +248,7 @@ namespace Balboa
             LocalSettings.Values["AlbumCoverFileName"] = AlbumCoverFileName;
             LocalSettings.Values["DisplayFolderPictures"] = DisplayFolderPictures;
 
-            if (Server != null & Port != null & ViewUpdateInterval!=null)
+            if (ServerName != null & Port != null & ViewUpdateInterval!=null)
                 LocalSettings.Values["InitialSetupDone"] = InitialSetupDone = true;
 
             _settingsChanged = false;
@@ -260,7 +260,7 @@ namespace Balboa
         public void SetDefault()
         {
             InitialSetupDone = false;
-            Server = "localhost";
+            ServerName = "localhost";
             Port = "6600";
             ViewUpdateInterval = "500" ;
             AlbumCoverFileName = "folder.jpg;cover.jpg";

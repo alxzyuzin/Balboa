@@ -208,13 +208,14 @@ namespace Balboa
 
         #endregion
 
-        public Server(MainPage mainPage)
+        public Server()
         {
+            _appSettings = new AppSettings();
             _appSettings.Restore();
 
             if (_appSettings.InitialSetupDone)
             {
-                Host = _appSettings.Server;
+                Host = _appSettings.ServerName;
                 Port = _appSettings.Port;
                 Password = _appSettings.Password;
                 ViewUpdateInterval = int.Parse(_appSettings.ViewUpdateInterval, System.Globalization.CultureInfo.InvariantCulture);
@@ -228,24 +229,38 @@ namespace Balboa
 
             //-------------------------------------------------------------------------------------
 
-            _mainPage = mainPage;
+            //_mainPage = mainPage;
 
 //            _Statistics =   new Statistic(_mainPage);
 //            _Status =       new Status(_mainPage);
 //            _CurrentSong =  new CurrentSong(_mainPage);
 
 //            _Playlist =     new ObservableObjectCollection<Track>(_mainPage);
-            _SavedPlaylists = new ObservableObjectCollection<File>(_mainPage);
+//            _SavedPlaylists = new ObservableObjectCollection<File>(_mainPage);
 //            _Artists =      new ObservableObjectCollection<CommonGridItem>(_mainPage);
 //            _Genres =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
 //            _Albums =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
-            _Tracks =       new ObservableObjectCollection<Track>(_mainPage);
+//            _Tracks =       new ObservableObjectCollection<Track>(_mainPage);
 
             _Connection.PropertyChanged += (object obj, PropertyChangedEventArgs args )=> 
                                     {
                                         if (args.PropertyName == nameof(Connection.Status))
                                             ConnectionStatusChanged?.Invoke(this, _Connection.Status);
                                     };
+        }
+
+        public void Init(AppSettings settings)
+        {
+            _appSettings = settings;
+            if (_appSettings.InitialSetupDone)
+            {
+                Host = _appSettings.ServerName;
+                Port = _appSettings.Port;
+                Password = _appSettings.Password;
+                ViewUpdateInterval = int.Parse(_appSettings.ViewUpdateInterval, System.Globalization.CultureInfo.InvariantCulture);
+                Initialized = true;
+            }
+
         }
 
         #region Методы
@@ -325,11 +340,11 @@ namespace Balboa
             _SentCommandQueue.Clear();
             _Response = string.Empty;
 //            _Playlist.ClearAndNotify();
-            _SavedPlaylists.ClearAndNotify();
+//            _SavedPlaylists.ClearAndNotify();
 //            _Artists.ClearAndNotify();
 //            _Genres.ClearAndNotify();
 //            _Albums.ClearAndNotify();
-            _Tracks.ClearAndNotify();
+//            _Tracks.ClearAndNotify();
          }
         /// <summary>
         ///  Обработчик команд из очери команд

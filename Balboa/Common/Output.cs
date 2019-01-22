@@ -12,7 +12,7 @@ using System.Globalization;
 
 namespace Balboa.Common
 {
-    public class Output //: INotifyPropertyChanged, IUpdatable
+    public class Output 
     {
         public int    Id { get; set; }
         public string Name { get; set; }

@@ -38,7 +38,7 @@ namespace Balboa
     public partial class MainPage : Page
     {
         private ResourceLoader _resldr = new ResourceLoader();
-        private Server _server;
+        private Server _server  = new Server();
         private MainMenu _mainMenu;
 
         public enum DataPanelState { CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings }
@@ -49,8 +49,6 @@ namespace Balboa
             Application.Current.Suspending += OnSuspending;
             Application.Current.Resuming += OnResuming;
             this.SizeChanged += MainPage_SizeChanged;
-
-            _server = new Server(this);
 
             _server.Error += OnServerError;
             _server.CriticalError += OnServerCriticalError;

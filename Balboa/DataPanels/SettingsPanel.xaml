@@ -76,7 +76,7 @@
         <TextBlock Text="Server" Grid.Row="2" Grid.Column="0" Style="{StaticResource  SettingsTextBlockStyle}"/>
         <TextBox   x:Name="tbx_Server"  Grid.Row="2" Grid.Column="1" Width="150" 
                            Style="{StaticResource  SettingsTextBoxStyle }"
-                           Text="{Binding Server, Mode=TwoWay}"/>
+                           Text="{Binding ServerName, Mode=TwoWay}"/>
 
         <TextBlock Text="Port" Grid.Row="3" Grid.Column="0"  Style="{StaticResource SettingsTextBlockStyle}"/>
         <TextBox   x:Name="tbx_Port" Text="{Binding Port, Mode=TwoWay}" Grid.Row="3" Grid.Column="1"  Width="80" Style="{StaticResource  SettingsTextBoxStyle }"/>
@@ -113,7 +113,7 @@
 
         <TextBlock Text="Album cover file name" Grid.Row="10" Grid.Column="0"  Grid.RowSpan="2" 
                            Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
-        <TextBox   x:Name="tbx_AlbumCoverFileName" Text="{Binding AlbumCoverFileName, Mode=TwoWay}"  Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2"
+        <TextBox   x:Name="tbx_AlbumCoverFileName" Text="{Binding AlbumCoverFileNames, Mode=TwoWay}"  Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2"
                            HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }" Grid.RowSpan="2" VerticalAlignment="Top"/>
         <TextBlock Text="File names separated with semicolon" Grid.Row="10" Grid.Column="3"  
                            Style="{StaticResource SettingsTextBlockStyle}" TextWrapping="WrapWholeWords"
@@ -125,12 +125,12 @@
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
         <StackPanel  Grid.Row="14" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right"  Grid.ColumnSpan="5" >
-            <AppBarButton x:Name="appbtn_StartSession" Icon="Preview" Label="Start session" Tapped="appbtn_StartSession_Tapped"  HorizontalAlignment="Right" Visibility="Visible"/>
-            <AppBarButton x:Name="appbtn_StopSession" Icon="Preview" Label="Stop session"  Tapped="appbtn_StopSession_Tapped" HorizontalAlignment="Right" Visibility="Visible"/>
+            <AppBarButton Icon="Preview" Label="Start session" Tapped="appbtn_StartSession_Tapped"  HorizontalAlignment="Right" Visibility="Visible"/>
+            <AppBarButton Icon="Preview" Label="Stop session"  Tapped="appbtn_StopSession_Tapped" HorizontalAlignment="Right" Visibility="Visible"/>
             <AppBarSeparator Visibility="Collapsed"/>
-            <AppBarButton x:Name="appbtn_TestConnection" Icon="Preview" Label="Test connection" Tapped="appbtn_TestConnection_Tapped" HorizontalAlignment="Right"/>
+            <AppBarButton Icon="Preview" Label="Test connection" Tapped="appbtn_TestConnection_Tapped" HorizontalAlignment="Right"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="appbtn_SaveSettings" Icon="Save" Label="Save" Tapped="appbtn_SaveSettings_Tapped" />
+            <AppBarButton Icon="Save" Label="Save" Tapped="appbtn_SaveSettings_Tapped" />
         </StackPanel>
     </Grid>
     
