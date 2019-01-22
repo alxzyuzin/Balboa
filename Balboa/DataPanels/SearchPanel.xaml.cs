@@ -74,7 +74,7 @@ namespace Balboa
             if (textbox_Search.Text.Length > 0)
             {
                 textblock_SearchResult.Text = _resldr.GetString("Searching");
-                _server.Tracks.ClearAndNotify();
+//                _server.Tracks.ClearAndNotify();
                 _server.Search("any", textbox_Search.Text);
             }
         }

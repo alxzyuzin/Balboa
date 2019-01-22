@@ -158,7 +158,7 @@ namespace Balboa
             if (si != null)
             {
                 //                _server.Albums.ClearAndNotify();
-                _server.Tracks.ClearAndNotify();
+                //_server.Tracks.ClearAndNotify();
                 _server.List("album", "artist", si.Name);
             }
         }
@@ -169,7 +169,7 @@ namespace Balboa
             var si = lv.SelectedItem as CommonGridItem;
             if (si != null)
             {
-                _server.Tracks.ClearAndNotify();
+                //_server.Tracks.ClearAndNotify();
                 _server.Search("album", si.Name);
             }
         }

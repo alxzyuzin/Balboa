@@ -7,6 +7,7 @@
  *
  --------------------------------------------------------------------------*/
 
+using Balboa.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -50,8 +51,16 @@ namespace Balboa
             Application.Current.Resuming += OnResuming;
             this.SizeChanged += MainPage_SizeChanged;
 
-            _server.Error += OnServerError;
-            _server.CriticalError += OnServerCriticalError;
+            _server.DataReady += async (object server, MpdResponse e) =>
+                    {
+                        if (e.Keyword == ResponseKeyword.Error)
+                        {
+                            await DisplayMessage(new Message(MsgBoxType.Error, e.ErrorMessage, MsgBoxButton.Close, 200));
+                        }
+                    };
+
+            //_server.Error += OnServerError;
+            //_server.CriticalError += OnServerCriticalError;
 
             _mainMenu = new MainMenu(_server);
             _mainMenu.RequestAction += OnDataPanelActionRequested;
