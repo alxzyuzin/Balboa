@@ -146,7 +146,7 @@ namespace Balboa
             Password = _appSettings.Password;
             ViewUpdateInterval =_appSettings.ViewUpdateInterval;
             MusicCollectionFolder = _appSettings.MusicCollectionFolder;
-            AlbumCoverFileNames = _appSettings.AlbumCoverFileName;
+            AlbumCoverFileNames = _appSettings.AlbumCoverFileNames;
             DisplayFolderPictures  = _appSettings.DisplayFolderPictures;
 
             _musicCollectionFolderToken = _appSettings.MusicCollectionFolderToken;
@@ -226,7 +226,7 @@ namespace Balboa
             _appSettings.Password = Password;
             _appSettings.ViewUpdateInterval = ViewUpdateInterval;
             _appSettings.MusicCollectionFolder = MusicCollectionFolder;
-            _appSettings.AlbumCoverFileName = AlbumCoverFileNames;
+            _appSettings.AlbumCoverFileNames = AlbumCoverFileNames;
             _appSettings.DisplayFolderPictures = DisplayFolderPictures;
             _appSettings.MusicCollectionFolderToken = _musicCollectionFolderToken;
 
