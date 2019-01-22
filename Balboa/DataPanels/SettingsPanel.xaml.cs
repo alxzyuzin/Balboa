@@ -20,102 +20,46 @@ namespace Balboa
 
     
 
-    public sealed partial class SettingsPanel : UserControl, INotifyPropertyChanged, IDataPanel
+    public sealed partial class SettingsPanel : UserControl, INotifyPropertyChanged, IDataPanel, 
+                                                             IRequestAction, IDisposable
     {
-        public event PropertyChangedEventHandler   PropertyChanged;
-        public event ActionRequestedEventHandler ActionRequested;
-
-        //        public event EventHandler<DisplayMessageEventArgs>  MessageReady;
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event ActionRequestedEventHandler RequestAction;
 
         private AppSettings _appSettings;
         private Server _server;
-        private List<Output> _outputs =  new List<Output>();
+        //private List<Output> _outputs =  new List<Output>();
         private ResourceLoader _resldr = new ResourceLoader();
 
-        //private Message _message;
-        //public Message Message
-        //{
-        //    get { return _message; }
-        //    private set
-        //    {
-        //        if (_message != value)
-        //        {
-        //            _message = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-        //        }
-        //    }
-        //}
-
-        //private ControlAction _action;
-        //public ControlAction Action
-        //{
-        //    get { return _action; }
-        //    private set
-        //    {
-        //        if (_action != value)
-        //        {
-        //            _action = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Message)));
-        //        }
-        //    }
-        //}
-
-       
+               
 
         public SettingsPanel()
         {
             this.InitializeComponent();
         }
 
+
+        public SettingsPanel(Server server):this()
+        {
+            _server = server;
+            _appSettings = _server.Settings;
+//            this.DataContext = _appSettings;
+//            _server.DataReady += _server_DataReady;
+        }
+
+
+
         public void Init(Server server)
         {
             _server = server;
             _appSettings = server.Settings;
             this.DataContext = _appSettings;
-            _server.DataReady += _server_DataReady;
+            //_server.DataReady += _server_DataReady;
         }
 
         public void Update() { }
 
-        private void _server_DataReady(object sender, EventArgs e)
-        {
-            var mpdData = e as MpdResponse;
-            if (mpdData.Keyword == ResponseKeyword.OK && mpdData.Command.Op == "outputs")
-            {
-                UpdateDataCollection(mpdData.Content);
-                UpdateToggleSwitchPanel();
-            }
-        }
-
-
-        private void UpdateToggleSwitchPanel()
-        {
-            stp_Outputs.Children.Clear();
-
-            foreach (Output output in _outputs)
-            {
-                ToggleSwitch ts = new ToggleSwitch();
-
-                ts.Style = Application.Current.Resources["ToggleSwitchStyle"] as Style;
-                ts.Name = output.Id.ToString(CultureInfo.CurrentCulture);
-                ts.Header = output.Name;
-                ts.IsOn = output.Enabled;
-                ts.Width = 300;
-                ts.Toggled += ts_Output_Switched;
-                stp_Outputs.Children.Add(ts);
-            }
-        }
-
-        public void UpdateDataCollection(List<string> serverData)
-        {
-            _outputs.Clear();
-            while (serverData.Count > 0) 
-            {
-                var output = new Output();
-                output.Update(serverData);
-                _outputs.Add(output);
-            }
-        }
+        
 
         private async void appbtn_SaveSettings_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -176,15 +120,7 @@ namespace Balboa
 
         }
 
-        private void ts_Output_Switched(object sender, RoutedEventArgs e)
-        {
-            var ts = sender as ToggleSwitch;
-            int output = int.Parse(ts.Name, NumberStyles.Integer, CultureInfo.InvariantCulture);
-            if (ts.IsOn)
-                _server.EnableOutput(output);
-            else
-                _server.DisableOutput(output);
-        }
+        
 
         private async void appbtn_TestConnection_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -234,6 +170,11 @@ namespace Balboa
         }
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose()
         {
             throw new NotImplementedException();
         }

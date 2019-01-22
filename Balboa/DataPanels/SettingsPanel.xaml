@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="600"
-    d:DesignWidth="800">
+    d:DesignWidth="800"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <UserControl.Resources>
 
@@ -40,9 +41,9 @@
     <Grid Style="{StaticResource InformationGridStyle}" Visibility="Visible">
          
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5*"/>
+            <ColumnDefinition Width="3*" MinWidth="180"/>
             <ColumnDefinition Width="160"/>
-            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="4*"/>
             <ColumnDefinition Width="6*"/>
         </Grid.ColumnDefinitions>
 
@@ -102,19 +103,19 @@
                            HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }"  
                            Background="#FFF4F4F4" IsEnabled="False"
                            Grid.RowSpan="2" VerticalAlignment="Top"
-                           Grid.ColumnSpan="2" Margin="0,3,100,0" />
-        <Button x:Name="btn_SelectMusicCollectionPath" Content="Select" Grid.Row="8" Grid.Column="2"  
-                        Style="{StaticResource  UtilityButtonStyle}" HorizontalAlignment="Right" Margin="0,1,10,0" VerticalAlignment="Top"
+                           Grid.ColumnSpan="2" Margin="0,3,50,0" />
+        <Button x:Name="btn_SelectMusicCollectionPath" Content="Select" Grid.Row="8" Grid.Column="3"  
+                        Style="{StaticResource  UtilityButtonStyle}"  Margin="0,1,10,0" VerticalAlignment="Top"
                         Height="37" Tapped="btn_SelectMusicCollectionPath_Tapped" FontSize="18" Grid.RowSpan="2"/>
         <Button x:Name="btn_ClearMusicCollectionPath" Content="Clear" Grid.Row="8" Grid.Column="3"  
-                        Style="{StaticResource  UtilityButtonStyle}" HorizontalAlignment="Left" Margin="0,1,0,0" VerticalAlignment="Top"
+                        Style="{StaticResource  UtilityButtonStyle}" HorizontalAlignment="Left" Margin="100,1,0,0" VerticalAlignment="Top"
                         Height="37" Tapped="btn_ClearMusicCollectionPath_Tapped" FontSize="18" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
 
         <TextBlock Text="Album cover file name" Grid.Row="10" Grid.Column="0"  Grid.RowSpan="2" 
                            Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
-        <TextBox   x:Name="tbx_AlbumCoverFileName" Text="{Binding AlbumCoverFileName, Mode=TwoWay}"  Grid.Row="10" Grid.Column="1" 
+        <TextBox   x:Name="tbx_AlbumCoverFileName" Text="{Binding AlbumCoverFileName, Mode=TwoWay}"  Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2"
                            HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }" Grid.RowSpan="2" VerticalAlignment="Top"/>
-        <TextBlock Text="File names separated with semicolon" Grid.Row="10" Grid.Column="2"  
+        <TextBlock Text="File names separated with semicolon" Grid.Row="10" Grid.Column="3"  
                            Style="{StaticResource SettingsTextBlockStyle}" TextWrapping="WrapWholeWords"
                            Grid.RowSpan="2"  Grid.ColumnSpan="3" VerticalAlignment="Top" Height="75"/>
 
@@ -122,10 +123,6 @@
                            Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
         <CheckBox   x:Name="checkbox_DisplayFolderPictures" IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"  Grid.Row="12" Grid.Column="1" 
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
-
-        <TextBlock Text="Outputs" Grid.Row="1" Grid.Column="5" FontWeight="Medium"  Margin="70,0,0,0" Style="{StaticResource  SettingsTextBlockStyle}"/>
-
-        <StackPanel x:Name="stp_Outputs" Grid.Row="2" Grid.Column="5" Grid.RowSpan="10" Margin="70,0,0,0" />
 
         <StackPanel  Grid.Row="14" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right"  Grid.ColumnSpan="5" >
             <AppBarButton x:Name="appbtn_StartSession" Icon="Preview" Label="Start session" Tapped="appbtn_StartSession_Tapped"  HorizontalAlignment="Right" Visibility="Visible"/>
