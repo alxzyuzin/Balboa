@@ -16,15 +16,6 @@ namespace Balboa.Common
 {
     public enum ResponseKeyword { OK, NotOk, ACK, Empty, InternalError, SocketError, ServerHalted, New }
 
-    public class MpdResponseCollection : List<string>
-    {
-        public ResponseKeyword Keyword { get; set; }
-        public MpdCommand Command { get; set; }
-        public string Error { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
-    }
-
-
     public class MpdResponse : EventArgs
     {
         public ResponseKeyword Keyword { get; private set; }
