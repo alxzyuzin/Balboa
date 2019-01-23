@@ -40,26 +40,17 @@ namespace Balboa
     public delegate void ConnectionStatusChangedEventHandler(object sender, string connectionStatus);
     public delegate void DataReadyEventHandler<MpdResponse>(object sender, MpdResponse eventArgs);
 
-    public class Server :  IDisposable, INotifyPropertyChanged
+    public class Server :  IDisposable
     {
    
         #region Events
         public event DataReadyEventHandler<MpdResponse> DataReady;
-
-        /// <summary>
-        /// Уведомление об изменении значения свойства
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-  
-        /// <summary>
-        /// Уведомление об изменении статуса соединения с сервером
-        /// </summary>
+        public event DataReadyEventHandler<MpdResponse> ServerError;
         public event ConnectionStatusChangedEventHandler ConnectionStatusChanged;
+        #endregion
 
-#endregion
+        #region Fields
 
-#region Fields
         private CancellationTokenSource _tokenSource;
         private AppSettings _appSettings = new AppSettings();
         private Progress<MpdResponse> _status;
@@ -78,32 +69,15 @@ namespace Balboa
         #endregion
 
         #region Properties
+
         public string ConnectionStatus => _Connection.Status;
-
-        public string ConnectionState
-        {
-            set
-            {
-                if (_strConnectionState != value)
-                {
-                    _strConnectionState = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConnectionState)));
-                }
-            }
-            get { return _strConnectionState; }
-
-        }
-
         public string MusicCollectionFolder => _appSettings.MusicCollectionFolder;
         public string AlbumCoverFileNames => _appSettings.AlbumCoverFileNames;
         public bool?  DisplayFolderPictures => _appSettings.DisplayFolderPictures;
         public string PlaylistName { get; set; }
-        
         public bool   Initialized => _appSettings.InitialSetupDone ;
-        private string _strConnectionState;
-        
-        public bool    IsConnected         { get { return _Connection.IsActive; } }
-        public bool    IsRunning           { get; private set; }=false;
+        public bool   IsConnected         { get { return _Connection.IsActive; } }
+        public bool   IsRunning           { get; private set; }=false;
 
         #endregion
 
@@ -147,9 +121,10 @@ namespace Balboa
                     CancellationToken token = _tokenSource.Token;
                     WorkItemHandler communicator = delegate { ExecuteCommands(token); };
                     await ThreadPool.RunAsync(communicator, WorkItemPriority.High, WorkItemOptions.TimeSliced);
-                }
+                 }
             }
         }
+
         /// <summary>
         /// Остановка прцесса взаимодествия с сервером
         /// </summary>
@@ -180,27 +155,44 @@ namespace Balboa
 
         private void ReportStatus(MpdResponse response)
         {
-            DataReady?.Invoke(this, response );
+            switch(response.Keyword)
+            {
+                case ResponseKeyword.OK:
+                case ResponseKeyword.ACK:
+                    DataReady?.Invoke(this, response);
+                    break;
+                case ResponseKeyword.InternalError:
+                    ServerError?.Invoke(this, response);
+                    break;
+                case ResponseKeyword.SocketError:
+                    _Connection.Close();
+                    ServerError?.Invoke(this, response);
+                    break;
+                case ResponseKeyword.ServerHalted:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(response.Keyword), response.Keyword, "");
+            }
+            
         }
-
 
         private void SetInitialState()
         {
             _CommandQueue.Clear();
             _SentCommandQueue.Clear();
             _Response = string.Empty;
-         }
+        }
 
         /// <summary>
         ///  Обработчик команд из очери команд
+        ///  Берём очередную команду из очереди
+        ///  Отправляем запрос на сервер
+        ///  Читаем ответ
+        ///  Разбираем ответ и передаём на обработку объектам интерфейса 
         /// </summary>
         /// <returns></returns>
         private async void ExecuteCommands(CancellationToken token)
         {
-            // Берём очередную команду из очереди
-            // Отправляем запрос на сервер
-            // Читаем ответ
-            // Разбираем ответ и заполняем данными 
             try
             { 
                 while (true)
@@ -212,7 +204,8 @@ namespace Balboa
                        if (_CommandQueue.Count > 0)
                        { // Есть команды к выполнению. Забираем команду из очереди  и разморахиваем процесс
                            command = _CommandQueue.Dequeue();
-                           _ThreadEvent.Reset();
+                         //_MpdResponseQueue.Enqueue(new MpdResponse(ResponseKeyword.New, command, null));
+                            _ThreadEvent.Reset();
                        }
                     }
                     if (command == null)
@@ -222,7 +215,6 @@ namespace Balboa
                     else
                     {
                         await _Connection.SendCommand(command.FullSyntax);
-                        _SentCommandQueue.Enqueue(command);
                         _Response += await _Connection.ReadResponse(); ;
                         _Response = ParceResponse(_Response);
                     }
@@ -230,7 +222,7 @@ namespace Balboa
             }
             catch (OperationCanceledException)
             {
-                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.Empty, null, string.Empty);
+                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.ServerHalted, null, string.Empty);
                 ((IProgress<MpdResponse>)_status).Report(mpdresp);
                 IsRunning = false;
             }
@@ -243,16 +235,14 @@ namespace Balboa
                 if (SocketError.GetStatus(ex.HResult) == SocketErrorStatus.Unknown)
                 {
                     var er = SocketError.GetStatus(ex.HResult);
-                    mpdresp = new MpdResponse(ResponseKeyword.Error, null, 
-                                        _resldr.GetString("CommunicationError") + Utilities.GetExceptionMsg(ex));
+                    mpdresp = new MpdResponse(ResponseKeyword.InternalError, null, _resldr.GetString("CommunicationError") + Utilities.GetExceptionMsg(ex));
                     ((IProgress<MpdResponse>)_status).Report(mpdresp);
                 }
-
-                //mpdresp = new MpdResponse(ResponseKeyword.Error, null,
-                //                        _resldr.GetString("CommunicationError") + Utilities.GetExceptionMsg(ex));
-                //MpdResponse mpdresp = new MpdResponse(ResponseKeyword.Empty, null, string.Empty);
-                //((IProgress<MpdResponse>)_status).Report(mpdresp);
-                
+                else
+                {
+                    mpdresp = new MpdResponse(ResponseKeyword.SocketError, null, _resldr.GetString("SocketError") + Utilities.GetExceptionMsg(ex));
+                    ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                }
                 IsRunning = false;
             }
         }
@@ -277,15 +267,16 @@ namespace Balboa
             ResponseKeyword keyword = ResponseKeyword.Empty;
             string currentresponse = string.Empty;
 
-            // Oтвет при ошибке начинается с ASC и заканчивается \n
-            // Ответ при нормальном завершении заканчивается OK\n
+            /*  Oтвет при ошибке начинается с ASC и заканчивается \n
+                Ответ при нормальном завершении заканчивается OK\n
 
-            // Проверка 1
-            // Строка начинается с символов OK\n - это значит что в начале строки содержится ответ 
-            // об успешном выполнении команды не возвращающей данных
-            // Просто убираем этот ответ из входной строки
+                Проверка 1
+                Строка начинается с символов OK\n - это значит что в начале строки содержится ответ 
+                об успешном выполнении команды не возвращающей данных
+                Просто убираем этот ответ из входной строки */
             if (response.StartsWith("OK\n", StringComparison.Ordinal))
             {
+                MpdCommand command = _SentCommandQueue.Dequeue();
                 keyword = ResponseKeyword.OK;
                 currentresponse = response.Substring(0, 3);
                 response = response.Remove(0, 3);
@@ -303,6 +294,9 @@ namespace Balboa
                 // currentresponce - содержит полный ответ от сервера
                 currentresponse = response.Substring(0, nextresponsestart);
                 response = response.Remove(0, nextresponsestart);
+                MpdCommand command = _SentCommandQueue.Dequeue();
+                MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
+                ((IProgress<MpdResponse>)_status).Report(mpdresp);
             }
 
             // Проверка 3
@@ -315,17 +309,12 @@ namespace Balboa
                 int newresponsestart = response.IndexOf("\n", StringComparison.Ordinal) + 1;
                 currentresponse = response.Substring(0, newresponsestart);
                 response = response.Remove(0, newresponsestart);
-            }
-            if (keyword != ResponseKeyword.Empty)
-            {
                 MpdCommand command = _SentCommandQueue.Dequeue();
                 MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
                 ((IProgress<MpdResponse>)_status).Report(mpdresp);
             }
-
             return response;
         }
-
 
         #endregion
 
@@ -339,6 +328,7 @@ namespace Balboa
                 lock( _Lock)
                 {
                     _CommandQueue.Enqueue(command);
+                    _SentCommandQueue.Enqueue(command);
                     _ThreadEvent.Set();
                 }
             }
@@ -787,5 +777,5 @@ namespace Balboa
             GC.SuppressFinalize(this);
         }
 
-    }   // Class End
+    }   // Class Server
 }

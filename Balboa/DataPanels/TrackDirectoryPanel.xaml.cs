@@ -96,10 +96,8 @@ namespace Balboa
         private async void _server_DataReady(object sender, EventArgs e)
         {
             var mpdData = e as MpdResponse;
-            if (mpdData.Command.Op != "lsinfo")
-                return;
                 
-            if (mpdData.Keyword == ResponseKeyword.OK)
+            if (mpdData.Keyword == ResponseKeyword.OK && mpdData.Command.Op == "lsinfo")
             {
                 if (_fileIconsUpdating)
                 {

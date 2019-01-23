@@ -147,10 +147,8 @@ namespace Balboa
         private void _server_DataReady(object sender, EventArgs e)
         {
             var mpdData = e as MpdResponse;
-            if (mpdData.Command.Op != "currentsong")
-                return;
-
-            if (mpdData.Keyword == ResponseKeyword.OK)
+          
+            if (mpdData.Keyword == ResponseKeyword.OK && mpdData.Command.Op == "currentsong")
             {
                 UpdateControlData(mpdData.Content);
             }

@@ -51,12 +51,9 @@ namespace Balboa
             Application.Current.Resuming += OnResuming;
             this.SizeChanged += MainPage_SizeChanged;
 
-            _server.DataReady += async (object server, MpdResponse e) =>
+            _server.ServerError += async (object server, MpdResponse e) =>
                     {
-                        if (e.Keyword == ResponseKeyword.Error)
-                        {
                             await DisplayMessage(new Message(MsgBoxType.Error, e.ErrorMessage, MsgBoxButton.Close, 200));
-                        }
                     };
 
             //_server.Error += OnServerError;

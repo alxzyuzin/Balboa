@@ -287,6 +287,9 @@ Nothing found.</value>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="SocketError" xml:space="preserve">
+    <value>Socket error.</value>
+  </data>
   <data name="Statistic" xml:space="preserve">
     <value>Statistic</value>
   </data>

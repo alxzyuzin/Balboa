@@ -14,7 +14,7 @@ using System.Collections.Generic;
 
 namespace Balboa.Common
 {
-    public enum ResponseKeyword { OK, NotOk, ACK, Empty, Error }
+    public enum ResponseKeyword { OK, NotOk, ACK, Empty, InternalError, SocketError, ServerHalted, New }
 
     public class MpdResponseCollection : List<string>
     {

@@ -3,12 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using System.Linq;
-using Windows.UI.Xaml.Controls.Primitives;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -43,8 +41,6 @@ namespace Balboa
             }
         }
 
-        //private string _temporaryPlaylistName = string.Empty;
-        
         public Visibility _playlistNameVisibility = Visibility.Collapsed;
         public Visibility PlaylistNameVisibility
         {
@@ -88,7 +84,7 @@ namespace Balboa
             _server.DataReady += _server_DataReady;
 
             _server.PlaylistInfo();
-            _server.CurrentSong();
+//            _server.CurrentSong();
 
             LoadedPlaylistName = _server.PlaylistName;
 //            PlaylistNameVisibility = _loadedPlaylistName.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -162,9 +158,7 @@ namespace Balboa
         private void appbtn_Playlist_DeleteSelected_Tapped(object sender, TappedRoutedEventArgs e)
         {
             foreach (Track track in lv_PlayList.SelectedItems)
-            {
                 _server.DeleteId(track.Id);
-            }
             Update();
         }
 
@@ -172,11 +166,10 @@ namespace Balboa
         {
             _playlist.Clear();
             _playlist.NotifyCollectionChanged();
+ //           _server.Stop();
             _server.Clear();
 
             LoadedPlaylistName = _server.PlaylistName = string.Empty;
-
-            //Update();
         }
 
         private void appbtn_Playlist_Add_Tapped(object sender, TappedRoutedEventArgs e)
@@ -187,7 +180,7 @@ namespace Balboa
         private void appbtn_Playlist_Shaffle_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _server.Shuffle();
-            Update();
+//            Update();
         }
 
         private void HightlightCurrentPlaingTrack()
@@ -228,21 +221,6 @@ namespace Balboa
             popup_GetPlaylistName.Child = playlistNameInput;
             popup_GetPlaylistName.IsOpen = true;
         }
-
-        //private void RequestNewPlaylistName()
-        //{
-        //    var playlistNameInput = new PlaylistNameInput(LoadedPlaylistName);
-        //    playlistNameInput.PropertyChanged += (object sender, PropertyChangedEventArgs args) =>
-        //    {
-        //        if (args.PropertyName == "PlaylistName")
-        //        {
-        //            _server.PlaylistName = LoadedPlaylistName = playlistNameInput.PlaylistName;
-        //            _server.Save(playlistNameInput.PlaylistNameUTF8);
-        //        }
-        //    };
-        //    popup_GetPlaylistName.Child = playlistNameInput;
-        //    popup_GetPlaylistName.IsOpen = true;
-        //}
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
