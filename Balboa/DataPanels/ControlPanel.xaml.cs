@@ -150,6 +150,8 @@ namespace Balboa
 
         public ControlPanel(Server server)
         {
+            if (server == null) throw new ArgumentNullException(nameof(server));
+
             _server = server;
             _server.DataReady += _server_DataReady;
             _server.ConnectionStatusChanged += (Object obj, string status) => { ConnectionStatus = status; };
