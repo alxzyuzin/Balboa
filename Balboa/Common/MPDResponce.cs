@@ -18,21 +18,19 @@ namespace Balboa.Common
 
     public class MpdResponseCollection : List<string>
     {
-   
-
-        public ResponseKeyword Keyword { get; set;} 
-        public MpdCommand      Command { get; set; } 
-        public string          Error   { get; set; } = string.Empty;
-        public string          Content { get; set; } = string.Empty;
+        public ResponseKeyword Keyword { get; set; }
+        public MpdCommand Command { get; set; }
+        public string Error { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
     }
 
-   
+
     public class MpdResponse : EventArgs
     {
         public ResponseKeyword Keyword { get; private set; }
         public MpdCommand Command { get; private set; }
         private List<string> _content = new List<string>();
-        public  List<string> Content { get { return _content; }  }
+        public List<string> Content { get { return _content; }  }
         public string ErrorMessage { get; set; } = string.Empty;
 
         public MpdResponse()
@@ -43,27 +41,6 @@ namespace Balboa.Common
         {
             Keyword = keyword;
             Command = command;
-            if (keyword == ResponseKeyword.OK)
-            {
-                _content.AddRange(content.Split('\n'));
-                // Уберём из ответа два последних элемента (ОК и \n)
-                _content.RemoveRange(_content.Count - 2, 2);
-            }
-            else
-                ErrorMessage = content;
-        }
-
-        public void Init(MpdCommand command)
-        {
-            Command = command;
-        }
-
-        public void Update(ResponseKeyword keyword, string content)
-        {
-            Keyword = keyword;
-            //if (Command != command)
-            //    throw new InvalidOperationException("Responce command does not match request command");
-            
             if (keyword == ResponseKeyword.OK)
             {
                 _content.AddRange(content.Split('\n'));
