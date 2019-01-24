@@ -84,10 +84,11 @@ namespace Balboa
             _server.DataReady += _server_DataReady;
 
             _server.PlaylistInfo();
-//            _server.CurrentSong();
+            _server.CurrentSong();
 
             LoadedPlaylistName = _server.PlaylistName;
-//            PlaylistNameVisibility = _loadedPlaylistName.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (_loadedPlaylistName!=null)
+                PlaylistNameVisibility = _loadedPlaylistName.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void Init(Server server)
@@ -166,9 +167,7 @@ namespace Balboa
         {
             _playlist.Clear();
             _playlist.NotifyCollectionChanged();
- //           _server.Stop();
-            _server.Clear();
-
+             _server.Clear();
             LoadedPlaylistName = _server.PlaylistName = string.Empty;
         }
 
@@ -180,7 +179,9 @@ namespace Balboa
         private void appbtn_Playlist_Shaffle_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _server.Shuffle();
-//            Update();
+            _server.PlaylistInfo();
+            _currentSongID = -1;
+            _server.CurrentSong();
         }
 
         private void HightlightCurrentPlaingTrack()
@@ -192,9 +193,10 @@ namespace Balboa
             track = lv_PlayList.Items.FirstOrDefault(item => (item as Track).Id == _currentSongID) as Track;
             if (track != null)
                 track.IsPlaying = true;
-            lv_PlayList.ScrollIntoView(track);
-            lv_PlayList.SelectedItems.Clear();
+        
+//            lv_PlayList.SelectedItems.Clear();
             _playlist.NotifyCollectionChanged();
+            lv_PlayList.ScrollIntoView(track);
         }
 
         private void appbtn_Playlist_Save_Tapped(object sender, TappedRoutedEventArgs e)

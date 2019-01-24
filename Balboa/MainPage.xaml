@@ -40,8 +40,9 @@
         <!-- Grid.Column="1" Grid.Row="0"/ -->
         <Border x:Name="DataPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"/>
         <!--
-            <local:CurrentTrack x:Name="p_CurrentTrack" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Visibility="Collapsed" />
-            <local:CurrentPlaylist x:Name="p_CurrentPlaylist" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed" />
+            <local:CurrentTrackPanel x:Name="p_CurrentTrack" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Visibility="Collapsed" />
+       
+        <local:CurrentPlaylist x:Name="p_CurrentPlaylist" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed" />
             <local:TrackDirectory x:Name="p_TrackDirectory" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
             <local:SavedPlaylistsPanel x:Name="p_SavedPlaylistsPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>    
             <local:GenresPanel x:Name="p_GenresPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>

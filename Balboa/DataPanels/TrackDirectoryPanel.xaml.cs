@@ -123,10 +123,10 @@ namespace Balboa
                     
                     await ThreadPool.RunAsync(workhandler, WorkItemPriority.High, WorkItemOptions.TimeSliced);
              }
-            else
-            {
-                _newPathChunck = string.Empty;
-            }
+            //else
+            //{
+            //    _newPathChunck = string.Empty;
+            //}
         }
 
         public void UpdateControlData(List<string> serverData)
