@@ -115,7 +115,7 @@ namespace Balboa
             }
         }
 
-        private char _PlayPauseButtonContent = '\xE103';
+        private char _PlayPauseButtonContent = (char)0xE103;
         public char PlayPauseButtonContent
         {
             get { return _PlayPauseButtonContent; }

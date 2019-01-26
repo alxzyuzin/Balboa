@@ -13,17 +13,22 @@
     <UserControl.Resources>
         <!-- ШАБЛОН для представления элемента SAVED PLAYLIST -->
         <DataTemplate x:Key="SavedPlaylistItemTemplate">
-            <Grid Margin="20,5,0,5">
+            <Grid Margin="20,2,0,2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="20" />
+                </Grid.RowDefinitions>
+
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="60" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="30" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock  Grid.Column="0"  Text="{Binding Icon}"  FontFamily="Segoe UI Symbol" FontSize="30"  />
-                <TextBlock  Grid.Column="1"  Text="{Binding Name}"  TextWrapping="WrapWholeWords" FontFamily="Segoe UI Symbol" 
-                            FontSize="22" VerticalAlignment="Top" />
-                <TextBlock  Grid.Column="2" />
+                <TextBlock  Grid.Row="0" Grid.Column="0"  Text="{Binding FileName}"  TextWrapping="WrapWholeWords" 
+                            FontFamily="Segoe UI Symbol" FontSize="20"/>
+                <StackPanel Grid.Row="1"  Grid.Column="0" Orientation="Horizontal" Margin="0,0,0,0">
+                    <TextBlock  Text="Last modified:"  FontFamily="Segoe UI Symbol" FontSize="15" Margin="0,0,10,0"  />
+                    <TextBlock  Text="{Binding LastModificationDate}"  FontFamily="Segoe UI Symbol" FontSize="15"  />
+                </StackPanel>
             </Grid>
         </DataTemplate>
 
@@ -33,7 +38,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="VerticalContentAlignment" Value="Top" />
             <Setter Property="Width" Value="400" />
-            <Setter Property="Height" Value="60" />
+            <Setter Property="Height" Value="80" />
         </Style>
     </UserControl.Resources>
     <Grid>
@@ -50,7 +55,7 @@
         <RowDefinition Height="87"/>
     </Grid.RowDefinitions>
 
-  
+        <!-- -->
     <GridView x:Name="gr_SavedPlaylists" Grid.Row="0" SelectionMode="Single" Margin="0,0,20,0" 
                       ItemTemplate="{StaticResource SavedPlaylistItemTemplate}" 
                       ItemContainerStyle="{StaticResource GridViewItemStyle}"

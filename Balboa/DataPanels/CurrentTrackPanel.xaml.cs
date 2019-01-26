@@ -10,10 +10,12 @@ using Windows.UI.Xaml.Controls;
 
 namespace Balboa
 {
-    public sealed partial class CurrentTrackPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDisposable
+    public sealed partial class CurrentTrackPanel : UserControl, INotifyPropertyChanged, IDataPanel,
+                                                    IRequestAction, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
- 
+        public event ActionRequestedEventHandler RequestAction;
+
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
         private Song _song = new Song();

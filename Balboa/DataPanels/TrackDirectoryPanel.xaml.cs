@@ -216,7 +216,7 @@ namespace Balboa
                 _server.Add(path + item.Name);
             }
             gr_FileSystemContent.SelectedItems.Clear();
-            RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel, Panels.PlaylistPanel));
+            RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel).SetPanel<PlaylistPanel>(new PlaylistPanel(_server)));
         }
 
         private void HighLiteLastOpenedFolder()

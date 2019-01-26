@@ -36,22 +36,28 @@ namespace Balboa
 
     public class ActionParams
     {
-        public ActionParams( Message message)
+        public ActionParams(Message message)
         {
             ActionType = ActionType.DisplayMessage;
             Message = message;
         }
 
-        public ActionParams(ActionType action, Panels panelClass)
+        public ActionParams(ActionType action)
         {
             ActionType = action;
-            PanelClass = panelClass;
+           
         }
 
-        public ActionType ActionType { get; private set; }
+        public ActionParams SetPanel<T>(T panel) where T : IRequestAction
+        {
+            Panel = panel;
+            return this;
+        }
+
+        public  ActionType ActionType { get; private set; }
         public Message Message { get; private set; }
-        public Panels PanelClass { get; private set; }
-    }
+        public object Panel { get; private set; }
+    } // class ActionParams
 
     public class Message
     {
@@ -67,6 +73,6 @@ namespace Balboa
         public string Text { get; private set; }
         public MsgBoxButton Buttons { get; private set; }
         public int BoxHeight { get; private set; }
-    }
+    } // class Message
 
-} // class ActionParams
+} // namespace Balboa

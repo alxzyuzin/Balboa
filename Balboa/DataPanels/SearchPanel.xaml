@@ -66,14 +66,15 @@
                                           Grid.ColumnSpan="2"
                                           GotFocus="listview_Search_GotFocus"
                                           DoubleTapped="listview_Search_DoubleTapped"/>
-        <TextBlock x:Name="textblock_SearchResult" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" 
-                       HorizontalAlignment="Center" FontSize="25" Text="" TextWrapping="WrapWholeWords"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" 
+                   HorizontalAlignment="Center" FontSize="25" Text="{Binding SearchResult}" 
+                   TextWrapping="WrapWholeWords"/>
         <StackPanel  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
                          Margin="5,0,5,5" Background="{StaticResource MainBackgroundBrush}"  Orientation="Horizontal"  FlowDirection="LeftToRight" >
-            <TextBlock x:Name="textblock_Search"  Grid.Row="2" Grid.Column="1" Text="Search" 
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="Search" 
                        FontSize="22" Margin="20,-15,20,0" Height="30" HorizontalAlignment="Left" />
-            <TextBox x:Name="textbox_Search"  Grid.Row="2" Grid.Column="1" Text=""
-                       FontSize="20"  Margin="0,-10,0,0" Height="40" Width="150" HorizontalAlignment="Left"/>
+            <TextBox   Grid.Row="2" Grid.Column="1" Text="{Binding SearchString, Mode=TwoWay}"
+                       FontSize="20"  Margin="0,-10,0,0" Height="40" Width="200" HorizontalAlignment="Left"/>
             <AppBarButton Icon="Find" Tapped="appbtn_Search_Tapped" />
         </StackPanel>
 

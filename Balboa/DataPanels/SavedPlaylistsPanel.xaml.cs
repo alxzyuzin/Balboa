@@ -6,6 +6,8 @@ using Windows.UI.Xaml.Controls;
 using Balboa.Common;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media;
+using Windows.UI;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -19,8 +21,8 @@ namespace Balboa
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
-        private ObservableCollection<CommonGridItem> _items = new ObservableCollection<CommonGridItem>();
-        public ObservableCollection<CommonGridItem> Items => _items;
+        private ObservableCollection<SavedPlaylistItem> _items = new ObservableCollection<SavedPlaylistItem>();
+        public ObservableCollection<SavedPlaylistItem> Items => _items;
 
         private Visibility _savedPlaylistsContentVisibility = Visibility.Collapsed;
         public Visibility SavedPlaylistsContentVisibility
@@ -75,9 +77,9 @@ namespace Balboa
                     _items.Clear();
                     while (mpdData.Content.Count > 0)
                     {
-                        var commonGridItem = new CommonGridItem();
-                        commonGridItem.Update(mpdData.Content);
-                        _items.Add(commonGridItem);
+                        var savedPlaylistItem = new SavedPlaylistItem();
+                        savedPlaylistItem.Update(mpdData.Content);
+                        _items.Add(savedPlaylistItem);
                     }
                 }
             }
@@ -94,9 +96,9 @@ namespace Balboa
             }
             else
             {
-                _server.PlaylistName = (gr_SavedPlaylists.SelectedItem as CommonGridItem).Name;
+                _server.PlaylistName = (gr_SavedPlaylists.SelectedItem as SavedPlaylistItem).FileName;
                 _server.Load(_server.PlaylistName);
-                RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel, Panels.PlaylistPanel));
+                RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel).SetPanel<PlaylistPanel>(new PlaylistPanel(_server)));
             }
         }
 
@@ -152,4 +154,27 @@ namespace Balboa
             _server.DataReady -= _server_DataReady;
         }
     }
+
+    //internal sealed class SavedPlaylistItemStyleSelector : StyleSelector
+    //{
+    //    protected override Style SelectStyleCore(object item, DependencyObject container)
+    //    {
+    //        Track listitem = item as Track;
+
+    //        Style style = new Style(typeof(ListViewItem));
+    //        // Default Style
+    //        style.Setters.Add(new Setter(ListViewItem.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch));
+    //        style.Setters.Add(new Setter(ListViewItem.BackgroundProperty, new SolidColorBrush(Color.FromArgb(0x10, 0xF0, 0xF0, 0xF0))));
+
+    //        // Custom IsPlaying Style
+    //        if (listitem.IsPlaying)
+    //        {
+    //            style.Setters.Add(new Setter(ListViewItem.BorderBrushProperty, new SolidColorBrush(Colors.Orange)));
+    //            style.Setters.Add(new Setter(ListViewItem.ForegroundProperty, new SolidColorBrush(Colors.Orange)));
+    //            style.Setters.Add(new Setter(ListViewItem.BorderThicknessProperty, new Thickness(1.0)));
+    //            style.Setters.Add(new Setter(ListViewItem.BorderBrushProperty, new SolidColorBrush(Colors.Orange)));
+    //        }
+    //        return style;
+    //    }
+    //}
 }

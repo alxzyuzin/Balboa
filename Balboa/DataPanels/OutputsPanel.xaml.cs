@@ -1,32 +1,23 @@
-﻿using System;
+﻿using Balboa.Common;
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using System.Globalization;
+using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Balboa.Common;
-using Windows.ApplicationModel.Resources;
-using System.Globalization;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace Balboa
 {
-    public sealed partial class OutputsPanel : UserControl, IDisposable
+    public sealed partial class OutputsPanel : UserControl, IRequestAction, IDisposable
     {
 
         private Server _server;
         private List<Output> _outputs = new List<Output>();
         private ResourceLoader _resldr = new ResourceLoader();
 
+        public event ActionRequestedEventHandler RequestAction;
 
         public OutputsPanel()
         {
@@ -107,6 +98,11 @@ namespace Balboa
             {
                 ts.Toggled -= ts_Output_Switched;
             }
+        }
+
+        public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
         }
     }
 }

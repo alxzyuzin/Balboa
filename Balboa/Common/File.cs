@@ -138,8 +138,9 @@ namespace Balboa.Common
         
         public void Update(List<string> response)
         {
-            int i = 0;
+            if (response == null) throw new ArgumentNullException(nameof(response));
 
+            int i = 0;
             do
             {
                 string[] items = response[i].Split(':');

@@ -12,17 +12,44 @@ using Windows.UI.Xaml.Input;
 namespace Balboa
 {
     public sealed partial class SearchPanel : UserControl, INotifyPropertyChanged, IDataPanel,
-        IDisposable
+                                                            IRequestAction, IDisposable
 
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public event ActionRequestedEventHandler ActionRequested;
+        public event ActionRequestedEventHandler RequestAction;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
         private TrackCollection<Track> _foundTracks = new TrackCollection<Track>();
         public ObservableCollection<Track> Tracks => _foundTracks;
-        
+
+        private string _searchResult;
+        public string SearchResult
+        {
+            get { return _searchResult; }
+            set
+            {
+                if(_searchResult!=value)
+                {
+                    _searchResult = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SearchResult)));
+                }
+            }
+        }
+
+        private string _searchString;
+        public string SearchString
+        {
+            get { return _searchString; }
+            set
+            {
+                if (_searchString != value)
+                {
+                    _searchString = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SearchString)));
+                }
+            }
+        }
 
         public SearchPanel()
         {
@@ -61,21 +88,18 @@ namespace Balboa
                         _foundTracks.Add(track);
                     }
                     _foundTracks.NotifyCollectionChanged();
-                }
 
-                textblock_SearchResult.Text = _foundTracks.Count==0?_resldr.GetString("SearchComplete"):"";
+                    SearchResult = _foundTracks.Count == 0 ? _resldr.GetString("SearchComplete") : "";
+                }
             }
         }
 
-       
-
         private void appbtn_Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (textbox_Search.Text.Length > 0)
+            if (SearchString.Length > 0)
             {
-                textblock_SearchResult.Text = _resldr.GetString("Searching");
-//                _server.Tracks.ClearAndNotify();
-                _server.Search("any", textbox_Search.Text);
+                SearchResult = _resldr.GetString("Searching");
+                _server.Search("any", SearchString);
             }
         }
 

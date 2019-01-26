@@ -7,6 +7,7 @@
  *
  --------------------------------------------------------------------------*/
 
+using Balboa;
 using Balboa.Common;
 using System;
 using System.Collections.Generic;
@@ -75,7 +76,7 @@ namespace Balboa
         {
             if (actionParams.ActionType.HasFlag(ActionType.ActivateDataPanel))
             {
-                ActivatePanel(actionParams.PanelClass);
+                ActivatePanel(actionParams.Panel as IRequestAction);
             }
             if (actionParams.ActionType.HasFlag(ActionType.DisplayMessage))
             {
@@ -157,28 +158,48 @@ namespace Balboa
         }
 
         #endregion
-        private void ActivatePanel(Panels panelClass)
+        //private void ActivatePanel(Panels panelClass)
+        //{
+        //    if (DataPanel.Child != null)
+        //    {
+        //        if (DataPanel.Child as IRequestAction != null)
+        //            ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
+        //        ((IDisposable)DataPanel.Child).Dispose();
+        //    }
+        //    Type t = Type.GetType("Balboa." + panelClass.ToString());
+        //    if (t == null)  throw new ArgumentNullException($"Class '{panelClass.ToString()}' does not exist.");
+        //    var panel = Activator.CreateInstance(t, _server) as UserControl;
+        //    if (panel as IRequestAction != null)
+        //        ((IRequestAction)panel).RequestAction += OnDataPanelActionRequested;
+        //    DataPanel.Child = panel;
+        //    //_mainMenu.SelectItem(panelClass);
+
+
+
+        //        //if (state == DataPanelState.CurrentTrack)
+        //        //    p_PageHeader.Visibility = Visibility.Collapsed;
+        //        //else
+        //        //    p_PageHeader.Visibility = Visibility.Visible;
+        //}
+
+        private void ActivatePanel(IRequestAction panel)
         {
+            if (panel == null) throw new ArgumentNullException(nameof(panel),"Not defined panel to activate");
+
             if (DataPanel.Child != null)
             {
                 if (DataPanel.Child as IRequestAction != null)
                     ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
                 ((IDisposable)DataPanel.Child).Dispose();
             }
-            Type t = Type.GetType("Balboa." + panelClass.ToString());
-            if (t == null)  throw new ArgumentNullException($"Class '{panelClass.ToString()}' does not exist.");
-            var panel = Activator.CreateInstance(t, _server) as UserControl;
-            if (panel as IRequestAction != null)
-                ((IRequestAction)panel).RequestAction += OnDataPanelActionRequested;
-            DataPanel.Child = panel;
-            _mainMenu.SelectItem(panelClass);
 
+            panel.RequestAction += OnDataPanelActionRequested;
+            DataPanel.Child = panel as UserControl;
 
-
-                //if (state == DataPanelState.CurrentTrack)
-                //    p_PageHeader.Visibility = Visibility.Collapsed;
-                //else
-                //    p_PageHeader.Visibility = Visibility.Visible;
+            //if (state == DataPanelState.CurrentTrack)
+            //    p_PageHeader.Visibility = Visibility.Collapsed;
+            //else
+            //    p_PageHeader.Visibility = Visibility.Visible;
         }
 
 

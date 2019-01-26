@@ -6,21 +6,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    d:DesignHeight="450"
-    d:DesignWidth="250">
+    d:DesignHeight="550"
+    d:DesignWidth="320">
 
-    <UserControl.Resources>
-        <Style  x:Key="MainMenuItemStyle" TargetType ="Button" >
-            <Setter Property="Width" Value="230"/>
-            <Setter Property="Height" Value="50" />
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Content" Value=""/>
-            <Setter Property="FontSize" Value="25"/>
-            <Setter Property="FontWeight" Value="Light"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        </Style>
-    </UserControl.Resources>
-    <Border BorderThickness="1" Margin="20,0,0,0" BorderBrush="{StaticResource MainBackgroundBrush}">
+    <Border BorderThickness="1" Margin="20,0,0,0" Width="320" BorderBrush="{StaticResource MainBackgroundBrush}">
         <Grid>
             <Grid.Resources>
                 <Storyboard x:Name="MainMenuShowStoryboard">
@@ -38,6 +27,25 @@
 
                     </DoubleAnimation>
                 </Storyboard>
+
+                <Style  x:Key="MainMenuButtonStyle" TargetType ="Button">
+                    <Setter Property="Width" Value="230"/>
+                    <Setter Property="Height" Value="50" />
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="Content" Value=""/>
+                    <Setter Property="FontSize" Value="25"/>
+                    <Setter Property="FontWeight" Value="Light"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                </Style>
+
+                <Style  x:Key="MainMenuSmallButtonStyle" TargetType ="Button" >
+                    <Setter Property="Width" Value="64"/>
+                    <Setter Property="Height" Value="50" />
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
+                    <Setter Property="FontSize" Value="28"/>
+                    <Setter Property="FontWeight" Value="Light"/>
+                </Style>
             </Grid.Resources>
 
             <Grid.ChildrenTransitions>
@@ -45,17 +53,30 @@
                     <EdgeUIThemeTransition Edge="Left"/>
                 </TransitionCollection>
             </Grid.ChildrenTransitions>
-
-            <StackPanel x:Name="stp_MenuButtons" VerticalAlignment="Stretch">
-                <Button x:Name="CurrentTrackPanel"      Content="Current track"    Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
-                <Button x:Name="PlaylistPanel"          Content="Current playlist" Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
-                <Button x:Name="TrackDirectoryPanel"    Content="File system"      Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
-                <Button x:Name="SavedPlaylistsPanel"    Content="Saved Playlists"  Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped" />
-                <Button x:Name="DatabaseExplorerPanel"  Content="Explore Database" Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
-                <Button x:Name="SearchPanel"            Content="Search"           Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
-                <Button x:Name="StatisticPanel"         Content="Statistic"        Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
-                <Button x:Name="OutputsPanel"           Content="Outputs "         Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
-                <Button x:Name="SettingsPanel"          Content="Settings"         Style="{StaticResource MainMenuItemStyle}" Tapped="MenuButtonTapped"/>
+            <StackPanel Orientation="Horizontal">
+                <StackPanel x:Name="stp_SmallMenuButtons" VerticalAlignment="Stretch">
+                    <Button Content="&#xE169;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchMenuState" />
+                    <Button Content="&#xE189;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToCurrentTrackPanel"/>
+                    <Button Content="&#xE142;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToPlaylistPanel"/>
+                    <Button Content="&#xE1D3;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToTrackDirectoryPanel"/>
+                    <Button Content="&#xE105;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToSavedPlaylistsPanel" />
+                    <Button Content="&#xE11a;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToSearchPanel"/>
+                    <Button Content="i"        Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToStatisticPanel" FontWeight="Bold" FontSize="30" Padding="0,0,0,4" />
+                    <Button Content="&#xE1D2;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToOutputsPanel" FontSize="25" />
+                    <Button Content="&#xE115;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToSettingsPanel" />
+                </StackPanel>
+            
+                <StackPanel x:Name="stp_MenuButtons" VerticalAlignment="Stretch">
+                    <Button Height="49" Width="0" IsEnabled="False"/>
+                    <Button x:Name="CurrentTrackPanel"   Content="Current track"    Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToCurrentTrackPanel"/>
+                    <Button x:Name="PlaylistPanel"       Content="Current playlist" Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToPlaylistPanel"/>
+                    <Button x:Name="TrackDirectoryPanel" Content="Music Library"    Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToTrackDirectoryPanel"/>
+                    <Button x:Name="SavedPlaylistsPanel" Content="Saved Playlists"  Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToSavedPlaylistsPanel" />
+                    <Button x:Name="SearchPanel"         Content="Search"           Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToSearchPanel"/>
+                    <Button x:Name="StatisticPanel"      Content="Library info"     Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToStatisticPanel"/>
+                    <Button x:Name="OutputsPanel"        Content="Outputs "         Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToOutputsPanel"/>
+                    <Button x:Name="SettingsPanel"       Content="Settings"         Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToSettingsPanel"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
 

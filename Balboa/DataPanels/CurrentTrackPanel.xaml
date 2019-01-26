@@ -19,7 +19,7 @@
                 <Setter Property="TextAlignment" Value="Left" />
                 <Setter Property="FontSize" Value="18"/>
                 <Setter Property="Height" Value="25" />
-                <Setter Property="Margin" Value="0,5,5,5" />
+                <Setter Property="Margin" Value="0,3,5,3" />
             </Style>
             <Storyboard x:Name="gr_CurrentTrackShowStoryboard">
                 <!--
@@ -58,8 +58,8 @@
                            VerticalAlignment="Top" />
         <Grid x:Name="grid_CurrentTrackData" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="10,100,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0"  Grid.Row="0" >
                 <TextBlock Text="Artist :"          Style="{StaticResource CurrentTrackTextBlockStyle}"/>

@@ -192,6 +192,7 @@
     <Compile Include="Common\CommonGridItem.cs" />
     <Compile Include="Common\Connection.cs" />
     <Compile Include="Common\ObservableObjectCollection.cs" />
+    <Compile Include="Common\SavedPlaylistItem.cs" />
     <Compile Include="Common\Song.cs" />
     <Compile Include="Common\FileItemStyleSelector.cs" />
     <Compile Include="Common\GenericComparer.cs" />

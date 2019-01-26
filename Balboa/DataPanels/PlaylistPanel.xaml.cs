@@ -173,7 +173,7 @@ namespace Balboa
 
         private void appbtn_Playlist_Add_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel, Panels.TrackDirectoryPanel));
+            RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel).SetPanel<TrackDirectoryPanel>(new TrackDirectoryPanel(_server)));
         }
 
         private void appbtn_Playlist_Shaffle_Tapped(object sender, TappedRoutedEventArgs e)
