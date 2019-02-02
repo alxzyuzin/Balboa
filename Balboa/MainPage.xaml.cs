@@ -41,9 +41,7 @@ namespace Balboa
     {
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server  = new Server();
-        private MainMenu _mainMenu;
-
-        public enum DataPanelState { CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings }
+//        public enum DataPanelState { CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings }
 
         public MainPage()
         {
@@ -60,12 +58,10 @@ namespace Balboa
             //_server.Error += OnServerError;
             //_server.CriticalError += OnServerCriticalError;
 
-            _mainMenu = new MainMenu(_server);
-            _mainMenu.RequestAction += OnDataPanelActionRequested;
-            grid_Main.Children.Add(_mainMenu);
-
+            MainMenuPanel.Init(_server);
+            MainMenuPanel.RequestAction += OnDataPanelActionRequested;
             PageHeaderPanel.Init(_server);
-            PlayModePanel.Init(_server);
+           // PlayModePanel.Init(_server);
             PlayControlPanel.Init(_server);
 
             if (_server.Initialized)
@@ -158,29 +154,7 @@ namespace Balboa
         }
 
         #endregion
-        //private void ActivatePanel(Panels panelClass)
-        //{
-        //    if (DataPanel.Child != null)
-        //    {
-        //        if (DataPanel.Child as IRequestAction != null)
-        //            ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
-        //        ((IDisposable)DataPanel.Child).Dispose();
-        //    }
-        //    Type t = Type.GetType("Balboa." + panelClass.ToString());
-        //    if (t == null)  throw new ArgumentNullException($"Class '{panelClass.ToString()}' does not exist.");
-        //    var panel = Activator.CreateInstance(t, _server) as UserControl;
-        //    if (panel as IRequestAction != null)
-        //        ((IRequestAction)panel).RequestAction += OnDataPanelActionRequested;
-        //    DataPanel.Child = panel;
-        //    //_mainMenu.SelectItem(panelClass);
-
-
-
-        //        //if (state == DataPanelState.CurrentTrack)
-        //        //    p_PageHeader.Visibility = Visibility.Collapsed;
-        //        //else
-        //        //    p_PageHeader.Visibility = Visibility.Visible;
-        //}
+ 
 
         private void ActivatePanel(IRequestAction panel)
         {
@@ -196,6 +170,7 @@ namespace Balboa
             panel.RequestAction += OnDataPanelActionRequested;
             DataPanel.Child = panel as UserControl;
 
+            MainMenuPanel.HighLiteSelectedItem(panel.GetType().Name);
             //if (state == DataPanelState.CurrentTrack)
             //    p_PageHeader.Visibility = Visibility.Collapsed;
             //else

@@ -37,7 +37,7 @@
         </Grid.RowDefinitions>
         <Border  x:Name="PopUpBorder" BorderThickness="1" Background="Black" 
                      Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
-                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0.4"/>
+                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0.6"/>
         <Border x:Name="BoxBorder" Grid.Column="1" Grid.Row="1" 
                     BorderBrush="White" BorderThickness="1" Background="Gray" Opacity="0">
 

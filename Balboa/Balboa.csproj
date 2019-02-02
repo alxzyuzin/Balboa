@@ -133,6 +133,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="DataPanels\VolumeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -220,6 +224,9 @@
     </Compile>
     <Compile Include="DataPanels\DatabaseExplorerPanel.xaml.cs">
       <DependentUpon>DatabaseExplorerPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DataPanels\VolumeControl.xaml.cs">
+      <DependentUpon>VolumeControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="IDataPanel.cs" />
     <Compile Include="IPropertyChanged.cs" />

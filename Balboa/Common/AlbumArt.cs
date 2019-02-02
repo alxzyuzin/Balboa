@@ -15,7 +15,7 @@ namespace Balboa.Common
         public event PropertyChangedEventHandler PropertyChanged;
 
         private ResourceLoader      _resldr = new ResourceLoader();
-        private StorageFile         _file;
+//        private StorageFile         _file;
         private IRandomAccessStream _fileStream;
 
         private BitmapImage _image;//
@@ -65,13 +65,14 @@ namespace Balboa.Common
             int pathlength = sb.Length;
 
             string[] CoverFileNames = albumCoverFileNames.Split(';');
-
+            StorageFile file =null;
             foreach (string albumCoverFileName in CoverFileNames)
             {
                 try
                 {
                     sb.Append(albumCoverFileName);
-                    _file = await StorageFile.GetFileFromPathAsync(sb.ToString());
+                    
+                    file = await StorageFile.GetFileFromPathAsync(sb.ToString());
                     break;
                 }
                 catch (FileNotFoundException)
@@ -87,29 +88,27 @@ namespace Balboa.Common
                     Error = string.Format(_resldr.GetString("Exception"), ee.GetType().ToString(), ee.Message);
                 }
             }
-            if (_file == null) return;
-            _fileStream = await _file.OpenAsync(FileAccessMode.Read);
-            //using (_fileStream = await file.OpenAsync(FileAccessMode.Read))
-            //{
-
-            //    var image = new BitmapImage();
-            //    await image.SetSourceAsync(_fileStream);
-            //    Image = image;
-            //    _fileStream.Dispose();
-            //}
+            if (file == null) return;
+            _fileStream = await file.OpenAsync(FileAccessMode.Read);
+            if (_fileStream.Size == 0)
+                ;
+          
         }
 
 
         public async Task UpdateImage()
         {
-            if (_fileStream == null) return;
-            
-            var image = new BitmapImage();
-            await image.SetSourceAsync(_fileStream);
-            Image = image;
-            _fileStream.Dispose();
-            
-            
+            if (_fileStream == null || _fileStream.Size == 0)
+            {
+                return;
+            }
+            Image = new BitmapImage();
+            //var image = new BitmapImage();
+            using (_fileStream)
+            {
+                    await Image.SetSourceAsync(_fileStream);
+            }
+            //Image = image;
         }
 
         /// <summary>

@@ -96,6 +96,7 @@ namespace Balboa
             }
             else
             {
+                _server.Clear();
                 _server.PlaylistName = (gr_SavedPlaylists.SelectedItem as SavedPlaylistItem).FileName;
                 _server.Load(_server.PlaylistName);
                 RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel).SetPanel<PlaylistPanel>(new PlaylistPanel(_server)));
@@ -155,26 +156,5 @@ namespace Balboa
         }
     }
 
-    //internal sealed class SavedPlaylistItemStyleSelector : StyleSelector
-    //{
-    //    protected override Style SelectStyleCore(object item, DependencyObject container)
-    //    {
-    //        Track listitem = item as Track;
-
-    //        Style style = new Style(typeof(ListViewItem));
-    //        // Default Style
-    //        style.Setters.Add(new Setter(ListViewItem.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch));
-    //        style.Setters.Add(new Setter(ListViewItem.BackgroundProperty, new SolidColorBrush(Color.FromArgb(0x10, 0xF0, 0xF0, 0xF0))));
-
-    //        // Custom IsPlaying Style
-    //        if (listitem.IsPlaying)
-    //        {
-    //            style.Setters.Add(new Setter(ListViewItem.BorderBrushProperty, new SolidColorBrush(Colors.Orange)));
-    //            style.Setters.Add(new Setter(ListViewItem.ForegroundProperty, new SolidColorBrush(Colors.Orange)));
-    //            style.Setters.Add(new Setter(ListViewItem.BorderThicknessProperty, new Thickness(1.0)));
-    //            style.Setters.Add(new Setter(ListViewItem.BorderBrushProperty, new SolidColorBrush(Colors.Orange)));
-    //        }
-    //        return style;
-    //    }
-    //}
+ 
 }

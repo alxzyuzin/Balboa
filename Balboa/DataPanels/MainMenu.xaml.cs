@@ -10,21 +10,24 @@ using System.Linq;
 
 namespace Balboa
 {
-    //public enum Panels
-    //{ 
-    //    CurrentTrackPanel,
-    //    PlaylistPanel,
-    //    TrackDirectoryPanel,
-    //    SavedPlaylistsPanel,
-    //    DatabaseExplorerPanel,
-    //    SearchPanel,
-    //    StatisticPanel,
-    //    OutputsPanel,
-    //    SettingsPanel
-    //}
+    
 
     public sealed partial class MainMenu : UserControl, IDataPanel, IRequestAction
     {
+
+        private enum Panel
+        {
+            CurrentTrackPanel = 1,
+            PlaylistPanel = 2,
+            TrackDirectoryPanel = 3,
+            SavedPlaylistsPanel = 4,
+            SearchPanel = 5,
+            StatisticPanel = 6,
+            OutputsPanel = 7, 
+            SettingsPanel = 8
+        }
+
+
         private Server _server;
         private ResourceLoader _resldr = new ResourceLoader();
         private SolidColorBrush WhiteBrush = new SolidColorBrush(Colors.White);
@@ -47,7 +50,7 @@ namespace Balboa
         }
         public void Init(Server server)
         {
-            throw new NotImplementedException();
+            _server = server;
         }
 
         public void Update()
@@ -70,79 +73,65 @@ namespace Balboa
         {
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new CurrentTrackPanel(_server));
             RequestAction.Invoke(this, actionParams);
-            HighLiteSelectedItem(sender as Button);
         }
         private void SwitchToPlaylistPanel(object sender, TappedRoutedEventArgs e)
         {
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new PlaylistPanel(_server));
             RequestAction.Invoke(this, actionParams);
-            HighLiteSelectedItem(sender as Button);
         }
 
         private void SwitchToTrackDirectoryPanel(object sender, TappedRoutedEventArgs e)
         {
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new TrackDirectoryPanel(_server));
             RequestAction.Invoke(this, actionParams);
-            HighLiteSelectedItem(sender as Button);
         }
 
         private void SwitchToSavedPlaylistsPanel(object sender, TappedRoutedEventArgs e)
         {
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new SavedPlaylistsPanel(_server));
             RequestAction.Invoke(this, actionParams);
-            HighLiteSelectedItem(sender as Button);
         }
 
         private void SwitchToSearchPanel(object sender, TappedRoutedEventArgs e)
         {
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new SearchPanel(_server));
             RequestAction.Invoke(this, actionParams);
-            HighLiteSelectedItem(sender as Button);
         }
 
         private void SwitchToStatisticPanel(object sender, TappedRoutedEventArgs e)
         {
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new StatisticPanel(_server));
             RequestAction.Invoke(this, actionParams);
-            HighLiteSelectedItem(sender as Button);
         }
 
         private void SwitchToOutputsPanel(object sender, TappedRoutedEventArgs e)
         {
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new OutputsPanel(_server));
             RequestAction.Invoke(this, actionParams);
-            HighLiteSelectedItem(sender as Button);
         }
 
         private void SwitchToSettingsPanel(object sender, TappedRoutedEventArgs e)
         {
            var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new SettingsPanel(_server));
            RequestAction.Invoke(this, actionParams);
-           HighLiteSelectedItem(sender as Button);
         }
 
-        public void HighLiteSelectedItem(Button pressedButton)
+        public void HighLiteSelectedItem(string className)
         {
-            var buttons1 = (pressedButton.Parent as StackPanel).Children as UIElementCollection;
-            var buttons2 = (pressedButton.Parent as StackPanel).Name == "stp_MenuButtons" ?
-                                                stp_SmallMenuButtons.Children as UIElementCollection:
-                                                stp_MenuButtons.Children as UIElementCollection;
+            var buttons = stp_MenuButtons.Children as UIElementCollection;
+            for (int i = 0; i < buttons.Count; i++)
+                SetMenuItemcolor(i, WhiteBrush);
 
-            int i = (buttons1.IndexOf(pressedButton));
-            for (int j=0; j < buttons1.Count; j++)
-            {
-                if (i == j)
-                {
-                    var b1 = (buttons1[j] as Button).Foreground = OrangeBrush; ;
-                    var b2 = (buttons2[j] as Button).Foreground = OrangeBrush; ;
-                }
-                else
-                {
-                    var b1 = (buttons1[j] as Button).Foreground = WhiteBrush;
-                    var b2 = (buttons2[j] as Button).Foreground = WhiteBrush;
-                }
-            }
-         }
+            var p = Enum.Parse(typeof(Panel), className) ?? 0;
+            SetMenuItemcolor((int)p, OrangeBrush);
+        }
 
+        private void SetMenuItemcolor(int itemNumber, SolidColorBrush color)
+        {
+            ((Button)(stp_SmallMenuButtons.Children as UIElementCollection)[itemNumber]).Foreground = color;
+            ((Button)(stp_MenuButtons.Children as UIElementCollection)[itemNumber]).Foreground = color;
+        }
+           
+        
     } //  Class MainMenu
 }   // Namespace Balboa

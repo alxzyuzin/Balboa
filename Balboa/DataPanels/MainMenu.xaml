@@ -9,7 +9,7 @@
     d:DesignHeight="550"
     d:DesignWidth="320">
 
-    <Border BorderThickness="1" Margin="20,0,0,0" Width="320" BorderBrush="{StaticResource MainBackgroundBrush}">
+    <Border BorderThickness="1" Width="320" BorderBrush="{StaticResource MainBackgroundBrush}">
         <Grid>
             <Grid.Resources>
                 <Storyboard x:Name="MainMenuShowStoryboard">
@@ -29,7 +29,7 @@
                 </Storyboard>
 
                 <Style  x:Key="MainMenuButtonStyle" TargetType ="Button">
-                    <Setter Property="Width" Value="230"/>
+                    <Setter Property="Width" Value="190"/>
                     <Setter Property="Height" Value="50" />
                     <Setter Property="BorderThickness" Value="0"/>
                     <Setter Property="Content" Value=""/>

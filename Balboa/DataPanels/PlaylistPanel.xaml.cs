@@ -71,6 +71,19 @@ namespace Balboa
             }
         }
 
+        private string _playlistLength;
+        public string PlaylistLength
+        {
+            get { return _playlistLength; }
+            set
+            {
+                if (_playlistLength != value)
+                {
+                    _playlistLength = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaylistLength)));
+                }
+            }
+        }
         public PlaylistPanel()
         {
             InitializeComponent();
@@ -138,7 +151,7 @@ namespace Balboa
                 _playlist.Add(track);
             }
             _playlist.NotifyCollectionChanged();
-
+            PlaylistLength = _playlist.Count.ToString();
             PlaylistContentVisibility = _playlist.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
