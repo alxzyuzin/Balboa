@@ -126,7 +126,7 @@ namespace Balboa
                 if (mpdData.Command.Op == "playlistinfo")
                 {
                     UpdateControlData(mpdData.Content);
-                  
+
                 }
                 if (mpdData.Command.Op == "currentsong")
                 {
@@ -137,6 +137,18 @@ namespace Balboa
                         _currentSongID = song.Id;
                         HightlightCurrentPlaingTrack();
                     }
+                }
+                if (mpdData.Command.Op == "save")
+                {
+                    ;
+                }
+            }
+
+            if (mpdData.Keyword != ResponseKeyword.OK)
+            {
+                if (mpdData.Command.Op == "save")
+                {
+                    ;
                 }
             }
         }
@@ -228,6 +240,8 @@ namespace Balboa
                 {
                     if (playlistNameInput.PlaylistName.Length > 0)
                     {
+                        if (LoadedPlaylistName == playlistNameInput.PlaylistName)
+                            _server.Rm(LoadedPlaylistName);
                         _server.PlaylistName = LoadedPlaylistName = playlistNameInput.PlaylistName;
                         _server.Save(playlistNameInput.PlaylistNameUTF8);
                     }

@@ -1,4 +1,13 @@
-﻿using System.ComponentModel;
+﻿/*-----------------------------------------------------------------------
+ * Copyright 2017 Alexandr Zyuzin.
+ *
+ * This file is part of MPD client Balboa.
+ *
+ * Класс предназначен для отображения окна ввода названия Playlist' а
+ * при нажатии кнопки сохранить Playlist в панели PlaylistPanel
+ *
+ --------------------------------------------------------------------------*/
+using System.ComponentModel;
 using System.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,11 +43,11 @@ namespace Balboa
             get { return _playlistName; }
             set
             {
-                if (_playlistName != value)
-                {
+//                if (_playlistName != value)
+//                {
                     _playlistName = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaylistName)));
-                }
+//                }
             }
         }
 

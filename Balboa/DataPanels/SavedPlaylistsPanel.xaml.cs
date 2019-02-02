@@ -114,7 +114,7 @@ namespace Balboa
             }
             else
             {
-                _server.Rm((gr_SavedPlaylists.SelectedItem as CommonGridItem).Name);
+                _server.Rm((gr_SavedPlaylists.SelectedItem as SavedPlaylistItem).FileName);
                 _server.ListPlaylists();
             }
         }
@@ -132,12 +132,12 @@ namespace Balboa
                 return;
             }
 
-            var playlistNameInput = new PlaylistNameInput((gr_SavedPlaylists.SelectedItem as CommonGridItem).Name);
+            var playlistNameInput = new PlaylistNameInput((gr_SavedPlaylists.SelectedItem as SavedPlaylistItem).FileName);
             playlistNameInput.PropertyChanged += (object snd, PropertyChangedEventArgs args) =>
             {
                 if (args.PropertyName == "PlaylistName")
                 {
-                    _server.Rename((gr_SavedPlaylists.SelectedItem as CommonGridItem).Name, playlistNameInput.PlaylistNameUTF8);
+                    _server.Rename((gr_SavedPlaylists.SelectedItem as SavedPlaylistItem).FileName, playlistNameInput.PlaylistNameUTF8);
                     _server.ListPlaylists();
                 }
             };

@@ -202,8 +202,6 @@ namespace Balboa
             _server.CurrentSong();
         }
 
-            
-
         public void Init(Server server)
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
