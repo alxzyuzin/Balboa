@@ -11,6 +11,7 @@ using Balboa;
 using Balboa.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Resources;
@@ -37,11 +38,46 @@ namespace Balboa
     //  Thread.CurrentThread.CurrentCulture = new CultureInfo("Fr-fr", true);
     //  myDateTime = DateTime.Parse(dt);
 
-    public partial class MainPage : Page
+    public partial class MainPage : Page, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        
+
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server  = new Server();
-//        public enum DataPanelState { CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings }
+        private Status _status = new Status();
+        //        public enum DataPanelState { CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings }
+
+        private string _extendedStatus;
+        public string ExtendedStatus
+        {
+
+            get { return _extendedStatus; }
+            private set
+            {
+                if (_extendedStatus != value)
+                {
+                    _extendedStatus = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ExtendedStatus)));
+                }
+            }
+        }
+
+        private string _connectionStatus = string.Empty;
+        public string ConnectionStatus
+        {
+            get { return _connectionStatus; }
+            private set
+            {
+                if (_connectionStatus != value)
+                {
+                    _connectionStatus = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConnectionStatus)));
+                }
+            }
+        }
+
+       
 
         public MainPage()
         {
@@ -50,6 +86,18 @@ namespace Balboa
             Application.Current.Resuming += OnResuming;
             this.SizeChanged += MainPage_SizeChanged;
 
+            _server.ConnectionStatusChanged += (object sender, string status) => { ConnectionStatus = status; };
+            _server.DataReady += (object sender, MpdResponse data) => 
+                    {
+                        if (data.Keyword == ResponseKeyword.OK)
+                        {
+                            if (data.Command.Op == "status")
+                            {
+                                _status.Update(data.Content);
+                                ExtendedStatus = _status.ExtendedStatus;
+                            }
+                        }
+                    };
             _server.ServerError += async (object server, MpdResponse e) =>
                     {
                             await DisplayMessage(new Message(MsgBoxType.Error, e.ErrorMessage, MsgBoxButton.Close, 200));
@@ -68,6 +116,9 @@ namespace Balboa
             if (_server.Initialized)
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
         }
+
+
+        
 
         private async void OnDataPanelActionRequested(Object sender, ActionParams actionParams)
         {

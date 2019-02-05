@@ -17,21 +17,14 @@
             <common:TimeConverter  x:Key="TimeConverter"/>
             <common:VolumeConverter x:Key="VolumeConverter"/>
         </Grid.Resources>
-        <Grid.RowDefinitions>
-           <RowDefinition  Height="*"/>
-           <RowDefinition  Height="19"/>
-        </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="160"/>
         </Grid.ColumnDefinitions>
-        <!-- Album art and Title -->
-        <StackPanel Grid.Column="0">
-           
-        </StackPanel>
-        
-        <StackPanel Grid.Row="0" Grid.Column="1" x:Name="stp_ServerStatus">
+       
+        <StackPanel Grid.Column="1" x:Name="stp_ServerStatus">
             <!-- Длительность трека и время от начала воспроизведения трека-->
             <Grid Margin="10,10,20,0">
                 <Grid.RowDefinitions>
@@ -86,10 +79,9 @@
                 <AppBarButton x:Name="appbtn_Stop"      Grid.Column="6" Icon="Stop"      Tapped="btn_Stop_Tapped"  FontWeight="Light"/>
                 <AppBarButton x:Name="appbtn_Restart"   Grid.Column="7" Icon="Link"      Tapped="btn_Restart_Tapped"  FontWeight="Light"/>
             </Grid>
-            <!-- Параметры воспроизведения и статус соединения -->
-            
         </StackPanel>
-        <Grid Grid.Column="2" Grid.RowSpan="2" Margin="0,-15,-20,0">
+        <!-- Volume control-->
+        <Grid Grid.Column="2" Margin="0,-15,-20,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"/>
                 <RowDefinition Height="20"/>
@@ -110,24 +102,13 @@
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        FontSize="25" Foreground="Orange"/>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="19" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock  Grid.Column="0" TextAlignment="Left"  Text="{Binding ExtendedStatus}" FontSize="15"/>
-            <TextBlock  Grid.Column="1" TextAlignment="Right"  Text="{Binding ConnectionStatus}" FontSize="15"/>
-        </Grid>
-        
+       
         <Popup x:Name="popup_VolumeControl" Visibility="Collapsed">
-
             <Popup.ChildTransitions>
                 <TransitionCollection>
                     <PaneThemeTransition Edge="Bottom"/>
                 </TransitionCollection>
             </Popup.ChildTransitions>
-
-            
         </Popup>
 
     </Grid>

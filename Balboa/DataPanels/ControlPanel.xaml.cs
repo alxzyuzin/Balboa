@@ -4,19 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -30,35 +23,6 @@ namespace Balboa
         private Status _status = new Status();
         private Song _song = new Song();
         private int _currentSongID = -1;
-
-        private string _extendedStatus;
-        public string ExtendedStatus
-        {
-
-            get { return _extendedStatus; }
-            private set
-            {
-                if (_extendedStatus!=value)
-                {
-                    _extendedStatus = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ExtendedStatus)));
-                }
-            }
-        }
-
-        private string _connectionStatus = string.Empty;
-        public string ConnectionStatus
-        {
-            get { return _connectionStatus; }
-            private set
-            {
-                if (_connectionStatus != value)
-                {
-                    _connectionStatus = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConnectionStatus)));
-                }
-            }
-        }
 
         private double _timeLeft;
         public double TimeLeft
@@ -144,14 +108,9 @@ namespace Balboa
             }
         }
 
-
-
-
-
         public ControlPanel()
         {
             this.InitializeComponent();
-           
         }
 
         public ControlPanel(Server server):this()
@@ -160,16 +119,13 @@ namespace Balboa
 
             _server = server;
             _server.DataReady += _server_DataReady;
-            _server.ConnectionStatusChanged += (Object obj, string status) => { ConnectionStatus = status; };
         }
 
         public void Init(Server server)
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
-
             _server = server;
             _server.DataReady += _server_DataReady;
-            _server.ConnectionStatusChanged += (Object obj, string status) => { ConnectionStatus = status; };
         }
 
         public void Update()
@@ -195,7 +151,6 @@ namespace Balboa
         {
             _status.Update(serverData);
 
-            ExtendedStatus = _status.ExtendedStatus;
             TimeLeft    = _status.TimeLeft;
             TimeElapsed = _status.TimeElapsed;
             PlayPauseButtonContent = (_status.State == "play") ? '\xE103' : '\xE102';
@@ -273,8 +228,6 @@ namespace Balboa
             _server.Restart();
         }
 
-
-
         #region VOLUME CONTROL
 
         private void VolumeSlider_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -283,7 +236,6 @@ namespace Balboa
                 _server?.SetVolume(Convert.ToInt32((sender as RoundSlider).Value));
         }
 
-        ////=======================================================================
         private void appbtn_Volume_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var appbarbutton = sender as AppBarButton;
@@ -298,20 +250,6 @@ namespace Balboa
             else
                 popup_VolumeControl.IsOpen = true;
         }
-
-        private void sl_Volume_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
-        {
-            var sl = sender as Slider;
-            var cp = e.GetCurrentPoint((UIElement)sender) as PointerPoint;
-            int mouseweeldelta = cp.Properties.MouseWheelDelta / 12;
-
-            int newvalue = (int)sl.Value + mouseweeldelta;
-            if ((newvalue >= 0) && (newvalue <= 100) && Math.Abs(mouseweeldelta)>1)
-            {
-             //   _server.SetVolume(newvalue);
-            }
-        }
-
 
         private bool _volumeChangedByStatus = true;
         private void sl_Volume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -421,9 +359,8 @@ namespace Balboa
         public void Dispose()
         {
             _server.DataReady -= _server_DataReady;
-            _server.ConnectionStatusChanged -= (Object obj, string status) => { ConnectionStatus = status; };
         }
 
  
-    }
+    }  // class ControlPanel
 }

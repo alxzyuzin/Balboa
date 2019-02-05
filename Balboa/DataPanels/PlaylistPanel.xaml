@@ -61,7 +61,7 @@
                                            DoubleTapped="lv_PlayList_DoubleTapped"
                                            GotFocus="lv_PlayList_GotFocus">
         </common:ListViewExtended>
-        <TextBlock Grid.Row="0" Text="Playlist doesn't containe any items. Use 'Add Track' button to add tracks."
+        <TextBlock Grid.Row="0" Text="Playlist doesn't contain any items. Use 'Add Track' button to add tracks."
                    VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" TextWrapping="WrapWholeWords" 
                    Visibility="{Binding PlaylistContentVisibility}"
                    Margin="20,20,20,20"/>
