@@ -17,7 +17,7 @@
             <RowDefinition  Height="19"/>
         </Grid.RowDefinitions>
         <Image      Grid.Row="0" Source="{Binding AlbumArt.Image}" />
-        <TextBlock  Grid.Row="1" Text="{Binding Title}" FontSize="20" 
+        <TextBlock  Grid.Row="1" Text="{Binding Title}" FontSize="20"  Margin="0,5,0,0"
                     TextWrapping="WrapWholeWords" HorizontalAlignment="Center"/>
     </Grid>
 </UserControl>

@@ -61,7 +61,7 @@ namespace Balboa
             MainMenuPanel.Init(_server);
             MainMenuPanel.RequestAction += OnDataPanelActionRequested;
             TrackInfoPanel.Init(_server);
-            PageHeaderPanel.Init(_server);
+//            PageHeaderPanel.Init(_server);
            // PlayModePanel.Init(_server);
             PlayControlPanel.Init(_server);
 
