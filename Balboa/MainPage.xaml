@@ -42,7 +42,7 @@
         <!--
   
         -->
-        <Border x:Name="DataPanel" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="20,0,20,0"/>
+        <Border x:Name="DataPanel" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="20,20,20,10"/>
         <!--
             <local:CurrentTrackPanel x:Name="p_CurrentTrack" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Visibility="Collapsed" />
        

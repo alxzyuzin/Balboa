@@ -71,7 +71,19 @@ namespace Balboa
             }
         }
 
-
+        private string _artist;
+        public string Artist
+        {
+            get { return _artist; }
+            private set
+            {
+                if (_artist != value)
+                {
+                    _artist = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Artist)));
+                }
+            }
+        }
 
 
         public TrackInfoPanel()
@@ -125,6 +137,7 @@ namespace Balboa
             _song.Update(serverData);
 
             Title = _song.Title;
+            Artist = _song.Artist;
             if (_song.File != null)
             {
                 await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);

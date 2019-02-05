@@ -362,9 +362,10 @@
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="SiroccoControls">
-      <HintPath>..\..\VolumeControl\SiroccoControls\bin\Release\SiroccoControls.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\VolumeControl\SiroccoControls\SiroccoControls.csproj">
+      <Project>{e72207a6-44c0-4a4b-bdc2-89a6a5f0f68f}</Project>
+      <Name>SiroccoControls</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

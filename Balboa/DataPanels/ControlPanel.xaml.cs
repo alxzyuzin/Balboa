@@ -1,4 +1,5 @@
 ﻿using Balboa.Common;
+using SiroccoControls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -129,7 +130,7 @@ namespace Balboa
             }
         }
 
-        private double _volume;
+        private double _volume = 0;
         public double Volume
         {
             get { return _volume; }
@@ -150,9 +151,10 @@ namespace Balboa
         public ControlPanel()
         {
             this.InitializeComponent();
+           
         }
 
-        public ControlPanel(Server server)
+        public ControlPanel(Server server):this()
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
 
@@ -163,6 +165,8 @@ namespace Balboa
 
         public void Init(Server server)
         {
+            if (server == null) throw new ArgumentNullException(nameof(server));
+
             _server = server;
             _server.DataReady += _server_DataReady;
             _server.ConnectionStatusChanged += (Object obj, string status) => { ConnectionStatus = status; };
@@ -196,6 +200,7 @@ namespace Balboa
             TimeElapsed = _status.TimeElapsed;
             PlayPauseButtonContent = (_status.State == "play") ? '\xE103' : '\xE102';
             Volume = _status.Volume;
+            VolumeSlider.Value = _status.Volume;
 
             if (_currentSongID != _status.SongId)
             {
@@ -215,22 +220,14 @@ namespace Balboa
         private void UpdateSongData(List<string> serverData)
         {
             _song.Update(serverData);
-            
             Duration = _song.Duration;
-            //if (_song.File != null)
-            //{
-            //    await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
-            //    await AlbumArt.UpdateImage();
-            //}
-
-        }
+         }
 
 
         private void btn_PrevTrack_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _server.Previous();
         }
-
 
         private void btn_PlayPause_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -279,6 +276,14 @@ namespace Balboa
 
 
         #region VOLUME CONTROL
+
+        private void VolumeSlider_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Value")
+                _server?.SetVolume(Convert.ToInt32((sender as RoundSlider).Value));
+        }
+
+        ////=======================================================================
         private void appbtn_Volume_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var appbarbutton = sender as AppBarButton;
@@ -419,5 +424,6 @@ namespace Balboa
             _server.ConnectionStatusChanged -= (Object obj, string status) => { ConnectionStatus = status; };
         }
 
+ 
     }
 }

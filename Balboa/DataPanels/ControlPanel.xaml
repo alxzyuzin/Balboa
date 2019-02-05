@@ -95,15 +95,17 @@
                 <RowDefinition Height="20"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <SiroccoControls:RoundSlider x:Name="RS" Width="160" Height="160"  Grid.RowSpan="3" Radius="60"
+            
+            <SiroccoControls:RoundSlider x:Name="VolumeSlider" Width="160" Height="160"  Grid.RowSpan="3" Radius="60"
                                      Minimum="0" Maximum="100"
                                      Background="{StaticResource MainBackgroundBrush}"
                                      SliderBrush="Orange" SliderBackgroundBrush="DimGray" SliderThickness="4"
-                                     Value="60"
+                                     MouseTiltValue="5"
                                      TickFrequency="10"
-                                     TickPlacement="Inline"/>
+                                     TickPlacement="Inline"
+                                     PropertyChanged="VolumeSlider_PropertyChanged"/>
             <TextBlock Grid.Row="1" Text="Volume" HorizontalAlignment="Center" VerticalAlignment="Center"
-                       Foreground="Orange"/>
+                       FontSize="13" Foreground="Orange"/>
             <TextBlock Grid.Row="0"  Grid.RowSpan="3" Text="{Binding Volume}" 
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        FontSize="25" Foreground="Orange"/>
