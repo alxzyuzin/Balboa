@@ -26,29 +26,24 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="120"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="90"/>
-            <RowDefinition Height="150"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="170"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="254"/>
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <!--  PЗАГОЛОВОК ОКНА row=0 column=1 -->
         <local:PageHeader x:Name="PageHeaderPanel" Grid.Row="0" Grid.Column="1"/>
         <!-- Главное меню row = 0 column = 0 -->
         <local:MainMenu x:Name="MainMenuPanel"    Grid.Row="0" Grid.Column="0" Visibility="Visible"
-                        Grid.RowSpan="2" Margin="0,50,0,0"/>
+                        Grid.RowSpan="2" />
         <!-- Grid.Column="1" Grid.Row="0"/ -->
+        <local:TrackInfoPanel x:Name="TrackInfoPanel" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" />
         <!--
-        <local:VolumeControl Grid.Row="2" Grid.Column="0" Grid.RowSpan="2" 
-                             StartAngle="0" EndAngle="10" 
-                             Radius="80"
-                             Center="90,70"
-                             SmallAngle="True"
-                              >
-        </local:VolumeControl>
+  
         -->
-        <Border x:Name="DataPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"/>
+        <Border x:Name="DataPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="20,0,20,0"/>
         <!--
             <local:CurrentTrackPanel x:Name="p_CurrentTrack" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Visibility="Collapsed" />
        
@@ -61,10 +56,11 @@
             <local:Settings x:Name="p_Settings" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" d:IsHidden="True" />
         -->
         <!-- PLAY MODES --> 
-       
+       <!--
         <local:PlayMode x:Name="PlayModePanel" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2"/>
+        -->
         <!-- Панель управления проигрыванием -->
-        <local:ControlPanel x:Name="PlayControlPanel" Grid.Row="3" Grid.Column="1"/>
+        <local:ControlPanel x:Name="PlayControlPanel" Grid.Row="3" Grid.Column="1" />
 
         <local:MessageBox x:Name="MsgBox" Grid.Row="0" Grid.Column="0" 
                           Grid.ColumnSpan="2" Grid.RowSpan="4" Visibility="Collapsed"/>

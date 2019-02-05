@@ -143,6 +143,10 @@ namespace Balboa
             }
         }
 
+
+
+
+
         public ControlPanel()
         {
             this.InitializeComponent();
@@ -195,7 +199,7 @@ namespace Balboa
 
             if (_currentSongID != _status.SongId)
             {
-//                Duration = _status.Duration;
+                Duration = _status.Duration;
                 _currentSongID = _status.SongId;
                 _server.CurrentSong();
             }
@@ -203,7 +207,7 @@ namespace Balboa
             {
                 TimeLeft = Duration - TimeElapsed;
                 ProgressValue = _status.TimeElapsed / Duration;
-//                pb_Progress.Value = _status.TimeElapsed / Duration;
+                pb_Progress.Value = _status.TimeElapsed / Duration;
             }
 
         }
@@ -213,6 +217,11 @@ namespace Balboa
             _song.Update(serverData);
             
             Duration = _song.Duration;
+            //if (_song.File != null)
+            //{
+            //    await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
+            //    await AlbumArt.UpdateImage();
+            //}
 
         }
 
@@ -406,8 +415,8 @@ namespace Balboa
 
         public void Dispose()
         {
-            _server.DataReady += _server_DataReady;
-            _server.ConnectionStatusChanged += (Object obj, string status) => { ConnectionStatus = status; };
+            _server.DataReady -= _server_DataReady;
+            _server.ConnectionStatusChanged -= (Object obj, string status) => { ConnectionStatus = status; };
         }
 
     }

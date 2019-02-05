@@ -133,6 +133,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="DataPanels\TrackInfoPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DataPanels\VolumeControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -225,6 +229,9 @@
     <Compile Include="DataPanels\DatabaseExplorerPanel.xaml.cs">
       <DependentUpon>DatabaseExplorerPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataPanels\TrackInfoPanel.xaml.cs">
+      <DependentUpon>TrackInfoPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataPanels\VolumeControl.xaml.cs">
       <DependentUpon>VolumeControl.xaml</DependentUpon>
     </Compile>
@@ -285,7 +292,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="Assets\1116x540.png" />
     <Content Include="Assets\120x120.png" />
@@ -354,6 +360,11 @@
     <Content Include="Assets\Wide310x150Logo.scale-180.png" />
     <Content Include="Assets\Wide310x150Logo.scale-80.png" />
     <None Include="Package.StoreAssociation.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SiroccoControls">
+      <HintPath>..\..\VolumeControl\SiroccoControls\bin\Release\SiroccoControls.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
