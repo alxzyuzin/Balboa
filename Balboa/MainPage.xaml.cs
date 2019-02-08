@@ -15,8 +15,10 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Resources;
+using Windows.Graphics.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
@@ -108,6 +110,9 @@ namespace Balboa
 
             MainMenuPanel.Init(_server);
             MainMenuPanel.RequestAction += OnDataPanelActionRequested;
+            VisualStateManager.GoToState(MainMenuPanel, "Wide", true);
+
+
             TrackInfoPanel.Init(_server);
 //            PageHeaderPanel.Init(_server);
            // PlayModePanel.Init(_server);
@@ -118,8 +123,14 @@ namespace Balboa
         }
 
 
-        
-
+        /// <summary>
+        ///  Функция вызывается когда одна из панелей запрашивает действие у главного окна
+        ///  Возможные действия 
+        ///     - Активировать указанную панель данных
+        ///     - Отобразить окно с сообщением пользователю
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="actionParams"></param>
         private async void OnDataPanelActionRequested(Object sender, ActionParams actionParams)
         {
             if (actionParams.ActionType.HasFlag(ActionType.ActivateDataPanel))
@@ -135,34 +146,34 @@ namespace Balboa
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            //var displayinformation = DisplayInformation.GetForCurrentView();
+            var displayinformation = DisplayInformation.GetForCurrentView();
 
-            //if (displayinformation.CurrentOrientation == DisplayOrientations.Landscape || displayinformation.CurrentOrientation == DisplayOrientations.LandscapeFlipped)
-            //{
-            //    if (e.NewSize.Width >= 1100)
-            //    {
-            //        VisualStateManager.GoToState(this, "Default", true);
-            //    }
+            if (displayinformation.CurrentOrientation == DisplayOrientations.Landscape || displayinformation.CurrentOrientation == DisplayOrientations.LandscapeFlipped)
+            {
+                if (e.NewSize.Width >= 1100)
+                {
+                    VisualStateManager.GoToState(this, "Default", true);
+                }
 
-            //    if (e.NewSize.Width < 1100)
-            //    {
-            //        // Прячем горизонтальный регулятор громкости
-            //        // Показываем кнопку регулятора громкости
-            //        // Меняем размер колонки 1 в панели управления воспроизведения grid_PlayControls.ColumnDefinitions[1];
-            //        // (меняем 300 на 20*
-            //        VisualStateManager.GoToState(this, "Filled", true);
-            //    }
+                if (e.NewSize.Width < 1100)
+                {
+                    // Прячем горизонтальный регулятор громкости
+                    // Показываем кнопку регулятора громкости
+                    // Меняем размер колонки 1 в панели управления воспроизведения grid_PlayControls.ColumnDefinitions[1];
+                    // (меняем 300 на 20*
+                    VisualStateManager.GoToState(this, "Filled", true);
+                }
 
-            //    if (e.NewSize.Width < 900)
-            //    {
-            //        VisualStateManager.GoToState(this, "Narrow", true);
-            //    }
+                if (e.NewSize.Width < 900)
+                {
+                    VisualStateManager.GoToState(this, "Narrow", true);
+                }
 
-            //    if (e.NewSize.Width < 620)
-            //    {
-            //        VisualStateManager.GoToState(this, "SuperNarrow", true);
-            //    }
-            //}
+                if (e.NewSize.Width < 620)
+                {
+                    VisualStateManager.GoToState(this, "SuperNarrow", true);
+                }
+            }
 
             //if (displayinformation.CurrentOrientation == DisplayOrientations.Portrait || displayinformation.CurrentOrientation == DisplayOrientations.PortraitFlipped)
             //{
@@ -227,6 +238,32 @@ namespace Balboa
             //    p_PageHeader.Visibility = Visibility.Collapsed;
             //else
             //    p_PageHeader.Visibility = Visibility.Visible;
+        }
+
+        private enum MainMenuState { Narrow, Wide}
+        private MainMenuState _mainMenuState = MainMenuState.Wide;
+        private void SwitchMenuState(object sender, TappedRoutedEventArgs e)
+        {
+            if (_mainMenuState ==  MainMenuState.Wide)
+            {
+                
+                MainMenuPanel.Collaps();
+                //VisualStateManager.GoToState(MainMenuPanel, "Narrow", true);
+                //VisualStateManager.GoToState(MainMenuPanel, "Collapsed", true);
+
+                _mainMenuState = MainMenuState.Narrow;
+            }
+            else
+            {
+                MainMenuPanel.Expand();
+                //VisualStateManager.GoToState(MainMenuPanel, "Wide", true);
+                //VisualStateManager.GoToState(MainMenuPanel, "Expanded", true);
+                //    MainMenuExpandStoryboard.Begin();
+                _mainMenuState = MainMenuState.Wide;
+            }
+            //var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new SettingsPanel(_server));
+            //RequestAction.Invoke(this, actionParams);
+            //HighLiteSelectedItem(sender as Button);
         }
 
 

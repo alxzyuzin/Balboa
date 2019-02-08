@@ -5,6 +5,8 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using System.Linq;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media.Animation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -17,14 +19,14 @@ namespace Balboa
 
         private enum Panel
         {
-            CurrentTrackPanel = 1,
-            PlaylistPanel = 2,
-            TrackDirectoryPanel = 3,
-            SavedPlaylistsPanel = 4,
-            SearchPanel = 5,
-            StatisticPanel = 6,
-            OutputsPanel = 7, 
-            SettingsPanel = 8
+            CurrentTrackPanel = 0,
+            PlaylistPanel = 1,
+            TrackDirectoryPanel = 2,
+            SavedPlaylistsPanel = 3,
+            SearchPanel = 4,
+            StatisticPanel = 5,
+            OutputsPanel = 6, 
+            SettingsPanel = 7
         }
 
 
@@ -63,12 +65,19 @@ namespace Balboa
             throw new NotImplementedException();
         }
 
-        private void SwitchMenuState(object sender, TappedRoutedEventArgs e)
+        public void Collaps()
         {
-            //var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new SettingsPanel(_server));
-            //RequestAction.Invoke(this, actionParams);
-            //HighLiteSelectedItem(sender as Button);
+//            StoryboardNarrow.Begin();
+            VisualStateManager.GoToState(this, "Narrow", true);
+
         }
+
+        public void Expand()
+        {
+            //StoryboardWide.Begin();
+            VisualStateManager.GoToState(this, "Wide", true);
+        }
+
         private void SwitchToCurrentTrackPanel(object sender, TappedRoutedEventArgs e)
         {
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new CurrentTrackPanel(_server));

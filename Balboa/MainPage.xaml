@@ -20,330 +20,359 @@
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <Page.Resources>
-         <x:String x:Key="AppName">Balboa</x:String>
+        <x:String x:Key="AppName">Balboa</x:String>
+        <Style  x:Key="MainMenuSmallButtonStyle" TargetType ="Button" >
+            <Setter Property="Width" Value="64"/>
+            <Setter Property="Height" Value="50" />
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Light"/>
+        </Style>
+
+        <Storyboard x:Name="MainMenuExpandStoryboard">
+
+            
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainMenuWidth"
+                                         Storyboard.TargetProperty="Width" Duration="0:0:10">
+                <DiscreteObjectKeyFrame Value="250" KeyTime="0"/>
+            </ObjectAnimationUsingKeyFrames>
+
+            
+        </Storyboard>
+        <Storyboard x:Name="MainMenuCollapseStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainMenuWidth"
+                                         Storyboard.TargetProperty="Width" Duration="0:0:10" >
+                <DiscreteObjectKeyFrame Value="60" KeyTime="0:0:1"/>
+            </ObjectAnimationUsingKeyFrames>
+
+
+            <!--DoubleAnimation Storyboard.TargetName="MainMenuWidth"
+                                        Storyboard.TargetProperty="Width"
+                                         From="250.0" To="60.0" Duration="00:00:0.2" 
+                                          FillBehavior="HoldEnd">
+
+            </-->
+        </Storyboard>
+
+
     </Page.Resources>
     
     <Grid x:Name="grid_Main"  Background="{StaticResource MainBackgroundBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="100"/>
-            <RowDefinition Height="150"/>
-            <RowDefinition Height="20"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <!--  PЗАГОЛОВОК ОКНА row=0 column=1 -->
-        <!--local:PageHeader x:Name="PageHeaderPanel" Grid.Row="0" Grid.Column="1"/ -->
-        <!-- Главное меню row = 0 column = 0 -->
-        <local:MainMenu x:Name="MainMenuPanel"    Grid.Row="0" Grid.Column="0" Visibility="Visible"
+        <Grid x:Name="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="90"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="150"/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Top"
+                    Content="&#xE169;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchMenuState" />
+            <!--local:PageHeader x:Name="PageHeaderPanel" Grid.Row="0" Grid.Column="1"/ -->
+            <local:MainMenu x:Name="MainMenuPanel" Grid.Row="0" Grid.Column="0" Margin="0,50,0,0"
                         Grid.RowSpan="2" />
-        <!-- Grid.Column="1" Grid.Row="0"/ -->
-        <local:TrackInfoPanel x:Name="TrackInfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" />
-        <!--
-  
-        -->
-        <Border x:Name="DataPanel" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="20,20,20,10"/>
-        <!--
-            <local:CurrentTrackPanel x:Name="p_CurrentTrack" Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Visibility="Collapsed" />
-       
-        <local:CurrentPlaylist x:Name="p_CurrentPlaylist" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed" />
-            <local:TrackDirectory x:Name="p_TrackDirectory" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
-            <local:SavedPlaylistsPanel x:Name="p_SavedPlaylistsPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>    
-            <local:GenresPanel x:Name="p_GenresPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
-            <local:SearchPanel x:Name="p_Search" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed"/>
-            <local:Stats x:Name="p_Stats" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Visibility="Collapsed" />
-            <local:Settings x:Name="p_Settings" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" d:IsHidden="True" />
-        -->
-        <!-- PLAY MODES --> 
-       <!--
-        <local:PlayMode x:Name="PlayModePanel" Grid.Row="2" Grid.Column="0" Grid.RowSpan="2"/>
-        -->
-        <!-- Панель управления проигрыванием -->
-        <local:ControlPanel x:Name="PlayControlPanel" Grid.Row="2" Grid.Column="1" />
-        
-        <TextBlock  Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" TextAlignment="Left" 
-                    Text="{Binding ExtendedStatus}" FontSize="15" Margin="20,0,0,0"/>
-        <TextBlock  Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" TextAlignment="Right"
-                    Text="{Binding ConnectionStatus}" FontSize="15" Margin="0,0,20,0" />
-        
+            <Border x:Name="DataPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="0,10,20,10"/>
+
+        </Grid>
+        <Grid x:Name="Bottom">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="150"/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <local:TrackInfoPanel x:Name="TrackInfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" />
+
+            <local:ControlPanel x:Name="PlayControlPanel" Grid.Row="2" Grid.Column="1" />
+        </Grid>
+
         <local:MessageBox x:Name="MsgBox" Grid.Row="0" Grid.Column="0" 
                           Grid.ColumnSpan="2" Grid.RowSpan="3" Visibility="Collapsed"/>
+    </Grid>
 
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="VisualStateGroup">
-                <VisualState x:Name="Default"/>
-                <VisualState x:Name="Filled">
-                    <Storyboard>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="sl_Volume"
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup x:Name="VisualStateGroup">
+            <VisualState x:Name="Default"/>
+            <VisualState x:Name="Filled">
+                <Storyboard>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="sl_Volume"
                                                        Storyboard.TargetProperty="(UIElement.Visibility)"
                                                        Duration="5">
-                            <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="0" />
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="0" />
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Volume" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Volume" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_VolumeColumn"
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_VolumeColumn"
                                          Storyboard.TargetProperty="Width">
-                            <DiscreteObjectKeyFrame Value="20*" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="20*" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                    </Storyboard>
+                </Storyboard>
 
-                </VisualState>
-                <VisualState x:Name="Narrow">
-                    <Storyboard>
-                        <!-- Заменим Slider управления громкостью на кнопку -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="sl_Volume"
+            </VisualState>
+            <VisualState x:Name="Narrow">
+                <Storyboard>
+                    <!-- Заменим Slider управления громкостью на кнопку -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="sl_Volume"
                                                        Storyboard.TargetProperty="(UIElement.Visibility)">
-                            <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="0" />
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="0" />
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Volume" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Volume" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="popup_VolumeControl" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="popup_VolumeControl" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_VolumeColumn"
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_VolumeColumn"
                                          Storyboard.TargetProperty="Width">
-                            <DiscreteObjectKeyFrame Value="20*" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="20*" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <!-- Спрячем главное меню -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stp_MainMenu" 
+                    <!-- Спрячем главное меню -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stp_MainMenu" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Collapsed" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="Collapsed" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <!-- Сдвинем левую грницу главного окна -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_MainPanel" 
+                    <!-- Сдвинем левую грницу главного окна -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_MainPanel" 
                                                           Storyboard.TargetProperty="Margin" >
-                            <DiscreteObjectKeyFrame  Value="20,70,0,0" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <!-- Покажем заголовок главного окна -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stackpanel_PageHeader" 
+                        <DiscreteObjectKeyFrame  Value="20,70,0,0" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <!-- Покажем заголовок главного окна -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stackpanel_PageHeader" 
                                                           Storyboard.TargetProperty="Visibility" >
-                            <DiscreteObjectKeyFrame  Value="Visible" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                    </Storyboard>
-                </VisualState>
-                <VisualState x:Name="SuperNarrow">
-                    <Storyboard>
-                        <!-- Заменим Slider управления громкостью на кнопку -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="sl_Volume"
+                        <DiscreteObjectKeyFrame  Value="Visible" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                </Storyboard>
+            </VisualState>
+            <VisualState x:Name="SuperNarrow">
+                <Storyboard>
+                    <!-- Заменим Slider управления громкостью на кнопку -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="sl_Volume"
                                                        Storyboard.TargetProperty="(UIElement.Visibility)">
-                            <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="0" />
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="0" />
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Volume" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Volume" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="popup_VolumeControl" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="popup_VolumeControl" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_VolumeColumn"
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_VolumeColumn"
                                          Storyboard.TargetProperty="Width">
-                            <DiscreteObjectKeyFrame Value="20*" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="20*" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <!-- Спрячем главное меню -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stp_MainMenu" 
+                    <!-- Спрячем главное меню -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stp_MainMenu" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Collapsed" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="Collapsed" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <!-- Сдвинем левую границу главного окна -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_MainPanel" 
+                    <!-- Сдвинем левую границу главного окна -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_MainPanel" 
                                                           Storyboard.TargetProperty="Margin" >
-                            <DiscreteObjectKeyFrame  Value="20,70,0,0" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <!-- Покажем заголовок главного окна -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stackpanel_PageHeader" 
+                        <DiscreteObjectKeyFrame  Value="20,70,0,0" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <!-- Покажем заголовок главного окна -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stackpanel_PageHeader" 
                                                           Storyboard.TargetProperty="Visibility" >
-                            <DiscreteObjectKeyFrame  Value="Visible" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="Visible" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <!-- Спрячем статус соединения -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="tb_ConnectionStatus" 
+                    <!-- Спрячем статус соединения -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="tb_ConnectionStatus" 
                                                           Storyboard.TargetProperty="Visibility" >
-                            <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
 
-                       <!-- Изменим позиционирование названия трека -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="textblock_Title" 
+                    <!-- Изменим позиционирование названия трека -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="textblock_Title" 
                                                           Storyboard.TargetProperty="(Grid.Column)" >
-                            <DiscreteObjectKeyFrame  Value="0" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="textblock_Title" 
+                        <DiscreteObjectKeyFrame  Value="0" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="textblock_Title" 
                                                           Storyboard.TargetProperty="(Grid.ColumnSpan)" >
-                            <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        
-                        <!-- Перестроим отображение данных текущего трека-->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                        <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+
+                    <!-- Перестроим отображение данных текущего трека-->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="(Grid.Column)" >
-                            <DiscreteObjectKeyFrame  Value="0" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                        <DiscreteObjectKeyFrame  Value="0" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="(Grid.Row)" >
-                            <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <!-- Позиционируем обложку альбома -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
+                        <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <!-- Позиционируем обложку альбома -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
                                                           Storyboard.TargetProperty="(Grid.ColumnSpan)" >
-                            <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
+                        <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
                                                           Storyboard.TargetProperty="(Grid.RowSpan)" >
-                            <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
                                                           Storyboard.TargetProperty="Margin" >
-                            <DiscreteObjectKeyFrame  Value="40,130,40,40" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="40,130,40,40" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <!-- Позиционируем описание трека -->
+                    <!-- Позиционируем описание трека -->
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="(Grid.ColumnSpan)" >
-                            <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                        <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="(Grid.RowSpan)" >
-                            <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="Margin" >
-                            <DiscreteObjectKeyFrame  Value="100,40,100,40" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="100,40,100,40" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
 
-                        <!-- Спрячем кнопку Stop -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Stop" 
+                    <!-- Спрячем кнопку Stop -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Stop" 
                                                           Storyboard.TargetProperty="Visibility" >
-                            <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_StopColumn"
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_StopColumn"
                                          Storyboard.TargetProperty="Width">
-                            <DiscreteObjectKeyFrame Value="0" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        
-                        
-                        
-                        <!-- Спрячем кнопку Save playlist -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Playlist_Save" 
-                                                          Storyboard.TargetProperty="Visibility" >
-                            <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        
-                        
-                       
+                        <DiscreteObjectKeyFrame Value="0" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                    </Storyboard>
-                </VisualState>
-                <VisualState x:Name="Portrait">
-                    <Storyboard>
-                        <!-- Заменим Slider управления громкостью на кнопку -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="sl_Volume"
+
+
+                    <!-- Спрячем кнопку Save playlist -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Playlist_Save" 
+                                                          Storyboard.TargetProperty="Visibility" >
+                        <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+
+
+
+
+                </Storyboard>
+            </VisualState>
+            <VisualState x:Name="Portrait">
+                <Storyboard>
+                    <!-- Заменим Slider управления громкостью на кнопку -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="sl_Volume"
                                                        Storyboard.TargetProperty="(UIElement.Visibility)">
-                            <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="0" />
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="Collapsed" KeyTime="0" />
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Volume" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="appbtn_Volume" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="popup_VolumeControl" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="popup_VolumeControl" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="Visible" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_VolumeColumn"
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PlayControls_VolumeColumn"
                                          Storyboard.TargetProperty="Width">
-                            <DiscreteObjectKeyFrame Value="20*" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame Value="20*" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <!-- Спрячем главное меню -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stp_MainMenu" 
+                    <!-- Спрячем главное меню -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stp_MainMenu" 
                                          Storyboard.TargetProperty="Visibility">
-                            <DiscreteObjectKeyFrame Value="Collapsed" KeyTime="0"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <!-- Сдвинем левую границу главного окна -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_MainPanel" 
+                        <DiscreteObjectKeyFrame Value="Collapsed" KeyTime="0"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <!-- Сдвинем левую границу главного окна -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_MainPanel" 
                                                           Storyboard.TargetProperty="Margin" >
-                            <DiscreteObjectKeyFrame  Value="20,70,0,0" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <!-- Покажем заголовок главного окна -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stackpanel_PageHeader" 
+                        <DiscreteObjectKeyFrame  Value="20,70,0,0" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <!-- Покажем заголовок главного окна -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="stackpanel_PageHeader" 
                                                           Storyboard.TargetProperty="Visibility" >
-                            <DiscreteObjectKeyFrame  Value="Visible" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="Visible" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <!-- Перестроим отображение данных текущего трека-->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                    <!-- Перестроим отображение данных текущего трека-->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="(Grid.Column)" >
-                            <DiscreteObjectKeyFrame  Value="0" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                        <DiscreteObjectKeyFrame  Value="0" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="(Grid.Row)" >
-                            <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                       <!-- Позиционируем обложку альбома -->
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
+                        <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <!-- Позиционируем обложку альбома -->
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
                                                           Storyboard.TargetProperty="(Grid.ColumnSpan)" >
-                            <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
+                        <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
                                                           Storyboard.TargetProperty="(Grid.RowSpan)" >
-                            <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image_AlbumCover" 
                                                           Storyboard.TargetProperty="Margin" >
-                            <DiscreteObjectKeyFrame  Value="40,130,40,40" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        
-                        <!-- Позиционируем описание трека -->
+                        <DiscreteObjectKeyFrame  Value="40,130,40,40" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                    <!-- Позиционируем описание трека -->
+
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="(Grid.ColumnSpan)" >
-                            <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                        <DiscreteObjectKeyFrame  Value="2" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="(Grid.RowSpan)" >
-                            <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="1" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
 
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_CurrentTrackData" 
                                                           Storyboard.TargetProperty="Margin" >
-                            <DiscreteObjectKeyFrame  Value="100,40,100,40" KeyTime="00:00:00"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame  Value="100,40,100,40" KeyTime="00:00:00"/>
+                    </ObjectAnimationUsingKeyFrames>
+
+                </Storyboard>
+
+            </VisualState>
+        </VisualStateGroup>
+
+    </VisualStateManager.VisualStateGroups>
 
 
 
-                    </Storyboard>
-                    
-                </VisualState>
-            </VisualStateGroup>
-
-        </VisualStateManager.VisualStateGroups>
-    </Grid>
 </Page>
