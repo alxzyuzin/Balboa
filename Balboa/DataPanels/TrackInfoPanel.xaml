@@ -9,19 +9,74 @@
     d:DesignHeight="290"
     d:DesignWidth="250"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition  Height="*"/>
-            <RowDefinition  Height="50"/>
-            <RowDefinition  Height="19"/>
-        </Grid.RowDefinitions>
-        <Image      Grid.Row="0" Source="{Binding AlbumArt.Image}" />
-        <StackPanel Grid.Row="1"  Margin="0,5,0,0" HorizontalAlignment="Center">
-            <TextBlock   Text="{Binding Title}" FontSize="20" 
-                    TextWrapping="WrapWholeWords" />
-            <TextBlock   Text="{Binding Artist}" FontSize="12" 
-                    TextWrapping="WrapWholeWords" />
+    <Border x:Name="TrackInfo" HorizontalAlignment="Left">
+         <StackPanel   HorizontalAlignment="Left" Orientation ="{Binding Orientation}">
+            <StackPanel x:Name="InnerStackPanel">
+                <Image      Source="{Binding AlbumArt.Image}" MaxHeight="170" Margin="0,0,20,0"/>
+            </StackPanel>
+            <StackPanel Margin="0,5,0,0" HorizontalAlignment="Left" MaxHeight="170">
+                <TextBlock   Text="{Binding Title}"  FontSize="19"  TextWrapping="WrapWholeWords" />
+                <TextBlock   Text="{Binding Artist}" FontSize="13" TextWrapping="WrapWholeWords" />
+            </StackPanel>
         </StackPanel>
-    </Grid>
+ 
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="MainMenuVisualStates">
+                <VisualState x:Name="NormalVertical">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <LinearDoubleKeyFrame Value="200" KeyTime="0:0:1" />
+                        </DoubleAnimationUsingKeyFrames>
+                        <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <LinearDoubleKeyFrame Value="250" KeyTime="0:0:1" />
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="NormalHorizontal">
+                    <Storyboard>
+                        <!--DoubleAnimationUsingKeyFrames Duration="0:0:1"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <LinearDoubleKeyFrame Value="300" KeyTime="0:0:1" />
+                        </-->
+                        <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <LinearDoubleKeyFrame Value="90" KeyTime="0:0:1" />
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+
+                <VisualState x:Name="CollapsedHorizontal">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                                 <LinearDoubleKeyFrame Value="0" KeyTime="0:0:1" />
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="CollapsedVertical">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <LinearDoubleKeyFrame Value="0" KeyTime="0:0:1" />
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    
+    </Border>
 </UserControl>

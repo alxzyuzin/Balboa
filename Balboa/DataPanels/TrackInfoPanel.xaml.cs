@@ -2,18 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -26,7 +16,23 @@ namespace Balboa
         private Server _server;
         private Status _status = new Status();
         private Song _song = new Song();
-        private int _currentSongID = -1;
+        //        private int _currentSongID = -1;
+
+        public Orientation Orientation { get; set; }
+        //private Orientation _orientation = Orientation.Vertical;
+        //public Orientation Orientation
+        //{
+        //    get { return _orientation; }
+        //    private set
+        //    {
+        //        if (_orientation != value)
+        //        {
+        //            _orientation = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Orientation)));
+
+        //        }
+        //    }
+        //}
 
         private Visibility _panelVisibility = Visibility.Visible;
         public Visibility PanelVisibility
@@ -89,6 +95,9 @@ namespace Balboa
         public TrackInfoPanel()
         {
             this.InitializeComponent();
+            InnerStackPanel.Orientation = this.Orientation == Orientation.Vertical ?
+                                        Orientation.Horizontal : Orientation.Vertical;
+
         }
 
         public TrackInfoPanel(Server server):this()
@@ -125,7 +134,6 @@ namespace Balboa
             }
         }
 
-
         private void UpdateStatusData(List<string> serverData)
         {
             _status.Update(serverData);
@@ -143,9 +151,12 @@ namespace Balboa
                 await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
                 await AlbumArt.UpdateImage();
             }
-
         }
 
+        public void SetLayout(DataPanelLayout layout)
+        {
+          //  VisualStateManager.GoToState(this, layout.ToString(), true);
+        }
 
         public void Dispose()
         {

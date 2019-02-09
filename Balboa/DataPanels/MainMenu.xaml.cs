@@ -40,6 +40,7 @@ namespace Balboa
         public MainMenu()
         {
             InitializeComponent();
+            VisualStateManager.GoToState(this, "Wide", true);
         }
 
         public MainMenu(Server server, int row = 0, int column = 0):this()
@@ -67,14 +68,11 @@ namespace Balboa
 
         public void Collaps()
         {
-//            StoryboardNarrow.Begin();
             VisualStateManager.GoToState(this, "Narrow", true);
-
         }
 
         public void Expand()
         {
-            //StoryboardWide.Begin();
             VisualStateManager.GoToState(this, "Wide", true);
         }
 

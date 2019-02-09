@@ -29,43 +29,19 @@
             <Setter Property="FontSize" Value="28"/>
             <Setter Property="FontWeight" Value="Light"/>
         </Style>
-
-        <Storyboard x:Name="MainMenuExpandStoryboard">
-
-            
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainMenuWidth"
-                                         Storyboard.TargetProperty="Width" Duration="0:0:10">
-                <DiscreteObjectKeyFrame Value="250" KeyTime="0"/>
-            </ObjectAnimationUsingKeyFrames>
-
-            
-        </Storyboard>
-        <Storyboard x:Name="MainMenuCollapseStoryboard">
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="MainMenuWidth"
-                                         Storyboard.TargetProperty="Width" Duration="0:0:10" >
-                <DiscreteObjectKeyFrame Value="60" KeyTime="0:0:1"/>
-            </ObjectAnimationUsingKeyFrames>
-
-
-            <!--DoubleAnimation Storyboard.TargetName="MainMenuWidth"
-                                        Storyboard.TargetProperty="Width"
-                                         From="250.0" To="60.0" Duration="00:00:0.2" 
-                                          FillBehavior="HoldEnd">
-
-            </-->
-        </Storyboard>
-
-
     </Page.Resources>
     
     <Grid x:Name="grid_Main"  Background="{StaticResource MainBackgroundBrush}">
-        <Grid x:Name="Top">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Grid x:Name="Top" Grid.Row="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="90"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="100"/>
                 <RowDefinition Height="150"/>
-                <RowDefinition Height="20"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -73,29 +49,36 @@
             </Grid.ColumnDefinitions>
             <Button Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Top"
                     Content="&#xE169;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchMenuState" />
-            <!--local:PageHeader x:Name="PageHeaderPanel" Grid.Row="0" Grid.Column="1"/ -->
-            <local:MainMenu x:Name="MainMenuPanel" Grid.Row="0" Grid.Column="0" Margin="0,50,0,0"
-                        Grid.RowSpan="2" />
+            
+            <local:TrackInfoPanel x:Name="TopTrackInfoPanel"   Grid.Row="0" Grid.Column="1" 
+                                  Orientation="Horizontal" Margin="20,10,20,10" />
+            
+            <local:MainMenu x:Name="MainMenuPanel" Grid.Row="0" Grid.Column="0" Margin="0,50,0,0" Grid.RowSpan="2"/>
             <Border x:Name="DataPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="0,10,20,10"/>
-
         </Grid>
-        <Grid x:Name="Bottom">
+        <Grid x:Name="Bottom"  Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="100"/>
                 <RowDefinition Height="150"/>
-                <RowDefinition Height="20"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <local:TrackInfoPanel x:Name="TrackInfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" />
-
-            <local:ControlPanel x:Name="PlayControlPanel" Grid.Row="2" Grid.Column="1" />
+            <local:TrackInfoPanel x:Name="BottomTrackInfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" 
+                                  Orientation="Vertical"
+                                  Margin="20,10,10,10"/>
+            <local:ControlPanel   x:Name="PlayControlPanel" Grid.Row="2" Grid.Column="1" />
         </Grid>
-
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                   Text="{Binding ExtendedStatus}" FontSize="15" Margin="20,0,0,0"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Right"
+                   Text="{Binding ConnectionStatus}" FontSize="15" Margin="0,0,20,0"/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Center"
+                   Text="{Binding AppWindowWIdth}" FontSize="15" Margin="0,0,20,0"/>
+        
         <local:MessageBox x:Name="MsgBox" Grid.Row="0" Grid.Column="0" 
                           Grid.ColumnSpan="2" Grid.RowSpan="3" Visibility="Collapsed"/>
     </Grid>

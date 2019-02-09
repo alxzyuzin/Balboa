@@ -39,6 +39,15 @@ namespace Balboa
     // and parsing the same string yields a different value.
     //  Thread.CurrentThread.CurrentCulture = new CultureInfo("Fr-fr", true);
     //  myDateTime = DateTime.Parse(dt);
+    [Flags]
+    public enum DataPanelLayout
+    {
+
+        Horizontal = 1,
+        Vertical = 2,
+        Wide = 4,
+        Narrow = 8
+    }
 
     public partial class MainPage : Page, INotifyPropertyChanged
     {
@@ -79,7 +88,19 @@ namespace Balboa
             }
         }
 
-       
+        private double _appWindowWIdth;
+        public double AppWindowWIdth
+        {
+            get { return _appWindowWIdth; }
+            private set
+            {
+                if (_appWindowWIdth != value)
+                {
+                    _appWindowWIdth = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AppWindowWIdth)));
+                }
+            }
+        }
 
         public MainPage()
         {
@@ -110,16 +131,21 @@ namespace Balboa
 
             MainMenuPanel.Init(_server);
             MainMenuPanel.RequestAction += OnDataPanelActionRequested;
-            VisualStateManager.GoToState(MainMenuPanel, "Wide", true);
+            
 
-
-            TrackInfoPanel.Init(_server);
-//            PageHeaderPanel.Init(_server);
-           // PlayModePanel.Init(_server);
+            TopTrackInfoPanel.SetLayout(DataPanelLayout.Horizontal);
+            TopTrackInfoPanel.Init(_server);
+            TopTrackInfoPanel.SetLayout(DataPanelLayout.Vertical);
+            BottomTrackInfoPanel.Init(_server);
+            //            PageHeaderPanel.Init(_server);
+            // PlayModePanel.Init(_server);
             PlayControlPanel.Init(_server);
 
             if (_server.Initialized)
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
+
+           
+
         }
 
 
@@ -146,6 +172,20 @@ namespace Balboa
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            AppWindowWIdth = e.NewSize.Width;
+
+            if (AppWindowWIdth <= 920)
+            {
+                VisualStateManager.GoToState(BottomTrackInfoPanel, "CollapsedHorizontal", true);
+                VisualStateManager.GoToState(TopTrackInfoPanel, "NormalHorizontal", true);
+            }
+            else
+            {
+                VisualStateManager.GoToState(BottomTrackInfoPanel, "NormalVertical", true);
+                VisualStateManager.GoToState(TopTrackInfoPanel, "CollapsedVertical", true);
+            }
+
+            ////////////////////////////////////////////////////////////////////
             var displayinformation = DisplayInformation.GetForCurrentView();
 
             if (displayinformation.CurrentOrientation == DisplayOrientations.Landscape || displayinformation.CurrentOrientation == DisplayOrientations.LandscapeFlipped)

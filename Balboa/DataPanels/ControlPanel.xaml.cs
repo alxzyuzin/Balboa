@@ -178,7 +178,6 @@ namespace Balboa
             Duration = _song.Duration;
          }
 
-
         private void btn_PrevTrack_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _server.Previous();
@@ -236,8 +235,15 @@ namespace Balboa
                 _server?.SetVolume(Convert.ToInt32((sender as RoundSlider).Value));
         }
 
+        /// <summary>
+        ///  Display/Hide Volume control if appbtn_Volume_Tapped
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void appbtn_Volume_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            // нужно переписать под новую форму регулятора громкости
+
             var appbarbutton = sender as AppBarButton;
             var ttv = appbarbutton.TransformToVisual(this);
             Point screenCoords = ttv.TransformPoint(new Point(15, -340));
@@ -251,14 +257,15 @@ namespace Balboa
                 popup_VolumeControl.IsOpen = true;
         }
 
-        private bool _volumeChangedByStatus = true;
-        private void sl_Volume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            var sl = sender as Slider;
-            if (!_volumeChangedByStatus && _status.State == "play")
-                _server.SetVolume((int)sl.Value);
-            _volumeChangedByStatus = false;
-        }
+        // Больше не требуестся
+        //private bool _volumeChangedByStatus = true;
+        //private void sl_Volume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        //{
+        //    var sl = sender as Slider;
+        //    if (!_volumeChangedByStatus && _status.State == "play")
+        //        _server.SetVolume((int)sl.Value);
+        //    _volumeChangedByStatus = false;
+        //}
 
         #endregion
 
@@ -302,6 +309,7 @@ namespace Balboa
 
         private void pb_Progress_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
+            throw new NotImplementedException(nameof(pb_Progress_ManipulationStarted));
             _seekBarIsBeingDragged = true;
             var sl = sender as Slider;
             _currentTrackPosition = sl.Value;
@@ -309,6 +317,8 @@ namespace Balboa
 
         private void pb_Progress_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
+            throw new NotImplementedException(nameof(pb_Progress_ManipulationCompleted));
+
             var sl = sender as Slider;
             double offset = sl.Value - _currentTrackPosition;
 
@@ -319,8 +329,11 @@ namespace Balboa
             _seekBarIsBeingDragged = false;
         }
 
+     
         private void pb_Progress_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
+            throw new NotImplementedException(nameof(pb_Progress_PointerWheelChanged));
+
             var sl = sender as Slider;
             var cp = e.GetCurrentPoint((UIElement)sender) as PointerPoint;
             int mouseweeldelta = cp.Properties.MouseWheelDelta / 24; // считаем что каждый клик смещает позицию в треке на 5 сек

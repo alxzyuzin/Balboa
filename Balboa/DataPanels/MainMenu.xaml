@@ -51,8 +51,8 @@
 
 
     <Grid >
-        <StackPanel x:Name="stackPanel" Orientation="Horizontal" RenderTransformOrigin="0.5,0.5">
-           <StackPanel x:Name="stp_SmallMenuButtons" VerticalAlignment="Stretch" >
+        <StackPanel x:Name="stackPanel" Orientation="Horizontal">
+           <StackPanel x:Name="stp_SmallMenuButtons">
                 <Button Content="&#xE189;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToCurrentTrackPanel"/>
                 <Button Content="&#xE142;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToPlaylistPanel"/>
                 <Button Content="&#xE1D3;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToTrackDirectoryPanel"/>
@@ -62,7 +62,7 @@
                 <Button Content="&#xE1D2;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToOutputsPanel" FontSize="25" />
                 <Button Content="&#xE115;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToSettingsPanel" />
             </StackPanel>
-            <StackPanel x:Name="stp_MenuButtons" VerticalAlignment="Stretch"    RenderTransformOrigin="0.5,0.5"   >
+            <StackPanel x:Name="stp_MenuButtons">
                  <Button x:Name="CurrentTrackPanel"   Content="Current track"    Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToCurrentTrackPanel"/>
                 <Button x:Name="PlaylistPanel"       Content="Current playlist" Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToPlaylistPanel"/>
                 <Button x:Name="TrackDirectoryPanel" Content="Music Library"    Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToTrackDirectoryPanel"/>

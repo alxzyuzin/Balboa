@@ -53,31 +53,36 @@
             <!-- Кнопки управления воспроизведением-->
             <Grid  x:Name="grid_PlayControls" Height="80" Margin="0,20,0,0" >
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="40*" x:Name="grid_PlayControls_VolumeColumn"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="20*"/>
-                    <ColumnDefinition Width="100" x:Name="grid_PlayControls_StopColumn"/>
-                    <ColumnDefinition Width="100" x:Name="grid_PlayControls_RestartColumn"/>
-                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="Auto"  x:Name="grid_PlayControls_StopColumn"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" x:Name="grid_PlayControls_VolumeColumn"/>
                 </Grid.ColumnDefinitions>
-                <!--
-                <AppBarButton x:Name="appbtn_Volume"    Grid.Column="0" Icon="Volume"  FontWeight="Light" Visibility="Collapsed" 
+
+                <AppBarButton x:Name="appbtn_Stop"      Grid.Column="0" Icon="Stop"      
+                              Tapped="btn_Stop_Tapped"  FontWeight="Light"/>
+
+                <AppBarButton x:Name="appbtn_PrevTrack" Grid.Column="2" Icon="Previous"  Tapped="btn_PrevTrack_Tapped"  FontWeight="Light"/>
+                <Button       x:Name="appbtn_PlayPause" Grid.Column="3"  Content="{Binding PlayPauseButtonContent}" 
+                              Tapped="btn_PlayPause_Tapped" Style="{StaticResource PlayButtonStyle}"
+                              Margin="10,0,0,0"/>
+                <AppBarButton x:Name="appbtn_NextTrack" Grid.Column="4" Icon="Next"      
+                              Tapped="btn_NextTrack_Tapped"  FontWeight="Light" />
+
+                <AppBarButton x:Name="appbtn_Volume"    Grid.Column="7" Icon="Volume"  FontWeight="Light"  
                               Tapped="appbtn_Volume_Tapped"/>
-              
+                <!--
                 <Slider       x:Name="sl_Volume"        Grid.Column="0"  HorizontalAlignment="Stretch"  VerticalAlignment="Top"
                                   Margin="30,-10,15,0"  Height="53"  Foreground="Orange"  Grid.ColumnSpan="2" Header="Volume" 
                                   Minimum="0" Maximum="100" Value="{Binding Volume}"
                                   ValueChanged="sl_Volume_ValueChanged"
                                   PointerWheelChanged="sl_Volume_PointerWheelChanged" />
                 -->
-                <AppBarButton x:Name="appbtn_PrevTrack" Grid.Column="2" Icon="Previous"  Tapped="btn_PrevTrack_Tapped"  FontWeight="Light"/>
-                <Button       x:Name="appbtn_PlayPause" Grid.Column="3"  Content="{Binding PlayPauseButtonContent}" Tapped="btn_PlayPause_Tapped" Style="{StaticResource PlayButtonStyle}"/>
-                <AppBarButton x:Name="appbtn_NextTrack" Grid.Column="4" Icon="Next"      Tapped="btn_NextTrack_Tapped"  FontWeight="Light" />
-                <AppBarButton x:Name="appbtn_Stop"      Grid.Column="6" Icon="Stop"      Tapped="btn_Stop_Tapped"  FontWeight="Light"/>
-                <AppBarButton x:Name="appbtn_Restart"   Grid.Column="7" Icon="Link"      Tapped="btn_Restart_Tapped"  FontWeight="Light"/>
+                
+                
             </Grid>
         </StackPanel>
         <!-- Volume control-->
