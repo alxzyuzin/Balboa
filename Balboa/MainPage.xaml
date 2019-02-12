@@ -51,7 +51,7 @@
                     Content="&#xE169;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchMenuState" />
             
             <local:TrackInfoPanel x:Name="TopTrackInfoPanel"   Grid.Row="0" Grid.Column="1" 
-                                  Orientation="Horizontal" Margin="20,10,20,10" />
+                                  Orientation="Horizontal"/>
             
             <local:MainMenu x:Name="MainMenuPanel" Grid.Row="0" Grid.Column="0" Margin="0,50,0,0" Grid.RowSpan="2"/>
             <Border x:Name="DataPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="0,10,20,10"/>
@@ -66,10 +66,9 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-
+            <Border Grid.Row="1" Grid.Column="1" BorderBrush="Red" BorderThickness="2"/>
             <local:TrackInfoPanel x:Name="BottomTrackInfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" 
-                                  Orientation="Vertical"
-                                  Margin="20,10,10,10"/>
+                                  Orientation="Vertical"                                  />
             <local:ControlPanel   x:Name="PlayControlPanel" Grid.Row="2" Grid.Column="1" />
         </Grid>
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 

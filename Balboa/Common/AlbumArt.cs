@@ -88,27 +88,30 @@ namespace Balboa.Common
                     Error = string.Format(_resldr.GetString("Exception"), ee.GetType().ToString(), ee.Message);
                 }
             }
-            if (file == null) return;
-            _fileStream = await file.OpenAsync(FileAccessMode.Read);
-            if (_fileStream.Size == 0)
-                ;
-          
+            
+                if (file == null) return;
+                _fileStream = await file.OpenAsync(FileAccessMode.Read);
+            
         }
 
 
         public async Task UpdateImage()
         {
             if (_fileStream == null || _fileStream.Size == 0)
-            {
                 return;
-            }
             Image = new BitmapImage();
-            //var image = new BitmapImage();
-            using (_fileStream)
+            try
             {
-                    await Image.SetSourceAsync(_fileStream);
+                await Image.SetSourceAsync(_fileStream);
+                //using (_fileStream)
+                //{
+                //await Image.SetSourceAsync(_fileStream);
+                //}
             }
-            //Image = image;
+            catch(Exception ex)
+            {
+                ;
+            }
         }
 
         /// <summary>

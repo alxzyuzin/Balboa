@@ -1,14 +1,10 @@
 ﻿using Balboa.Common;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
-using System.Text.RegularExpressions;
 using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 
@@ -151,8 +147,6 @@ namespace Balboa
 
             _musicCollectionFolderToken = _appSettings.MusicCollectionFolderToken;
         }
-
-
 
         public void Init(Server server)
         {

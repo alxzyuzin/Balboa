@@ -37,16 +37,32 @@ namespace Balboa
             }
         }
 
-        private string _searchString;
-        public string SearchString
+
+        private ComboBoxItem _whereToSearch;
+        public ComboBoxItem WhereToSearch
         {
-            get { return _searchString; }
+            get { return _whereToSearch; }
             set
             {
-                if (_searchString != value)
+                if (_whereToSearch != value)
                 {
-                    _searchString = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SearchString)));
+                    _whereToSearch = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WhereToSearch)));
+                }
+            }
+        }
+
+
+        private string _whatToSearch = string.Empty;
+        public string WhatToSearch
+        {
+            get { return _whatToSearch; }
+            set
+            {
+                if (_whatToSearch != value)
+                {
+                    _whatToSearch = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(WhatToSearch)));
                 }
             }
         }
@@ -54,6 +70,8 @@ namespace Balboa
         public SearchPanel()
         {
             this.InitializeComponent();
+            _whereToSearch = new ComboBoxItem();
+            _whereToSearch.Content = "Any";
         }
 
         public SearchPanel(Server server):this()
@@ -80,7 +98,7 @@ namespace Balboa
             {
                 if (mpdData.Command.Op == "search")
                 {
-                    _foundTracks.Clear();
+                    ;
                     while (mpdData.Content.Count > 0)
                     {
                         var track = new Track();
@@ -89,25 +107,38 @@ namespace Balboa
                     }
                     _foundTracks.NotifyCollectionChanged();
 
-                    SearchResult = _foundTracks.Count == 0 ? _resldr.GetString("SearchComplete") : "";
+                    SearchResult = _foundTracks.Count == 0 ? $"SearchComplete. Nothing found." : $"SearchComplete. {_foundTracks.Count} tracks found." ;
                 }
             }
+
+
         }
 
         private void appbtn_Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (SearchString.Length > 0)
-            {
-                SearchResult = _resldr.GetString("Searching");
-                _server.Search("any", SearchString);
-            }
+            //string wts = WhereToSearch.Content.ToString();
+            // _server.Search(wts, "");
+            //await _server.Connection.SendCommand("search \"Artist\" \"a\"");
+            //string replay = await _server.Connection.ReadResponse();
+
+            _foundTracks.Clear();
+            _foundTracks.NotifyCollectionChanged();
+            SearchResult = "Searching ...";
+            string wts = WhereToSearch.Content.ToString();
+            wts = wts == "Year" ? "Date" : wts;
+
+            if (WhatToSearch.Length > 0)
+                _server.Search(wts, WhatToSearch);
+            else
+                _server.Search(wts, "");
+
         }
 
         private void appbtn_Search_AddToPaylist_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (listview_Search.SelectedItems.Count > 0)
+            if (gridview_Search.SelectedItems.Count > 0)
             {
-                foreach (Track track in listview_Search.SelectedItems)
+                foreach (Track track in gridview_Search.SelectedItems)
                     _server.Add(track.File);
             }
             else
@@ -119,12 +150,12 @@ namespace Balboa
 
         private void appbtn_Search_SelectAll_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            listview_Search.SelectAll();
+            gridview_Search.SelectAll();
         }
 
         private void appbtn_Search_DeSelectAll_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            listview_Search.SelectedItems.Clear();
+            gridview_Search.SelectedItems.Clear();
         }
 
         private void listview_Search_GotFocus(object sender, RoutedEventArgs e)
@@ -138,6 +169,11 @@ namespace Balboa
             //Track track = _listViewItemGotFocus.Content as Track;
             //_server.Add(track.File);
             playlastaddedtrack = true;
+        }
+
+        private void SearchItemMenu_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
         }
 
         public void HandleUserResponse(MsgBoxButton pressedButton)

@@ -22,7 +22,7 @@
                                           From="0.0" To="1.0" Duration="0:0:1"/>
             </Storyboard>
             <!-- ШАБЛОН для элемента Playlist -->
-            <DataTemplate x:Key="ItemTemplate">
+            <DataTemplate x:Key="TrackItemTemplate">
                 <Grid >
                     <Grid.RowDefinitions>
                         <RowDefinition  Height="28"/>
@@ -53,7 +53,7 @@
 
         <common:ListViewExtended x:Name="lv_PlayList"  Grid.Row="0"  VerticalContentAlignment="Stretch"  
                                            ItemBackground="#10F0F0F0" 
-                                           ItemTemplate="{StaticResource ItemTemplate}" 
+                                           ItemTemplate="{StaticResource TrackItemTemplate}" 
                                            ItemContainerStyleSelector="{StaticResource PlaylistItemStyleSelector}" 
                                            ItemsSource="{Binding Playlist}"
                                            ScrollViewer.VerticalScrollMode="Enabled"

@@ -9,7 +9,7 @@
     d:DesignHeight="290"
     d:DesignWidth="250"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <Border x:Name="TrackInfo" HorizontalAlignment="Left">
+    <Border x:Name="TrackInfo" HorizontalAlignment="Left" Margin="20,10,10,0">
          <StackPanel   HorizontalAlignment="Left" Orientation ="{Binding Orientation}">
             <StackPanel x:Name="InnerStackPanel">
                 <Image      Source="{Binding AlbumArt.Image}" MaxHeight="170" Margin="0,0,20,0"/>

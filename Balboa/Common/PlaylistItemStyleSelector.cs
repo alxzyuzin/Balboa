@@ -37,4 +37,27 @@ namespace Balboa.Common
                 return style;
         }
     }
+
+    internal sealed class SearchItemStyleSelector : StyleSelector
+    {
+        protected override Style SelectStyleCore(object item, DependencyObject container)
+        {
+            Track listitem = item as Track;
+
+            Style style = new Style(typeof(GridViewItem));
+            // Default Style
+            style.Setters.Add(new Setter(GridViewItem.HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch));
+            style.Setters.Add(new Setter(GridViewItem.BackgroundProperty, new SolidColorBrush(Color.FromArgb(0x10, 0xF0, 0xF0, 0xF0))));
+
+            // Custom IsPlaying Style
+            if (listitem.IsPlaying)
+            {
+                style.Setters.Add(new Setter(GridViewItem.BorderBrushProperty, new SolidColorBrush(Colors.Orange)));
+                style.Setters.Add(new Setter(GridViewItem.ForegroundProperty, new SolidColorBrush(Colors.Orange)));
+                style.Setters.Add(new Setter(GridViewItem.BorderThicknessProperty, new Thickness(1.0)));
+                style.Setters.Add(new Setter(GridViewItem.BorderBrushProperty, new SolidColorBrush(Colors.Orange)));
+            }
+            return style;
+        }
+    }
 }

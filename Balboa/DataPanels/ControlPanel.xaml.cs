@@ -124,6 +124,7 @@ namespace Balboa
         public void Init(Server server)
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
+
             _server = server;
             _server.DataReady += _server_DataReady;
         }
@@ -232,7 +233,11 @@ namespace Balboa
         private void VolumeSlider_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Value")
-                _server?.SetVolume(Convert.ToInt32((sender as RoundSlider).Value));
+            {
+                int volume = Convert.ToInt32((sender as RoundSlider).Value);
+                volume = volume < 0 ? 0 : volume;
+                _server?.SetVolume(volume);
+            }
         }
 
         /// <summary>

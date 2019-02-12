@@ -120,6 +120,11 @@ namespace Balboa
                                 ExtendedStatus = _status.ExtendedStatus;
                             }
                         }
+
+                        if (data.Keyword != ResponseKeyword.OK)
+                        {
+                            ;
+                        }
                     };
             _server.ServerError += async (object server, MpdResponse e) =>
                     {

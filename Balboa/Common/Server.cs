@@ -70,6 +70,7 @@ namespace Balboa
 
         #region Properties
 
+        public Connection Connection => _Connection;
         public string ConnectionStatus => _Connection.Status;
         public string MusicCollectionFolder => _appSettings.MusicCollectionFolder;
         public string AlbumCoverFileNames => _appSettings.AlbumCoverFileNames;
@@ -276,10 +277,13 @@ namespace Balboa
                 Просто убираем этот ответ из входной строки */
             if (response.StartsWith("OK\n", StringComparison.Ordinal))
             {
-                MpdCommand command = _SentCommandQueue.Dequeue();
                 keyword = ResponseKeyword.OK;
+                
                 currentresponse = response.Substring(0, 3);
                 response = response.Remove(0, 3);
+                MpdCommand command = _SentCommandQueue.Dequeue();
+                MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
+                ((IProgress<MpdResponse>)_status).Report(mpdresp);
             }
 
             // Проверка 2
@@ -520,6 +524,11 @@ namespace Balboa
         public void Search(string type, string what)
         {
             AddCommand(new MpdCommand("search", type, what));
+        }
+
+        public void Search(string filter)
+        {
+            AddCommand(new MpdCommand("search", filter));
         }
 
         /// <summary>
