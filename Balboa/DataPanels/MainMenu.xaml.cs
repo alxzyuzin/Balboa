@@ -14,7 +14,7 @@ namespace Balboa
 {
     
 
-    public sealed partial class MainMenu : UserControl, IDataPanel, IRequestAction
+    public sealed partial class MainMenu : UserControl,  IRequestAction
     {
 
         private enum Panel
@@ -49,17 +49,18 @@ namespace Balboa
             Grid.SetRow(this, row);
             Grid.SetColumn(this, column);
             Grid.SetRowSpan(this, 2);
-            Margin =  new Windows.UI.Xaml.Thickness(0, 10, 0, 0);
+            //Margin =  new Windows.UI.Xaml.Thickness(0, 10, 0, 0);
         }
+
         public void Init(Server server)
         {
             _server = server;
         }
 
-        public void Update()
-        {
-            throw new NotImplementedException();
-        }
+        //public void Update()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {

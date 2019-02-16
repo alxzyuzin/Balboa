@@ -36,6 +36,31 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
+        
+        <Grid x:Name="Bottom"  Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="150"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="DataInfoPanel" Grid.Row="1" Grid.Column="1" Margin="0,10,0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
+                <TextBlock  Grid.Row="0" Text="{Binding DataPanelInfo}" FontSize="22" 
+                            TextWrapping="WrapWholeWords" MaxWidth="270" HorizontalAlignment="Left"/>
+                <TextBlock  Grid.Row="1" Text="{Binding DataPanelElementsCount}" FontSize="19" Foreground="Orange"/>
+            </Grid>
+            <local:TrackInfoPanel x:Name="BottomTrackInfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" 
+                                  Orientation="Vertical"/>
+            <local:ControlPanel   x:Name="PlayControlPanel" Grid.Row="2" Grid.Column="1" />
+        </Grid>
+
         <Grid x:Name="Top" Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -49,34 +74,19 @@
             </Grid.ColumnDefinitions>
             <Button Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Top"
                     Content="&#xE169;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchMenuState" />
-            
-            <local:TrackInfoPanel x:Name="TopTrackInfoPanel"   Grid.Row="0" Grid.Column="1" 
-                                  Orientation="Horizontal"/>
-            
+
+            <local:TrackInfoPanel x:Name="TopTrackInfoPanel"   Grid.Row="0" Grid.Column="1"  Orientation="Horizontal"/>
+
             <local:MainMenu x:Name="MainMenuPanel" Grid.Row="0" Grid.Column="0" Margin="0,50,0,0" Grid.RowSpan="2"/>
             <Border x:Name="DataPanel" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="0,10,20,10"/>
         </Grid>
-        <Grid x:Name="Bottom"  Grid.Row="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="150"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Border Grid.Row="1" Grid.Column="1" BorderBrush="Red" BorderThickness="2"/>
-            <local:TrackInfoPanel x:Name="BottomTrackInfoPanel" Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" 
-                                  Orientation="Vertical"                                  />
-            <local:ControlPanel   x:Name="PlayControlPanel" Grid.Row="2" Grid.Column="1" />
-        </Grid>
+
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
                    Text="{Binding ExtendedStatus}" FontSize="15" Margin="20,0,0,0"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Right"
                    Text="{Binding ConnectionStatus}" FontSize="15" Margin="0,0,20,0"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Center"
-                   Text="{Binding AppWindowWIdth}" FontSize="15" Margin="0,0,20,0"/>
+                   Text="{Binding MainWindowWIdth}" FontSize="15" Margin="0,0,20,0"/>
         
         <local:MessageBox x:Name="MsgBox" Grid.Row="0" Grid.Column="0" 
                           Grid.ColumnSpan="2" Grid.RowSpan="3" Visibility="Collapsed"/>
@@ -351,6 +361,7 @@
                 </Storyboard>
 
             </VisualState>
+            
         </VisualStateGroup>
 
     </VisualStateManager.VisualStateGroups>

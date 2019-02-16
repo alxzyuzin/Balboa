@@ -9,43 +9,92 @@
     d:DesignHeight="290"
     d:DesignWidth="250"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <Border x:Name="TrackInfo" HorizontalAlignment="Left" Margin="20,10,10,0">
-         <StackPanel   HorizontalAlignment="Left" Orientation ="{Binding Orientation}">
-            <StackPanel x:Name="InnerStackPanel">
-                <Image      Source="{Binding AlbumArt.Image}" MaxHeight="170" Margin="0,0,20,0"/>
-            </StackPanel>
-            <StackPanel Margin="0,5,0,0" HorizontalAlignment="Left" MaxHeight="170">
-                <TextBlock   Text="{Binding Title}"  FontSize="19"  TextWrapping="WrapWholeWords" />
-                <TextBlock   Text="{Binding Artist}" FontSize="13" TextWrapping="WrapWholeWords" />
+    <UserControl.Resources>
+        <Storyboard x:Name="MakeTransparent">
+            <DoubleAnimation Duration="0:0:0.5"  
+                                 Storyboard.TargetName="TrackInfo"
+                                 Storyboard.TargetProperty="(FrameworkElement.Opacity)"   
+                                 From="1" To="0"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="MakeOpaque">
+            <DoubleAnimation Duration="0:0:0.5"  
+                                 Storyboard.TargetName="TrackInfo"
+                                 Storyboard.TargetProperty="(FrameworkElement.Opacity)"   
+                                 From="0" To="1"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+            </DoubleAnimation>
+        </Storyboard>
+
+        <Storyboard x:Name="VerticalCollapse">
+            <DoubleAnimationUsingKeyFrames Duration="0:0:0.5"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                <LinearDoubleKeyFrame Value="0" KeyTime="0:0:0.5" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="VerticalExpand">
+            <DoubleAnimationUsingKeyFrames Duration="0:0:0.5"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                <LinearDoubleKeyFrame Value="234" KeyTime="0:0:0.5" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="HorizontalCollapse">
+            <DoubleAnimationUsingKeyFrames Duration="0:0:0.5"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                <LinearDoubleKeyFrame Value="0" KeyTime="0:0:0.5" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="HorizontalExpand">
+            <DoubleAnimationUsingKeyFrames Duration="0:0:0.5"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                                 Storyboard.TargetName="TrackInfo"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                <LinearDoubleKeyFrame Value="90" KeyTime="0:0:0.5" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+    </UserControl.Resources>
+    <!--  BorderThickness="2" BorderBrush="White"-->
+    <Border x:Name="TrackInfo" HorizontalAlignment="Left" Margin="20,0,20,0" Width="244">
+         <StackPanel   HorizontalAlignment="Left" Orientation ="Vertical">
+            <StackPanel Orientation="{Binding Orientation}">
+                <Image  x:Name="AlbumArtImage" Source="{Binding AlbumArt.Image}" MaxHeight="170"
+                        HorizontalAlignment="Left" />
+                <StackPanel Margin="0,5,0,0" HorizontalAlignment="Left" >
+                    <TextBlock   Text="{Binding Title}"  FontSize="19"  TextWrapping="WrapWholeWords" />
+                    <TextBlock   Text="{Binding Artist}" FontSize="13" TextWrapping="WrapWholeWords" />
+                </StackPanel>
             </StackPanel>
         </StackPanel>
  
         <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="MainMenuVisualStates">
-                <VisualState x:Name="NormalVertical">
-                    <Storyboard>
-                        <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
-                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
-                                 Storyboard.TargetName="TrackInfo"
-                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
-                            <LinearDoubleKeyFrame Value="200" KeyTime="0:0:1" />
-                        </DoubleAnimationUsingKeyFrames>
-                        <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
+            <VisualStateGroup x:Name="TrackInfoPanelVisualStates">
+                <VisualState x:Name="VerticalNormal">
+
+                    <Storyboard x:Uid="VerticalExpand"/>
+                    <!--
+                    <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
                                  Storyboard.TargetProperty="(FrameworkElement.Height)"   
                                  Storyboard.TargetName="TrackInfo"
                                  EnableDependentAnimation="True" FillBehavior="HoldEnd">
-                            <LinearDoubleKeyFrame Value="250" KeyTime="0:0:1" />
-                        </DoubleAnimationUsingKeyFrames>
-                    </Storyboard>
+                        <LinearDoubleKeyFrame Value="254" KeyTime="0:0:1" />
+                    </DoubleAnimationUsingKeyFrames>
+-->
+
                 </VisualState>
-                <VisualState x:Name="NormalHorizontal">
+                <VisualState x:Name="HorizontalNormal">
                     <Storyboard>
-                        <!--DoubleAnimationUsingKeyFrames Duration="0:0:1"  
-                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
-                                 Storyboard.TargetName="TrackInfo"
-                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
-                            <LinearDoubleKeyFrame Value="300" KeyTime="0:0:1" />
-                        </-->
                         <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
                                  Storyboard.TargetProperty="(FrameworkElement.Height)"   
                                  Storyboard.TargetName="TrackInfo"
@@ -54,28 +103,60 @@
                         </DoubleAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
-
-                <VisualState x:Name="CollapsedHorizontal">
+                <VisualState x:Name="HorizontalCollapsed">
                     <Storyboard>
                         <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
-                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetProperty="(FrameworkElement.Height)"   
                                  Storyboard.TargetName="TrackInfo"
                                  EnableDependentAnimation="True" FillBehavior="HoldEnd">
                                  <LinearDoubleKeyFrame Value="0" KeyTime="0:0:1" />
                         </DoubleAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
-                <VisualState x:Name="CollapsedVertical">
+                <VisualState x:Name="VerticalCollapsed">
+                    <Storyboard x:Uid="VerticalCollapse"/>
+                </VisualState>
+                <VisualState x:Name="Opaque">
                     <Storyboard>
-                        <DoubleAnimationUsingKeyFrames Duration="0:0:1"  
-                                 Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                        <DoubleAnimation Duration="0:0:1"  
                                  Storyboard.TargetName="TrackInfo"
+                                 Storyboard.TargetProperty="(FrameworkElement.Opacity)"   
+                                 From="0" To="1"
                                  EnableDependentAnimation="True" FillBehavior="HoldEnd">
-                            <LinearDoubleKeyFrame Value="0" KeyTime="0:0:1" />
-                        </DoubleAnimationUsingKeyFrames>
+                        </DoubleAnimation>
                     </Storyboard>
                 </VisualState>
+                <VisualState x:Name="Transparent">
+                    <Storyboard x:Uid="MakeTransparent"/>
+                </VisualState>
+
+                <VisualStateGroup.Transitions>
+                    <VisualTransition From="VerticalCollapsed" To="Transparent">
+                        <Storyboard x:Uid="MakeTransparent"/>
+                    </VisualTransition>
+                    <VisualTransition From="Transparent" To="VerticalCollapsed">
+
+                    </VisualTransition>
+
+                    <VisualTransition From="VerticalNormal" To="Transparent">
+                        <Storyboard x:Uid="MakeTransparent"/>
+                    </VisualTransition>
+                    <VisualTransition From="Transparent" To="VerticalNormal">
+                        <Storyboard x:Uid="MakeOpaque"/>
+                    </VisualTransition>
+
+                    <VisualTransition From="VerticalNormal" To="VerticalCollapsed">
+                        <Storyboard x:Uid="VerticalCollapse"/>
+                    </VisualTransition>
+
+                    <VisualTransition From="VerticalCollapsed" To="VerticalNormal" >
+                        <Storyboard x:Uid="VerticalExpand"/>
+                    </VisualTransition>
+
+                </VisualStateGroup.Transitions>
+
             </VisualStateGroup>
+            
         </VisualStateManager.VisualStateGroups>
     
     </Border>

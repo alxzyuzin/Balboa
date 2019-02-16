@@ -57,6 +57,9 @@ namespace Balboa
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server  = new Server();
         private Status _status = new Status();
+        private UserControl _activeDataPanel;
+        public PlaylistPanel ActiveDataPanel { get { return _activeDataPanel as PlaylistPanel; } }
+
         //        public enum DataPanelState { CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings }
 
         private string _extendedStatus;
@@ -89,7 +92,7 @@ namespace Balboa
         }
 
         private double _appWindowWIdth;
-        public double AppWindowWIdth
+        public double MainWindowWIdth
         {
             get { return _appWindowWIdth; }
             private set
@@ -97,10 +100,41 @@ namespace Balboa
                 if (_appWindowWIdth != value)
                 {
                     _appWindowWIdth = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AppWindowWIdth)));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MainWindowWIdth)));
                 }
             }
         }
+
+        private string _dataPanelInfo;
+        public string DataPanelInfo
+        {
+            get { return _dataPanelInfo; }
+            private set
+            {
+                if (_dataPanelInfo != value)
+                {
+                    _dataPanelInfo = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelInfo)));
+                }
+            }
+        }
+
+        private string _dataPanelElementsCount;
+        public string DataPanelElementsCount
+        {
+            get { return _dataPanelElementsCount; }
+            private set
+            {
+                if (_dataPanelElementsCount != value)
+                {
+                    _dataPanelElementsCount = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelElementsCount)));
+                }
+            }
+        }
+
+
+
 
         public MainPage()
         {
@@ -140,17 +174,15 @@ namespace Balboa
 
             TopTrackInfoPanel.SetLayout(DataPanelLayout.Horizontal);
             TopTrackInfoPanel.Init(_server);
-            TopTrackInfoPanel.SetLayout(DataPanelLayout.Vertical);
+
+            BottomTrackInfoPanel.SetLayout(DataPanelLayout.Vertical);
             BottomTrackInfoPanel.Init(_server);
-            //            PageHeaderPanel.Init(_server);
-            // PlayModePanel.Init(_server);
+
+            _activeDataPanel = BottomTrackInfoPanel;
             PlayControlPanel.Init(_server);
 
             if (_server.Initialized)
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
-
-           
-
         }
 
 
@@ -166,8 +198,12 @@ namespace Balboa
         {
             if (actionParams.ActionType.HasFlag(ActionType.ActivateDataPanel))
             {
-                ActivatePanel(actionParams.Panel as IRequestAction);
+                _activeDataPanel = actionParams.Panel as UserControl;
+                ActivatePanel(_activeDataPanel as IRequestAction);
+
+                RearangeTrackInfoPanels();
             }
+
             if (actionParams.ActionType.HasFlag(ActionType.DisplayMessage))
             {
                 MsgBoxButton pressedButton = await DisplayMessage(actionParams.Message);
@@ -177,18 +213,8 @@ namespace Balboa
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            AppWindowWIdth = e.NewSize.Width;
-
-            if (AppWindowWIdth <= 920)
-            {
-                VisualStateManager.GoToState(BottomTrackInfoPanel, "CollapsedHorizontal", true);
-                VisualStateManager.GoToState(TopTrackInfoPanel, "NormalHorizontal", true);
-            }
-            else
-            {
-                VisualStateManager.GoToState(BottomTrackInfoPanel, "NormalVertical", true);
-                VisualStateManager.GoToState(TopTrackInfoPanel, "CollapsedVertical", true);
-            }
+            MainWindowWIdth = e.NewSize.Width;
+            RearangeTrackInfoPanels();
 
             ////////////////////////////////////////////////////////////////////
             var displayinformation = DisplayInformation.GetForCurrentView();
@@ -224,6 +250,32 @@ namespace Balboa
             //{
             //    VisualStateManager.GoToState(this, "Portrait", true); 
             //}
+        }
+
+        private void RearangeTrackInfoPanels()
+        {
+            if (_activeDataPanel.GetType() == typeof(CurrentTrackPanel))
+            {
+                TopTrackInfoPanel.Collapse();
+                BottomTrackInfoPanel.Hide();
+            }
+            else
+            {
+                if (MainWindowWIdth >= 920)
+                {
+                    TopTrackInfoPanel.Collapse();
+                    BottomTrackInfoPanel.Show();
+                }
+                else
+                {
+                    TopTrackInfoPanel.Expand();
+                }
+            }
+
+            if (MainWindowWIdth >= 920)
+                BottomTrackInfoPanel.Expand();
+            else
+                BottomTrackInfoPanel.Collapse();
         }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
@@ -270,19 +322,14 @@ namespace Balboa
 
             if (DataPanel.Child != null)
             {
-                if (DataPanel.Child as IRequestAction != null)
-                    ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
+//                if (DataPanel.Child as IRequestAction != null)
+                ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
                 ((IDisposable)DataPanel.Child).Dispose();
             }
-
             panel.RequestAction += OnDataPanelActionRequested;
             DataPanel.Child = panel as UserControl;
-
+            DataInfoPanel.DataContext = panel as IDataPanelInfo;
             MainMenuPanel.HighLiteSelectedItem(panel.GetType().Name);
-            //if (state == DataPanelState.CurrentTrack)
-            //    p_PageHeader.Visibility = Visibility.Collapsed;
-            //else
-            //    p_PageHeader.Visibility = Visibility.Visible;
         }
 
         private enum MainMenuState { Narrow, Wide}
@@ -291,24 +338,14 @@ namespace Balboa
         {
             if (_mainMenuState ==  MainMenuState.Wide)
             {
-                
                 MainMenuPanel.Collaps();
-                //VisualStateManager.GoToState(MainMenuPanel, "Narrow", true);
-                //VisualStateManager.GoToState(MainMenuPanel, "Collapsed", true);
-
                 _mainMenuState = MainMenuState.Narrow;
             }
             else
             {
                 MainMenuPanel.Expand();
-                //VisualStateManager.GoToState(MainMenuPanel, "Wide", true);
-                //VisualStateManager.GoToState(MainMenuPanel, "Expanded", true);
-                //    MainMenuExpandStoryboard.Begin();
                 _mainMenuState = MainMenuState.Wide;
             }
-            //var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new SettingsPanel(_server));
-            //RequestAction.Invoke(this, actionParams);
-            //HighLiteSelectedItem(sender as Button);
         }
 
 

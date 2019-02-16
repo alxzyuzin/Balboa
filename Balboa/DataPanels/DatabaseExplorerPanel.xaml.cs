@@ -21,7 +21,33 @@ namespace Balboa
         private Server _server;
         private ObservableCollection<CommonGridItem> _foundItems = new ObservableCollection<CommonGridItem>();
         public  ObservableCollection<CommonGridItem> Items => _foundItems;
-        
+
+        public string DataPanelInfo
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DataPanelElementsCount
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public DatabaseExplorerPanel()
         {
             this.InitializeComponent();

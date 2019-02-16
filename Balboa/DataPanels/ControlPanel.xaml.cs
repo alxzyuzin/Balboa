@@ -108,6 +108,32 @@ namespace Balboa
             }
         }
 
+        public string DataPanelInfo
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DataPanelElementsCount
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public ControlPanel()
         {
             this.InitializeComponent();

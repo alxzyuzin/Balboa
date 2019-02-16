@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Balboa;
 using Balboa.Common;
+using System.ComponentModel;
 
 namespace Balboa
 {
@@ -23,7 +24,7 @@ namespace Balboa
     {
         void Init(Server server);
         void Update();
-    }
+     }
 
     public interface IRequestAction
     {
@@ -33,6 +34,17 @@ namespace Balboa
         event ActionRequestedEventHandler RequestAction;
         void HandleUserResponse(MsgBoxButton pressedButton);
     }
+
+    public interface IDataPanelInfo
+    {
+        /// <summary>
+        ///    Occurs when a command button pressed.
+        /// </summary>
+
+        string DataPanelInfo { get; set; }
+        string DataPanelElementsCount { get; set; }
+    }
+
 
     public class ActionParams
     {

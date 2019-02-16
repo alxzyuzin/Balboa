@@ -9,6 +9,14 @@ using Windows.UI.Xaml.Controls;
 
 namespace Balboa
 {
+    [Flags]
+    public enum PanelVisualState
+    {
+        VerticalCollapsed = 1,
+        HorizontalCollapsed = 2,
+        Transparent = 4
+    }
+
     public sealed partial class TrackInfoPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -16,23 +24,9 @@ namespace Balboa
         private Server _server;
         private Status _status = new Status();
         private Song _song = new Song();
-        //        private int _currentSongID = -1;
-
+ 
         public Orientation Orientation { get; set; }
-        //private Orientation _orientation = Orientation.Vertical;
-        //public Orientation Orientation
-        //{
-        //    get { return _orientation; }
-        //    private set
-        //    {
-        //        if (_orientation != value)
-        //        {
-        //            _orientation = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Orientation)));
-
-        //        }
-        //    }
-        //}
+        public PanelVisualState VisualState { get; set; }     
 
         private Visibility _panelVisibility = Visibility.Visible;
         public Visibility PanelVisibility
@@ -95,9 +89,7 @@ namespace Balboa
         public TrackInfoPanel()
         {
             this.InitializeComponent();
-            InnerStackPanel.Orientation = this.Orientation == Orientation.Vertical ?
-                                        Orientation.Horizontal : Orientation.Vertical;
-
+                
         }
 
         public TrackInfoPanel(Server server):this()
@@ -113,6 +105,17 @@ namespace Balboa
             if (server == null) throw new ArgumentNullException(nameof(server));
 
             _server = server;
+            if (Orientation == Orientation.Vertical)
+            {
+                AlbumArtImage.Width = 190;
+                VerticalExpand.Begin();
+            }
+            else
+            {
+                AlbumArtImage.Width = 90;
+                HorizontalExpand.Begin();
+            }
+                
             _server.DataReady += ServerDataReady;
         }
 
@@ -151,6 +154,50 @@ namespace Balboa
                 await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
                 await AlbumArt.UpdateImage();
             }
+        }
+        public void Collapse()
+        {
+            if (Orientation == Orientation.Vertical && !VisualState.HasFlag(PanelVisualState.VerticalCollapsed))
+            {
+                VisualState |= PanelVisualState.VerticalCollapsed;
+                VerticalCollapse.Begin();
+            }
+            if (Orientation == Orientation.Horizontal && !VisualState.HasFlag(PanelVisualState.HorizontalCollapsed))
+            {
+                VisualState |= PanelVisualState.HorizontalCollapsed;
+                HorizontalCollapse.Begin();
+            }
+        }
+
+
+        public void Expand()
+        {
+            if (Orientation == Orientation.Vertical && VisualState.HasFlag(PanelVisualState.VerticalCollapsed))
+            {
+                VisualState ^= PanelVisualState.VerticalCollapsed;
+                VerticalExpand.Begin();
+            }
+            if (Orientation == Orientation.Horizontal && VisualState.HasFlag(PanelVisualState.HorizontalCollapsed))
+            {
+                VisualState ^= PanelVisualState.HorizontalCollapsed;
+                HorizontalExpand.Begin();
+            }
+        }
+
+        public void Hide()
+        {
+            if (VisualState.HasFlag(PanelVisualState.Transparent))
+                return;
+            VisualState |= PanelVisualState.Transparent;
+            MakeTransparent.Begin();
+        }
+
+        public void Show()
+        {
+            if (!VisualState.HasFlag(PanelVisualState.Transparent))
+                return;
+            VisualState ^= PanelVisualState.Transparent;
+            MakeOpaque.Begin();
         }
 
         public void SetLayout(DataPanelLayout layout)
