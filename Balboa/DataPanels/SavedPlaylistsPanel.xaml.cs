@@ -13,7 +13,7 @@ using Windows.UI;
 
 namespace Balboa
 {
-    public sealed partial class SavedPlaylistsPanel : UserControl, INotifyPropertyChanged, IDataPanel,
+    public sealed partial class SavedPlaylistsPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDataPanelInfo,
                                                                    IRequestAction, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -23,6 +23,36 @@ namespace Balboa
         private Server _server;
         private ObservableCollection<SavedPlaylistItem> _items = new ObservableCollection<SavedPlaylistItem>();
         public ObservableCollection<SavedPlaylistItem> Items => _items;
+
+        private string _dataPanelInfo;
+        public string DataPanelInfo
+        {
+            get { return _dataPanelInfo; }
+            set
+            {
+                if (_dataPanelInfo != value)
+                {
+                    _dataPanelInfo = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelInfo)));
+                }
+            }
+        }
+
+        private string _dataPanelElementsCount;
+        public string DataPanelElementsCount
+        {
+            get { return _dataPanelElementsCount; }
+            set
+            {
+                if (_dataPanelElementsCount != value)
+                {
+                    _dataPanelElementsCount = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelElementsCount)));
+                }
+            }
+        }
+
+        public double TotalButtonWidth => AppBarButtons.ActualWidth;
 
         private Visibility _savedPlaylistsContentVisibility = Visibility.Collapsed;
         public Visibility SavedPlaylistsContentVisibility
@@ -84,6 +114,8 @@ namespace Balboa
                 }
             }
             SavedPlaylistsContentVisibility = _items.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+            DataPanelElementsCount = $"{_items.Count.ToString()} saved playlists found.";
         }
 
         private void appbtn_SavedPlaylistLoad_Click(object sender, RoutedEventArgs e)

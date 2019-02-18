@@ -10,44 +10,41 @@
     d:DesignHeight="300"
     d:DesignWidth="800"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    
-    <Grid>
-        <Grid.Resources>
-            <common:TimeConverter  x:Key="TimeConverter"/>
-            <common:SearchItemStyleSelector x:Key="SearchItemStyleSelector"/>
 
-            <Storyboard x:Name="gr_SearchShowStoryboard">
-                <DoubleAnimation  Storyboard.TargetName="gr_Search"
-                                          Storyboard.TargetProperty="Opacity"
-                                          From="0.0" To="1.0" Duration="0:0:1"/>
-            </Storyboard>
+    <UserControl.Resources>
+        <common:TimeConverter  x:Key="TimeConverter"/>
+        <common:SearchItemStyleSelector x:Key="SearchItemStyleSelector"/>
 
-            <!-- ШАБЛОН для элемента результата поиска -->
-            <DataTemplate x:Key="SearchItemTemplate">
-                <Grid Width="500">
-                    <Grid.RowDefinitions>
-                        <RowDefinition  Height="Auto"/>
-                        <RowDefinition  Height="Auto"/>
-                        <RowDefinition  Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    
-                    <TextBlock Grid.Row="0" Text="{Binding Title}"  FontSize="22" 
-                               Margin="10,0,0,0" Grid.ColumnSpan="2" />
-                    <StackPanel  Orientation="Horizontal" Grid.Row="1">
-                        <TextBlock Text="Album : "          FontSize="16" Margin="15,0,0,0"/>
-                        <TextBlock Text="{Binding Album}"   FontSize="16" Margin="5,0,0,0"/>
-                        <TextBlock Text="Year : "           FontSize="16" Margin="15,0,0,0"/>
-                        <TextBlock Text="{Binding Date}"    FontSize="16" Margin="5,0,0,0"/>
-                    </StackPanel>
-                    <StackPanel  Orientation="Horizontal" Grid.Row="2" >
-                        <TextBlock Text="Artist :"          FontSize="16" Margin="15,0,0,0"/>
-                        <TextBlock Text="{Binding Artist}"  FontSize="16" Margin="5,0,0,0"/>
-                        <TextBlock Text="Genre :"           FontSize="16"  Margin="15,0,0,0"/>
-                        <TextBlock Text="{Binding Genre}"   FontSize="16"  Margin="5,0,0,0"/>
-                    </StackPanel>
-                    <!--TextBlock Grid.Row="0" Grid.Column="0" FontSize="20" Margin="0,0,20,0" TextAlignment="Right"
+        <!-- ШАБЛОН для элемента результата поиска -->
+        <DataTemplate x:Key="SearchItemTemplate">
+            <Grid Width="500">
+                <Grid.RowDefinitions>
+                    <RowDefinition  Height="Auto"/>
+                    <RowDefinition  Height="Auto"/>
+                    <RowDefinition  Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  Width="*"/>
+                    <ColumnDefinition  Width="25"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Text="{Binding Title}"  FontSize="22" Margin="10,0,0,0" />
+                <StackPanel  Orientation="Horizontal" Grid.Row="1">
+                    <TextBlock Text="Album : "          FontSize="16" Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Album}"   FontSize="16" Margin="5,0,0,0"/>
+                    <TextBlock Text="Year : "           FontSize="16" Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Date}"    FontSize="16" Margin="5,0,0,0"/>
+                </StackPanel>
+                <StackPanel  Orientation="Horizontal" Grid.Row="2" >
+                    <TextBlock Text="Artist :"          FontSize="16" Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Artist}"  FontSize="16" Margin="5,0,0,0"/>
+                    <TextBlock Text="Genre :"           FontSize="16"  Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Genre}"   FontSize="16"  Margin="5,0,0,0"/>
+                </StackPanel>
+                <!--TextBlock Grid.Row="0" Grid.Column="0" FontSize="20" Margin="0,0,20,0" TextAlignment="Right"
                                Text="{Binding Time , Converter={StaticResource TimeConverter}}" /-->
-                    <!--
+                <!--
                     <StackPanel Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                         <Button Content="&#xE14C;"   FontSize="30" FontFamily="Segoe UI Symbol" 
                                 BorderThickness="0" Height="46"  Padding="0,0,0,0"
@@ -61,14 +58,22 @@
                         </Popup>
                     </StackPanel>
                     -->
-                </Grid>
-            </DataTemplate>
+            </Grid>
+        </DataTemplate>
 
-        </Grid.Resources>
+        <Storyboard x:Name="gr_SearchShowStoryboard">
+            <DoubleAnimation  Storyboard.TargetName="gr_Search"
+                                          Storyboard.TargetProperty="Opacity"
+                                          From="0.0" To="1.0" Duration="0:0:1"/>
+        </Storyboard>
+
+
+    </UserControl.Resources>
+    
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="65"/>
+            <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="87"/>
         </Grid.RowDefinitions>
 
@@ -89,39 +94,17 @@
                        FontSize="20"  Margin="0,-15,0,0" Height="40" Width="150" HorizontalAlignment="Left"/>
             <AppBarButton Icon="Find"  Margin="0,-6,0,0" Tapped="appbtn_Search_Tapped" />
         </StackPanel>
-        <!--
-        <common:ListViewExtended x:Name="listview_Search"  Grid.Row="1" VerticalContentAlignment="Stretch"  
-                                          ItemBackground="#10F0F0F0" 
-                                          ItemTemplate="{StaticResource SearchResultItemTemplate}" 
-                                          ItemContainerStyleSelector="{StaticResource PlaylistItemStyleSelector}" 
-                                          ItemsSource="{Binding Tracks}"
-                                          SelectionMode="Multiple"
-                                          Grid.ColumnSpan="2"
-                                          GotFocus="listview_Search_GotFocus"
-                                          DoubleTapped="listview_Search_DoubleTapped"/>
-         
-        -->
-
+       
         <GridView x:Name="gridview_Search" Grid.Row="1"
                   ItemTemplate="{StaticResource SearchItemTemplate}"
                   ItemsSource="{Binding Tracks}"
                   ItemContainerStyleSelector="{StaticResource SearchItemStyleSelector}" 
-                  />
-        <!--
-        SelectionMode="Multiple" 
-                       
-                     
-                      DoubleTapped="gridview_DoubleTapped"
-                      GotFocus="gridview_GotFocus">
--->
-        <TextBlock Grid.Row="2" Foreground="Orange" HorizontalAlignment="Left" FontSize="16" 
-                   Margin="20,5,0,0" Text="{Binding SearchResult}"/>
-        
-
-        <StackPanel  Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-            <AppBarButton Icon="ClearSelection" Label="Clear Selection" Tapped="appbtn_Search_DeSelectAll_Tapped"/>
-            <AppBarButton Icon="SelectAll" Label="Select All" Tapped="appbtn_Search_SelectAll_Tapped"/>
-            <AppBarButton Icon="Add"   Label="Add to playlist" Tapped="appbtn_Search_AddToPaylist_Tapped"/>
+                  SelectionMode="Multiple" />
+ 
+        <StackPanel x:Name="AppBarButtons" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <AppBarButton Icon="ClearSelection" Label="Clear Selection" Width="90" Tapped="appbtn_Search_DeSelectAll_Tapped"/>
+            <AppBarButton Icon="SelectAll"      Label="Select All" Width="90" Tapped="appbtn_Search_SelectAll_Tapped"/>
+            <AppBarButton Icon="Add"            Label="Add to playlist"  Width="90" Tapped="appbtn_Search_AddToPaylist_Tapped"/>
         </StackPanel>
     </Grid>
 

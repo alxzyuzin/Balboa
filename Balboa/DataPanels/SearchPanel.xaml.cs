@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Input;
 
 namespace Balboa
 {
-    public sealed partial class SearchPanel : UserControl, INotifyPropertyChanged, IDataPanel,
+    public sealed partial class SearchPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDataPanelInfo,
                                                             IRequestAction, IDisposable
 
     {
@@ -23,20 +23,36 @@ namespace Balboa
         private TrackCollection<Track> _foundTracks = new TrackCollection<Track>();
         public ObservableCollection<Track> Tracks => _foundTracks;
 
-        private string _searchResult;
-        public string SearchResult
+
+        private string _dataPanelInfo;
+        public string DataPanelInfo
         {
-            get { return _searchResult; }
+            get { return _dataPanelInfo; }
             set
             {
-                if(_searchResult!=value)
+                if (_dataPanelInfo != value)
                 {
-                    _searchResult = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SearchResult)));
+                    _dataPanelInfo = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelInfo)));
                 }
             }
         }
 
+        private string _dataPanelElementsCount;
+        public string DataPanelElementsCount
+        {
+            get { return _dataPanelElementsCount; }
+            set
+            {
+                if (_dataPanelElementsCount != value)
+                {
+                    _dataPanelElementsCount = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelElementsCount)));
+                }
+            }
+        }
+
+        public double TotalButtonWidth => AppBarButtons.ActualWidth;
 
         private ComboBoxItem _whereToSearch;
         public ComboBoxItem WhereToSearch
@@ -51,7 +67,6 @@ namespace Balboa
                 }
             }
         }
-
 
         private string _whatToSearch = string.Empty;
         public string WhatToSearch
@@ -106,8 +121,9 @@ namespace Balboa
                         _foundTracks.Add(track);
                     }
                     _foundTracks.NotifyCollectionChanged();
+                    string searchresult = _foundTracks.Count == 0 ? "Nothing found." : $"{ _foundTracks.Count} tracks found.";
+                    DataPanelElementsCount = $"SearchComplete. {searchresult}";
 
-                    SearchResult = _foundTracks.Count == 0 ? $"SearchComplete. Nothing found." : $"SearchComplete. {_foundTracks.Count} tracks found." ;
                 }
             }
 
@@ -116,14 +132,9 @@ namespace Balboa
 
         private void appbtn_Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //string wts = WhereToSearch.Content.ToString();
-            // _server.Search(wts, "");
-            //await _server.Connection.SendCommand("search \"Artist\" \"a\"");
-            //string replay = await _server.Connection.ReadResponse();
-
             _foundTracks.Clear();
             _foundTracks.NotifyCollectionChanged();
-            SearchResult = "Searching ...";
+            DataPanelElementsCount = "Searching ...";
             string wts = WhereToSearch.Content.ToString();
             wts = wts == "Year" ? "Date" : wts;
 
@@ -131,7 +142,6 @@ namespace Balboa
                 _server.Search(wts, WhatToSearch);
             else
                 _server.Search(wts, "");
-
         }
 
         private void appbtn_Search_AddToPaylist_Tapped(object sender, TappedRoutedEventArgs e)
@@ -143,8 +153,10 @@ namespace Balboa
             }
             else
             {
-                //await MessageBox(_resldr.GetString("AddingTrackToPlaylist"),
-                //    _resldr.GetString("NoSelectedItemsToAdd"), MsgBoxButtons.Continue);
+                var message = new Message(MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"),
+                                           MsgBoxButton.Continue, 150);
+                RequestAction?.Invoke(this, new ActionParams(message));
+                return;
             }
         }
 

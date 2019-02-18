@@ -40,16 +40,16 @@
             <Setter Property="Width" Value="400" />
             <Setter Property="Height" Value="80" />
         </Style>
-    </UserControl.Resources>
-    <Grid>
-    <Grid.Resources>
+
         <Storyboard x:Name="gr_SavedPlayListsShowStoryboard">
             <DoubleAnimation  Storyboard.TargetName="gr_SavedPlayLists"
                                           Storyboard.TargetProperty="Opacity"
                                           From="0.0" To="1.0" Duration="0:0:1"/>
         </Storyboard>
-    </Grid.Resources>
 
+    </UserControl.Resources>
+    <Grid>
+    
     <Grid.RowDefinitions>
         <RowDefinition Height="*"/>
         <RowDefinition Height="87"/>
@@ -65,8 +65,8 @@
                    VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" TextWrapping="WrapWholeWords" 
                    Visibility="{Binding SavedPlaylistsContentVisibility}"
                    Margin="20,20,20,20"/>
-        
-    <StackPanel  Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+
+        <StackPanel x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
         <Popup x:Name="popup_GetPlaylistName" VerticalOffset="-155" HorizontalOffset="-120">
            <Popup.ChildTransitions>
                <TransitionCollection>
