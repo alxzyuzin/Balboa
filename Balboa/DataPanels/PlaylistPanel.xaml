@@ -48,7 +48,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="105"/>
+            <RowDefinition Height="87"/>
         </Grid.RowDefinitions>
 
         <common:ListViewExtended x:Name="lv_PlayList"  Grid.Row="0"  VerticalContentAlignment="Stretch"  
@@ -65,32 +65,20 @@
                    VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" TextWrapping="WrapWholeWords" 
                    Visibility="{Binding EmptyContentMessageVisibility}"
                    Margin="20,20,20,20"/>
-<!--
-        <StackPanel  Grid.Row="1" Margin="20,5,0,0">
-            <StackPanel  HorizontalAlignment="Stretch"  Visibility="{Binding PlaylistNameVisibility}">
-                <TextBlock  Grid.Row="0" Text="Playlist name :" FontSize="20"  />
-                <TextBlock  Grid.Row="1" Text="{Binding LoadedPlaylistName}" FontSize="20" FontWeight="Bold"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,6,10,0" >
-                <TextBlock Text="Total tracks in playlist:" FontSize="15" FontWeight="Bold" />
-                <TextBlock Text="{Binding PlaylistLength}"  FontSize="15" FontWeight="Bold" Margin="5,0,0,0"/>
-            </StackPanel>
-        </StackPanel>
--->
 
         <StackPanel x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
              <Popup x:Name="popup_GetPlaylistName" VerticalOffset="-155" HorizontalOffset="-150">
                <Popup.ChildTransitions>
                    <TransitionCollection>
-                       <AddDeleteThemeTransition/>
-                   </TransitionCollection>
+                        <PaneThemeTransition Edge="Bottom"/>
+                    </TransitionCollection>
                </Popup.ChildTransitions>
             </Popup>
-            <AppBarButton Icon="Save"    Label="Save"          Width="85" Tapped="appbtn_Playlist_Save_Tapped"/>
-            <AppBarButton Icon="Delete"  Label="Del. Selected" Width="85" Tapped="appbtn_Playlist_DeleteSelected_Tapped"/>
-            <AppBarButton Icon="Clear"   Label="Clear"         Width="85" Tapped="appbtn_Playlist_Clear_Tapped"/>
-            <AppBarButton Icon="Add"     Label="Add track"     Width="85" Tapped="appbtn_Playlist_Add_Tapped"/>
-            <AppBarButton Icon="Shuffle" Label="Shuffle"       Width="85" Tapped="appbtn_Playlist_Shaffle_Tapped"/>
+            <AppBarButton Icon="Save"    Label="Save"          Width="90" Tapped="appbtn_Playlist_Save_Tapped"/>
+            <AppBarButton Icon="Delete"  Label="Del. Selected" Width="90" Tapped="appbtn_Playlist_DeleteSelected_Tapped"/>
+            <AppBarButton Icon="Clear"   Label="Clear"         Width="90" Tapped="appbtn_Playlist_Clear_Tapped"/>
+            <AppBarButton Icon="Add"     Label="Add track"     Width="90" Tapped="appbtn_Playlist_Add_Tapped"/>
+            <AppBarButton Icon="Shuffle" Label="Shuffle"       Width="90" Tapped="appbtn_Playlist_Shaffle_Tapped"/>
         </StackPanel>
     </Grid>
 </UserControl>

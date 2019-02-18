@@ -102,8 +102,8 @@
                   SelectionMode="Multiple" />
  
         <StackPanel x:Name="AppBarButtons" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-            <AppBarButton Icon="ClearSelection" Label="Clear Selection" Width="90" Tapped="appbtn_Search_DeSelectAll_Tapped"/>
-            <AppBarButton Icon="SelectAll"      Label="Select All" Width="90" Tapped="appbtn_Search_SelectAll_Tapped"/>
+            <AppBarButton Icon="ClearSelection" Label="Clear Selection"  Width="90" Tapped="appbtn_Search_DeSelectAll_Tapped"/>
+            <AppBarButton Icon="SelectAll"      Label="Select All"       Width="90" Tapped="appbtn_Search_SelectAll_Tapped"/>
             <AppBarButton Icon="Add"            Label="Add to playlist"  Width="90" Tapped="appbtn_Search_AddToPaylist_Tapped"/>
         </StackPanel>
     </Grid>

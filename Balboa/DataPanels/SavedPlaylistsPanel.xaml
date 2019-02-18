@@ -74,9 +74,9 @@
                </TransitionCollection>
            </Popup.ChildTransitions>
         </Popup>
-        <AppBarButton Icon="OpenFile" Label="Load" Click="appbtn_SavedPlaylistLoad_Click" />
-        <AppBarButton Icon="Delete" Label="Delete" Tapped="appbtn_SavedPlaylistDelete_Tapped"/>
-        <AppBarButton Icon="Rename" Label="Rename" Tapped="appbtn_SavedPlaylistRename_Tapped"/>
+            <AppBarButton Icon="OpenFile" Label="Load"    Width="90" Tapped="appbtn_SavedPlaylistLoad_Click" />
+            <AppBarButton Icon="Delete"   Label="Delete"  Width="90" Tapped="appbtn_SavedPlaylistDelete_Tapped"/>
+            <AppBarButton Icon="Rename"   Label="Rename"  Width="90" Tapped="appbtn_SavedPlaylistRename_Tapped"/>
     </StackPanel>
     </Grid>
 </UserControl>

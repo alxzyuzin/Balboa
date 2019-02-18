@@ -27,7 +27,6 @@
             <Setter Property="VerticalAlignment" Value="Top" />
         </Style>
 
-
         <Style x:Key="SettingsTextBoxStyle" TargetType="TextBox" >
             <Setter Property="FontSize" Value="22"/>
             <Setter Property="Height" Value="26" />
@@ -38,8 +37,8 @@
         </Style>
 
     </UserControl.Resources>
-    <Grid Style="{StaticResource InformationGridStyle}" Visibility="Visible">
-         
+    <Grid>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*" MinWidth="180"/>
             <ColumnDefinition Width="160"/>
@@ -48,7 +47,7 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="0"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
@@ -63,7 +62,6 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="10"/>
             <RowDefinition Height="87"/>
-            <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
         <Grid.Resources>
             <Storyboard x:Name="gr_SettingsShowStoryboard">
@@ -73,37 +71,39 @@
             </Storyboard>
         </Grid.Resources>
 
-        <TextBlock Text="Server" Grid.Row="2" Grid.Column="0" Style="{StaticResource  SettingsTextBlockStyle}"/>
-        <TextBox   x:Name="tbx_Server"  Grid.Row="2" Grid.Column="1" Width="150" 
+        <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource  SettingsTextBlockStyle}"/>
+        <TextBox   Grid.Row="2" Grid.Column="1" Width="150" 
                            Style="{StaticResource  SettingsTextBoxStyle }"
                            Text="{Binding ServerName, Mode=TwoWay}"/>
 
-        <TextBlock Text="Port" Grid.Row="3" Grid.Column="0"  Style="{StaticResource SettingsTextBlockStyle}"/>
-        <TextBox   x:Name="tbx_Port" Text="{Binding Port, Mode=TwoWay}" Grid.Row="3" Grid.Column="1"  Width="80" Style="{StaticResource  SettingsTextBoxStyle }"/>
-        <TextBlock Text="(1 - 6553 )" Grid.Row="3" Grid.Column="2"  Grid.ColumnSpan="2"
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Port"   Style="{StaticResource SettingsTextBlockStyle}"/>
+        <TextBox   Grid.Row="3" Grid.Column="1" Text="{Binding Port, Mode=TwoWay}"   Width="80" Style="{StaticResource  SettingsTextBoxStyle }"/>
+        <TextBlock Grid.Row="3" Grid.Column="2" Text="(1 - 6553)"   Grid.ColumnSpan="2"
                            Style="{StaticResource  SettingsTextBlockStyle}"/>
 
-        <TextBlock Text="Password"    Grid.Row="4" Grid.Column="0"  Style="{StaticResource SettingsTextBlockStyle}"/>
-        <TextBox   x:Name="tbx_Password" Grid.Row="4" Grid.Column="1" Width="150"  
+        <TextBlock Grid.Row="4" Grid.Column="0"  Text="Password"     Style="{StaticResource SettingsTextBlockStyle}"/>
+        <TextBox   Grid.Row="4" Grid.Column="1" Width="150"  
                            Text="{Binding Password, Mode=TwoWay}"
                            Style="{StaticResource  SettingsTextBoxStyle }"/>
-        <TextBlock Text="(optional)"  Grid.Row="4" Grid.Column="2"  Style="{StaticResource SettingsTextBlockStyle}"/>
+        <TextBlock Grid.Row="4" Grid.Column="2" Text="(optional)"   Style="{StaticResource SettingsTextBlockStyle}"/>
 
-        <TextBlock Text="View update interval" Grid.Row="6" Grid.Column="0"   Grid.RowSpan="2" 
+        <TextBlock Grid.Row="6" Grid.Column="0" Grid.RowSpan="2" Text="View update interval"  
                            Style="{StaticResource SettingsTextBlockStyle}"
                            TextWrapping="WrapWholeWords" Height="70" />
-        <TextBox   Text="{Binding ViewUpdateInterval, Mode=TwoWay}"  Grid.Row="6" Grid.Column="1"   Width="80" 
-                           Style="{StaticResource  SettingsTextBoxStyle }"/>
-        <TextBlock  Text="(milliseconds)" Grid.Row="6" Grid.Column="2"  Style="{StaticResource SettingsTextBlockStyle}" />
+        <TextBox   Grid.Row="6" Grid.Column="1"   Width="80"    
+                   Style="{StaticResource  SettingsTextBoxStyle }" Text="{Binding ViewUpdateInterval, Mode=TwoWay}" />
+        <TextBlock  Grid.Row="6" Grid.Column="2" 
+                    Style="{StaticResource SettingsTextBlockStyle}" Text="(milliseconds)"/>
 
-        <TextBlock Text="Path to music collection" Grid.Row="8" Grid.Column="0"  Grid.RowSpan="2" Style="{StaticResource SettingsTextBlockStyle}" 
-                           TextWrapping="WrapWholeWords" Height="70"/>
-        <TextBox   x:Name="tbx_MusicCollectionPath" Grid.Row="8" Grid.Column="1" 
-                           Text="{Binding MusicCollectionFolder, Mode=TwoWay}"
-                           HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }"  
-                           Background="#FFF4F4F4" IsEnabled="False"
-                           Grid.RowSpan="2" VerticalAlignment="Top"
-                           Grid.ColumnSpan="2" Margin="0,3,50,0" />
+        <TextBlock  Grid.Row="8" Grid.Column="0" TextWrapping="WrapWholeWords" Height="70"
+                    Style="{StaticResource SettingsTextBlockStyle}" Text="Path to music collection" Grid.RowSpan="2"/>
+        <TextBox   Grid.Row="8" Grid.Column="1" HorizontalAlignment="Stretch" 
+                   Background="#FFF4F4F4" IsEnabled="False"
+                   Grid.RowSpan="2" Grid.ColumnSpan="2"
+                   VerticalAlignment="Top" Margin="0,3,50,0" 
+                   Style="{StaticResource  SettingsTextBoxStyle }"          
+                   Text="{Binding MusicCollectionFolder, Mode=TwoWay}" />
+
         <Button x:Name="btn_SelectMusicCollectionPath" Content="Select" Grid.Row="8" Grid.Column="3"  
                         Style="{StaticResource  UtilityButtonStyle}"  Margin="0,1,10,0" VerticalAlignment="Top"
                         Height="37" Tapped="btn_SelectMusicCollectionPath_Tapped" FontSize="18" Grid.RowSpan="2"/>
@@ -113,18 +113,22 @@
 
         <TextBlock Text="Album cover file name" Grid.Row="10" Grid.Column="0"  Grid.RowSpan="2" 
                            Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
-        <TextBox   x:Name="tbx_AlbumCoverFileName" Text="{Binding AlbumCoverFileNames, Mode=TwoWay}"  Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2"
-                           HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }" Grid.RowSpan="2" VerticalAlignment="Top"/>
-        <TextBlock Text="File names separated with semicolon" Grid.Row="10" Grid.Column="3"  
-                           Style="{StaticResource SettingsTextBlockStyle}" TextWrapping="WrapWholeWords"
-                           Grid.RowSpan="2"  Grid.ColumnSpan="3" VerticalAlignment="Top" Height="75"/>
+        <TextBox     Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Top"
+                     HorizontalAlignment="Stretch" 
+                     Style="{StaticResource  SettingsTextBoxStyle }"
+                     Text="{Binding AlbumCoverFileNames, Mode=TwoWay}"/>
+        <TextBlock Grid.Row="10" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Top" Height="75" Margin="20,0,30,0"
+                   Style="{StaticResource SettingsTextBlockStyle}" 
+                   Text="File names separated with semicolon"  TextWrapping="WrapWholeWords"/>
 
-        <TextBlock Text="Display pictures for folders" Grid.Row="12" Grid.Column="0"  Grid.RowSpan="2" Grid.ColumnSpan="2"
-                           Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
-        <CheckBox   x:Name="checkbox_DisplayFolderPictures" IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"  Grid.Row="12" Grid.Column="1" 
-                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <TextBlock Grid.Row="12" Grid.Column="0"  Grid.RowSpan="2" Grid.ColumnSpan="2"
+                   Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"
+                   Style="{StaticResource SettingsTextBlockStyle}"
+                   Text="Display pictures for folders"/>
+        <CheckBox  Grid.Row="12" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"
+                   IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"/>
 
-        <StackPanel  Grid.Row="14" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right"  Grid.ColumnSpan="5" >
+        <StackPanel  Grid.Row="14" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right"  Grid.ColumnSpan="2">
             <AppBarButton Icon="Preview" Label="Start session" Tapped="appbtn_StartSession_Tapped"  HorizontalAlignment="Right" Visibility="Visible"/>
             <AppBarButton Icon="Preview" Label="Stop session"  Tapped="appbtn_StopSession_Tapped" HorizontalAlignment="Right" Visibility="Visible"/>
             <AppBarSeparator Visibility="Collapsed"/>
@@ -133,5 +137,5 @@
             <AppBarButton Icon="Save" Label="Save" Tapped="appbtn_SaveSettings_Tapped" />
         </StackPanel>
     </Grid>
-    
+
 </UserControl>

@@ -243,9 +243,15 @@ namespace Balboa
 
             int i = _currentPath.LastIndexOf("/");
             if (i >= 0)
+            {
+                _parentFolderName = _currentPath.Substring(i+1);
                 _currentPath = _currentPath.Remove(i);
-             else
-             _currentPath = string.Empty;
+            }
+            else
+            {
+                _parentFolderName = _currentPath;
+                _currentPath = string.Empty;
+            }
              _server.LsInfo(_currentPath);
             // Eсли мы поднялись на самый верх по дереву каталогов отключим кнопку Up
             AppbtnUpIsEnabled = _currentPath.Length > 0 ? true : false;

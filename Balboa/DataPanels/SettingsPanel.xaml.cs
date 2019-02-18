@@ -17,7 +17,7 @@ namespace Balboa
     
 
     public sealed partial class SettingsPanel : UserControl, INotifyPropertyChanged, IDataPanel, 
-                                                             IRequestAction, IDisposable
+                                                             IRequestAction
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler RequestAction;
@@ -148,13 +148,13 @@ namespace Balboa
             _musicCollectionFolderToken = _appSettings.MusicCollectionFolderToken;
         }
 
-        public void Init(Server server)
-        {
-            _server = server;
-            _appSettings.Restore();
-        }
+        //public void Init(Server server)
+        //{
+        //    _server = server;
+        //    _appSettings.Restore();
+        //}
 
-        public void Update() { }
+        //public void Update() { }
 
         private async void appbtn_SaveSettings_Tapped(object sender, TappedRoutedEventArgs e)
         {
@@ -284,10 +284,6 @@ namespace Balboa
         {
            // throw new NotImplementedException();
         }
-
-        public void Dispose()
-        {
-           // throw new NotImplementedException();
-        }
+    
     }
 }
