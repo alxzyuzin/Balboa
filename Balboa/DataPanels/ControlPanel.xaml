@@ -11,13 +11,12 @@
     d:DesignHeight="160"
     d:DesignWidth="1100"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    
-    <Grid Margin="0,0,20,0">
-        <Grid.Resources>
+    <UserControl.Resources>
             <common:TimeConverter  x:Key="TimeConverter"/>
             <common:VolumeConverter x:Key="VolumeConverter"/>
-        </Grid.Resources>
-
+    </UserControl.Resources>
+    
+    <Grid Margin="0,0,20,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0"/>
             <ColumnDefinition Width="*"/>
@@ -81,8 +80,6 @@
                                   ValueChanged="sl_Volume_ValueChanged"
                                   PointerWheelChanged="sl_Volume_PointerWheelChanged" />
                 -->
-                
-                
             </Grid>
         </StackPanel>
         <!-- Volume control-->

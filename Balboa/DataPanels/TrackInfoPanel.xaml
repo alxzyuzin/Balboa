@@ -42,7 +42,7 @@
                                  Storyboard.TargetProperty="(FrameworkElement.Width)"   
                                  Storyboard.TargetName="TrackInfo"
                                  EnableDependentAnimation="True" FillBehavior="HoldEnd">
-                <LinearDoubleKeyFrame Value="234" KeyTime="0:0:0.5" />
+                <LinearDoubleKeyFrame Value="244" KeyTime="0:0:0.5" />
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
 
@@ -65,12 +65,11 @@
         </Storyboard>
 
     </UserControl.Resources>
-    <!--  BorderThickness="2" BorderBrush="White"-->
-    <Border x:Name="TrackInfo" HorizontalAlignment="Left" Margin="20,0,20,0" Width="244">
+    <Border x:Name="TrackInfo" HorizontalAlignment="Left" Margin="20,0,0,0">
          <StackPanel   HorizontalAlignment="Left" Orientation ="Vertical">
             <StackPanel Orientation="{Binding Orientation}">
                 <Image  x:Name="AlbumArtImage" Source="{Binding AlbumArt.Image}" MaxHeight="170"
-                        HorizontalAlignment="Left" />
+                        HorizontalAlignment="Left" Margin="0,0,20,0" />
                 <StackPanel Margin="0,5,0,0" HorizontalAlignment="Left" >
                     <TextBlock   Text="{Binding Title}"  FontSize="19"  TextWrapping="WrapWholeWords" />
                     <TextBlock   Text="{Binding Artist}" FontSize="13" TextWrapping="WrapWholeWords" />

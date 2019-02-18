@@ -41,20 +41,6 @@ namespace Balboa
             }
         }
 
-        //public Visibility _playlistNameVisibility = Visibility.Collapsed;
-        //public Visibility PlaylistNameVisibility
-        //{
-        //    get { return _playlistNameVisibility; }
-        //    set
-        //    {
-        //        if (_playlistNameVisibility != value)
-        //        {
-        //            _playlistNameVisibility = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaylistNameVisibility)));
-        //        }
-        //    }
-        //}
-
         private string _loadedPlaylistName = string.Empty;
         public string LoadedPlaylistName
         {
@@ -70,20 +56,6 @@ namespace Balboa
                 }
             }
         }
-
-        //private string _playlistLength;
-        //public string PlaylistLength
-        //{
-        //    get { return _playlistLength; }
-        //    set
-        //    {
-        //        if (_playlistLength != value)
-        //        {
-        //            _playlistLength = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaylistLength)));
-        //        }
-        //    }
-        //}
 
         private string _dataPanelInfo;
         public string DataPanelInfo
@@ -113,6 +85,9 @@ namespace Balboa
             }
         }
 
+        public double TotalButtonWidth => AppBarButtons.ActualWidth;
+        
+
         public PlaylistPanel()
         {
             InitializeComponent();
@@ -130,10 +105,8 @@ namespace Balboa
 
             LoadedPlaylistName = _server.PlaylistName;
             if (_loadedPlaylistName != null)
-            {
-                DataPanelInfo = "Playlist name: " + _server.PlaylistName;
- //               PlaylistNameVisibility = _loadedPlaylistName.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
-            }
+                 DataPanelInfo = "Playlist name: " + _server.PlaylistName;
+ 
         }
 
         public void Init(Server server)
@@ -195,12 +168,7 @@ namespace Balboa
                 _playlist.Add(track);
             }
             _playlist.NotifyCollectionChanged();
-
-            DataPanelElementsCount = "Playlist items count: "+ _playlist.Count.ToString();
-//            DataPanelInfo = "OOOOOOOOOOO";
-
-            //PlaylistLength = _playlist.Count.ToString();
-            //PlaylistContentVisibility = _playlist.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+            DataPanelElementsCount = "Playlist items count: "+ _playlist.Count.ToString()+".";
             MakeOpaque.Begin();
         }
 
@@ -256,7 +224,6 @@ namespace Balboa
             if (track != null)
                 track.IsPlaying = true;
         
-//            lv_PlayList.SelectedItems.Clear();
             _playlist.NotifyCollectionChanged();
             lv_PlayList.ScrollIntoView(track);
         }

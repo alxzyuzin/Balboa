@@ -43,6 +43,7 @@ namespace Balboa
 
         string DataPanelInfo { get; set; }
         string DataPanelElementsCount { get; set; }
+        double TotalButtonWidth { get; }
     }
 
 

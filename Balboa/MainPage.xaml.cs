@@ -3,7 +3,7 @@
  *
  * This file is part of MPD client Balboa.
  *
- * Главная страница приложения
+ * Application main page
  *
  --------------------------------------------------------------------------*/
 
@@ -42,7 +42,6 @@ namespace Balboa
     [Flags]
     public enum DataPanelLayout
     {
-
         Horizontal = 1,
         Vertical = 2,
         Wide = 4,
@@ -104,37 +103,6 @@ namespace Balboa
                 }
             }
         }
-
-        private string _dataPanelInfo;
-        public string DataPanelInfo
-        {
-            get { return _dataPanelInfo; }
-            private set
-            {
-                if (_dataPanelInfo != value)
-                {
-                    _dataPanelInfo = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelInfo)));
-                }
-            }
-        }
-
-        private string _dataPanelElementsCount;
-        public string DataPanelElementsCount
-        {
-            get { return _dataPanelElementsCount; }
-            private set
-            {
-                if (_dataPanelElementsCount != value)
-                {
-                    _dataPanelElementsCount = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelElementsCount)));
-                }
-            }
-        }
-
-
-
 
         public MainPage()
         {
@@ -215,6 +183,7 @@ namespace Balboa
         {
             MainWindowWIdth = e.NewSize.Width;
             RearangeTrackInfoPanels();
+            
 
             ////////////////////////////////////////////////////////////////////
             var displayinformation = DisplayInformation.GetForCurrentView();
@@ -276,6 +245,13 @@ namespace Balboa
                 BottomTrackInfoPanel.Expand();
             else
                 BottomTrackInfoPanel.Collapse();
+
+            if (_activeDataPanel as IDataPanelInfo != null)
+                DataInfoPanel.Width = Math.Max( MainWindowWIdth  
+                                                - ((IDataPanelInfo)_activeDataPanel).TotalButtonWidth 
+                                                - BottomTrackInfoPanel.ActualWidth
+                                                - 40, 0); 
+            
         }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
@@ -322,7 +298,6 @@ namespace Balboa
 
             if (DataPanel.Child != null)
             {
-//                if (DataPanel.Child as IRequestAction != null)
                 ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
                 ((IDisposable)DataPanel.Child).Dispose();
             }
