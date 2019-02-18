@@ -26,16 +26,16 @@ namespace Balboa
 
         public ObservableCollection<Track> Playlist => _playlist;
 
-        private Visibility _playListContentVisibility = Visibility.Collapsed;
-        public Visibility PlaylistContentVisibility
+        private Visibility _emptyContentMessageVisibility = Visibility.Collapsed;
+        public Visibility EmptyContentMessageVisibility
         {
-            get { return _playListContentVisibility; }
+            get { return _emptyContentMessageVisibility; }
             set
             {
-                if (_playListContentVisibility != value)
+                if (_emptyContentMessageVisibility != value)
                 {
-                    _playListContentVisibility = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PlaylistContentVisibility)));
+                    _emptyContentMessageVisibility = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EmptyContentMessageVisibility)));
                 }
                 
             }
@@ -168,7 +168,8 @@ namespace Balboa
                 _playlist.Add(track);
             }
             _playlist.NotifyCollectionChanged();
-            DataPanelElementsCount = "Playlist items count: "+ _playlist.Count.ToString()+".";
+            EmptyContentMessageVisibility = _playlist.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+            DataPanelElementsCount = $"Playlist contains {_playlist.Count.ToString()} items.";
             MakeOpaque.Begin();
         }
 

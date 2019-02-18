@@ -21,7 +21,7 @@ using Windows.UI.Xaml.Input;
 
 namespace Balboa
 {
-    public sealed partial class TrackDirectoryPanel : UserControl, INotifyPropertyChanged, IDataPanel, 
+    public sealed partial class TrackDirectoryPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDataPanelInfo,
                                                                    IRequestAction, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -41,7 +41,36 @@ namespace Balboa
 
         private Progress<File> _progress;
         private ManualResetEvent _ThreadEvent = new ManualResetEvent(false);
-        private CancellationTokenSource _tokenSource; 
+        private CancellationTokenSource _tokenSource;
+
+        private Visibility _emptyContentMessageVisibility = Visibility.Collapsed;
+        public Visibility EmptyContentMessageVisibility
+        {
+            get { return _emptyContentMessageVisibility; }
+            set
+            {
+                if (_emptyContentMessageVisibility != value)
+                {
+                    _emptyContentMessageVisibility = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EmptyContentMessageVisibility)));
+                }
+
+            }
+        }
+
+        private bool _appbtnUpIsEnabled = false;
+        public bool AppbtnUpIsEnabled
+        {
+            get { return _appbtnUpIsEnabled; }
+            set
+            {
+                if (_appbtnUpIsEnabled !=value)
+                {
+                    _appbtnUpIsEnabled = value;
+                    PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(AppbtnUpIsEnabled)));
+                }
+            }
+        }
 
         private string _emptyDirectoryMessage = string.Empty;
         public string EmptyDirectoryMessage
@@ -60,6 +89,37 @@ namespace Balboa
 
             }
         }
+
+        private string _dataPanelInfo;
+        public string DataPanelInfo
+        {
+            get { return _dataPanelInfo; }
+            set
+            {
+                if (_dataPanelInfo != value)
+                {
+                    _dataPanelInfo = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelInfo)));
+                }
+            }
+        }
+
+        private string _dataPanelElementsCount;
+        public string DataPanelElementsCount
+        {
+            get { return _dataPanelElementsCount; }
+            set
+            {
+                if (_dataPanelElementsCount != value)
+                {
+                    _dataPanelElementsCount = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DataPanelElementsCount)));
+                }
+            }
+        }
+
+        public double TotalButtonWidth => AppBarButtons.ActualWidth;
+
 
 
         public TrackDirectoryPanel()
@@ -111,23 +171,22 @@ namespace Balboa
                     if (_currentPath.Length>0 && _newPathChunck.Length>0)
                         _currentPath += "/";
                     _currentPath += _newPathChunck;
+
+                DataPanelInfo = $"Folder /{_currentPath}";
+
                     _newPathChunck = string.Empty;
 
-                    appbtn_Up.IsEnabled = _currentPath.Length>0 ? true : false;
+                    AppbtnUpIsEnabled = _currentPath.Length>0 ? true : false;
                     EmptyDirectoryMessage = _files.Count == 0 ?
                          string.Format(_resldr.GetString("NoAudioFilesInFolder"), "\""+_currentPath+ "\"") : string.Empty;
-
+                    DataPanelElementsCount = $"contains {_files.Count.ToString()} items.";
                     _tokenSource = new CancellationTokenSource();
                     CancellationToken token = _tokenSource.Token;
                     WorkItemHandler workhandler = delegate { UpdateFilesIcons(token); };
                     
                     await ThreadPool.RunAsync(workhandler, WorkItemPriority.High, WorkItemOptions.TimeSliced);
              }
-            //else
-            //{
-            //    _newPathChunck = string.Empty;
-            //}
-        }
+         }
 
         public void UpdateControlData(List<string> serverData)
         {
@@ -139,6 +198,8 @@ namespace Balboa
                 if(file.Nature == FileNature.File || file.Nature == FileNature.Directory)
                     _files.Add(file);
             }
+
+            EmptyContentMessageVisibility = _files.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void gr_FileSystemContent_GotFocus(object sender, RoutedEventArgs e)
@@ -186,8 +247,8 @@ namespace Balboa
              else
              _currentPath = string.Empty;
              _server.LsInfo(_currentPath);
-                // Eсли мы поднялись на самый верх по дереву каталогов отключим кнопку Up
-             appbtn_Up.IsEnabled = _currentPath.Length > 0 ? true : false;
+            // Eсли мы поднялись на самый верх по дереву каталогов отключим кнопку Up
+            AppbtnUpIsEnabled = _currentPath.Length > 0 ? true : false;
             
         }
 

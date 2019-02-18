@@ -11,43 +11,41 @@
     d:DesignWidth="800"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
+
+        <common:TimeConverter  x:Key="TimeConverter"/>
+        <common:PlaylistItemStyleSelector x:Key="PlaylistItemStyleSelector"/>
+
+        <!-- ШАБЛОН для элемента Playlist -->
+        <DataTemplate x:Key="TrackItemTemplate">
+            <Grid >
+                <Grid.RowDefinitions>
+                    <RowDefinition  Height="28"/>
+                    <RowDefinition  Height="22"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="{Binding Title}"  FontSize="20" 
+                               TextAlignment="Left" Margin="10,0,0,0"/>
+                <TextBlock Grid.Row="0" Text="{Binding Time , Converter={StaticResource TimeConverter}}"
+                               FontSize="20" Margin="0,0,20,0" HorizontalAlignment="Right"/>
+                <StackPanel  Orientation="Horizontal" Grid.Row="1">
+                    <TextBlock Text="Artist :"   Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Artist}" Margin="5,0,0,0"/>
+                    <TextBlock Text="Album : " Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Album}"  Margin="5,0,0,0"/>
+                    <TextBlock Text="Year : "  Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Date}"  Margin="5,0,0,0"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
         <Storyboard x:Name="MakeOpaque">
             <DoubleAnimation  Storyboard.TargetName="lv_PlayList"
                               Storyboard.TargetProperty="Opacity"
                               From="0.0" To="1.0" Duration="0:0:0.5"/>
         </Storyboard>
     </UserControl.Resources>
-     <Grid>
-        <Grid.Resources>
-            <common:TimeConverter  x:Key="TimeConverter"/>
-            <common:PlaylistItemStyleSelector x:Key="PlaylistItemStyleSelector"/>
 
-            
-            <!-- ШАБЛОН для элемента Playlist -->
-            <DataTemplate x:Key="TrackItemTemplate">
-                <Grid >
-                    <Grid.RowDefinitions>
-                        <RowDefinition  Height="28"/>
-                        <RowDefinition  Height="22"/>
-                    </Grid.RowDefinitions>
- 
-                    <TextBlock Grid.Row="0" Text="{Binding Title}"  FontSize="20" 
-                               TextAlignment="Left" Margin="10,0,0,0"/>
-                    <TextBlock Grid.Row="0" Text="{Binding Time , Converter={StaticResource TimeConverter}}"
-                               FontSize="20" Margin="0,0,20,0" HorizontalAlignment="Right"/>
-                    <StackPanel  Orientation="Horizontal" Grid.Row="1">
-                        <TextBlock Text="Artist :"   Margin="15,0,0,0"/>
-                        <TextBlock Text="{Binding Artist}" Margin="5,0,0,0"/>
-                        <TextBlock Text="Album : " Margin="15,0,0,0"/>
-                        <TextBlock Text="{Binding Album}"  Margin="5,0,0,0"/>
-                        <TextBlock Text="Year : "  Margin="15,0,0,0"/>
-                        <TextBlock Text="{Binding Date}"  Margin="5,0,0,0"/>
-                    </StackPanel>
-                </Grid>
-            </DataTemplate>
-           
-        </Grid.Resources>
-        
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="105"/>
@@ -65,7 +63,7 @@
         </common:ListViewExtended>
         <TextBlock Grid.Row="0" Text="Playlist doesn't contain any items. Use 'Add Track' button to add tracks."
                    VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" TextWrapping="WrapWholeWords" 
-                   Visibility="{Binding PlaylistContentVisibility}"
+                   Visibility="{Binding EmptyContentMessageVisibility}"
                    Margin="20,20,20,20"/>
 <!--
         <StackPanel  Grid.Row="1" Margin="20,5,0,0">
@@ -88,11 +86,11 @@
                    </TransitionCollection>
                </Popup.ChildTransitions>
             </Popup>
-            <AppBarButton Icon="Save"    Label="Save"          Width="85"  Tapped="appbtn_Playlist_Save_Tapped"/>
-            <AppBarButton Icon="Delete"  Label="Del. Selected" Width="85"  Tapped="appbtn_Playlist_DeleteSelected_Tapped" />
-            <AppBarButton Icon="Clear"   Label="Clear"         Width="85"  Tapped="appbtn_Playlist_Clear_Tapped"/>
-            <AppBarButton Icon="Add"     Label="Add track"     Width="85"  Tapped="appbtn_Playlist_Add_Tapped"/>
-            <AppBarButton Icon="Shuffle" Label="Shuffle"       Width="85"  Tapped="appbtn_Playlist_Shaffle_Tapped"/>
+            <AppBarButton Icon="Save"    Label="Save"          Width="85" Tapped="appbtn_Playlist_Save_Tapped"/>
+            <AppBarButton Icon="Delete"  Label="Del. Selected" Width="85" Tapped="appbtn_Playlist_DeleteSelected_Tapped"/>
+            <AppBarButton Icon="Clear"   Label="Clear"         Width="85" Tapped="appbtn_Playlist_Clear_Tapped"/>
+            <AppBarButton Icon="Add"     Label="Add track"     Width="85" Tapped="appbtn_Playlist_Add_Tapped"/>
+            <AppBarButton Icon="Shuffle" Label="Shuffle"       Width="85" Tapped="appbtn_Playlist_Shaffle_Tapped"/>
         </StackPanel>
     </Grid>
 </UserControl>
