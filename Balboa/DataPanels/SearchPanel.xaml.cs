@@ -23,7 +23,6 @@ namespace Balboa
         private TrackCollection<Track> _foundTracks = new TrackCollection<Track>();
         public ObservableCollection<Track> Tracks => _foundTracks;
 
-
         private string _dataPanelInfo;
         public string DataPanelInfo
         {
@@ -146,18 +145,20 @@ namespace Balboa
 
         private void appbtn_Search_AddToPaylist_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (gridview_Search.SelectedItems.Count > 0)
-            {
-                foreach (Track track in gridview_Search.SelectedItems)
-                    _server.Add(track.File);
-            }
-            else
+            if (gridview_Search.SelectedItems.Count == 0)
             {
                 var message = new Message(MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"),
                                            MsgBoxButton.Continue, 150);
                 RequestAction?.Invoke(this, new ActionParams(message));
                 return;
             }
+
+            foreach (Track track in gridview_Search.SelectedItems)
+                    _server.Add(track.File);
+
+            gridview_Search.SelectedItems.Clear();
+            RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel).SetPanel(new PlaylistPanel(_server)));
+
         }
 
         private void appbtn_Search_SelectAll_Tapped(object sender, TappedRoutedEventArgs e)

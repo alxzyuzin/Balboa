@@ -121,7 +121,6 @@ namespace Balboa
         public double TotalButtonWidth => AppBarButtons.ActualWidth;
 
 
-
         public TrackDirectoryPanel()
         {
             InitializeComponent();
@@ -268,8 +267,7 @@ namespace Balboa
             string path = string.Empty;
             if (_currentPath.Length>0 && !_currentPath.EndsWith("/"))
                 path = _currentPath + "/";  
-            //else
-            //    path = _currentPath;
+   
             if (gr_FileSystemContent.SelectedItems.Count == 0)
             {
                 var message = new Message( MsgBoxType.Info, _resldr.GetString("NoSelectedItemsToAdd"),

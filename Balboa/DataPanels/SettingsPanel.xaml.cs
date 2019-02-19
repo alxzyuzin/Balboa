@@ -1,5 +1,6 @@
 ﻿using Balboa.Common;
 using System;
+using System.Collections;
 using System.ComponentModel;
 using Windows.ApplicationModel.Resources;
 using Windows.Storage;
@@ -24,7 +25,6 @@ namespace Balboa
 
         private AppSettings _appSettings = new AppSettings();
         private Server _server;
-        //private List<Output> _outputs =  new List<Output>();
         private ResourceLoader _resldr = new ResourceLoader();
 
         private string _serverName;
@@ -148,13 +148,13 @@ namespace Balboa
             _musicCollectionFolderToken = _appSettings.MusicCollectionFolderToken;
         }
 
-        //public void Init(Server server)
-        //{
-        //    _server = server;
-        //    _appSettings.Restore();
-        //}
+        public void Init(Server server)
+        {
+            _server = server;
+            _appSettings.Restore();
+        }
 
-        //public void Update() { }
+        public void Update() { }
 
         private async void appbtn_SaveSettings_Tapped(object sender, TappedRoutedEventArgs e)
         {
