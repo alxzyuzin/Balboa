@@ -79,7 +79,7 @@ namespace Balboa
         public bool   IsConnected         { get { return _Connection.IsActive; } }
         public bool   IsRunning           { get; private set; }=false;
 
-        //public string DataPanelInfo { get; set; }
+        //public string CurrentPathInfo { get; set; }
         //public string DataPanelElementsCount { get; set; }
         
         #endregion

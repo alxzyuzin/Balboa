@@ -59,6 +59,7 @@
                            TextWrapping="WrapWholeWords"/>
                 
         <StackPanel x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <AppBarButton    Icon="Home"         Label="Home"  Width="85"  Tapped="appbtn_Home_Tapped"/>
             <AppBarButton    Icon="Up"         Label="Up"  Width="85"  IsEnabled="{Binding AppbtnUpIsEnabled}"
                              Tapped="appbtn_Up_Tapped"/>
             <AppBarSeparator Width="65" />

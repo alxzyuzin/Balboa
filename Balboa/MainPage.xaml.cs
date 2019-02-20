@@ -299,7 +299,8 @@ namespace Balboa
             if (DataPanel.Child != null)
             {
                 ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
-                ((IDisposable)DataPanel.Child).Dispose();
+                if (DataPanel.Child as IDisposable != null)
+                    ((IDisposable)DataPanel.Child).Dispose();
             }
             panel.RequestAction += OnDataPanelActionRequested;
             DataPanel.Child = panel as UserControl;

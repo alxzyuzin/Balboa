@@ -37,7 +37,7 @@ namespace Balboa
         private GridViewItem _gridViewItemGotFocus;
         public ObservableCollection<File> Files => _files;
         private ObservableCollection<File> _files = new ObservableCollection<File>();
-        private bool _fileIconsUpdating = false;
+        private bool _fileIconsUpdating;
 
         private Progress<File> _progress;
         private ManualResetEvent _ThreadEvent = new ManualResetEvent(false);
@@ -58,7 +58,7 @@ namespace Balboa
             }
         }
 
-        private bool _appbtnUpIsEnabled = false;
+        private bool _appbtnUpIsEnabled;
         public bool AppbtnUpIsEnabled
         {
             get { return _appbtnUpIsEnabled; }
@@ -125,6 +125,7 @@ namespace Balboa
         {
             InitializeComponent();
             _progress = new Progress<File>(SetFileIcon);
+            RestoreStatus();
         }
 
         public TrackDirectoryPanel(Server server) : this()
@@ -133,6 +134,9 @@ namespace Balboa
 
             _server = server;
             _server.DataReady += _server_DataReady;
+            Unloaded += (object sender, RoutedEventArgs e)=> { SaveStatus(); };
+
+
             if (_currentPath.Length == 0)
                 _server.LsInfo();
             else
@@ -284,6 +288,15 @@ namespace Balboa
             RequestAction?.Invoke(this, new ActionParams(ActionType.ActivateDataPanel).SetPanel<PlaylistPanel>(new PlaylistPanel(_server)));
         }
 
+        private void appbtn_Home_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            _currentPath = string.Empty;
+            _server.LsInfo(_currentPath);
+            // Отключим кнопку Up
+            AppbtnUpIsEnabled = false;
+        }
+
+
         private void HighLiteLastOpenedFolder()
         {
             // При переходе на уровень вверх по файловой системе подсветим 
@@ -332,52 +345,21 @@ namespace Balboa
             file.AlbumArtWidth = new GridLength(60);
         }
 
+        
 
-        //private async void UpdateFilesIcons(CancellationToken token)
-        //{
-        //    var aa = new AlbumArt();
+        private void RestoreStatus()
+        {
+            
+            ApplicationDataContainer LocalSettings = ApplicationData.Current.LocalSettings;
+            Object value = LocalSettings.Values["CurrentMusicLibraryPath"];
+            _currentPath = value as string ?? string.Empty;
+        }
 
-        //    if (_server.DisplayFolderPictures == false || _server.MusicCollectionFolder.Length == 0)
-        //        return;
-        //    try
-        //    {
-        //        _fileIconsUpdating = true;
-        //        foreach (File file in _files.Where(f => f.Nature == FileNature.Directory))
-        //        {
-        //            token.ThrowIfCancellationRequested();
-
-        //            var fullPathToAlbumArt = new StringBuilder(_server.MusicCollectionFolder);
-        //            fullPathToAlbumArt.Append(@"\").Append(_currentPath.Replace('/', '\\'));
-        //            if (!fullPathToAlbumArt.ToString().EndsWith(@"\"))
-        //                fullPathToAlbumArt.Append(@"\");
-        //            fullPathToAlbumArt.Append(file.Name);
-
-        //            IRandomAccessStream fileStream = await GetFolderImageStream(fullPathToAlbumArt.ToString());
-        //            ((IProgress<FileIconParams>)_progress).Report(new FileIconParams(fileStream, file));
-        //        }
-
-        //    }
-        //    catch (OperationCanceledException)
-        //    {
-
-        //    }
-        //    _fileIconsUpdating = false;
-        //    _ThreadEvent.Set();
-        //}
-
-
-        //private async void SetFileIcon(FileIconParams iconParams)
-        //{
-        //    if (iconParams.Stream == null)
-        //        return;
-
-        //    BitmapImage bmi = new BitmapImage();
-        //    await bmi.SetSourceAsync(iconParams.Stream);
-        //    iconParams.File.ImageSource = bmi;
-
-        //    iconParams.File.AlbumArtWidth = new GridLength(60);
-        //}
-
+        private void SaveStatus()
+        {
+            ApplicationDataContainer LocalSettings = ApplicationData.Current.LocalSettings;
+            LocalSettings.Values["CurrentMusicLibraryPath"] = _currentPath;
+        }
 
 
         private async Task<IRandomAccessStream> GetFolderImageStream(string PathToAlbumArt)
