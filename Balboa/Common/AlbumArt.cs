@@ -107,7 +107,6 @@ namespace Balboa.Common
             }
             catch (Exception ex)
             {
-                //Error = $"{ResourceStringException} {ex.GetType().ToString()} {}";
                 Error = string.Format(_resldr.GetString("Exception"), ex.GetType().ToString(), ex.Message);
                 _fileStream = null;
                 return false;

@@ -51,15 +51,12 @@ namespace Balboa
     public partial class MainPage : Page, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server  = new Server();
         private Status _status = new Status();
         private UserControl _activeDataPanel;
         public PlaylistPanel ActiveDataPanel { get { return _activeDataPanel as PlaylistPanel; } }
-
-        //        public enum DataPanelState { CurrentTrack, CurrentPlaylist, FileSystem, Playlists, Statistic, Artists, Genres, Search, Settings }
 
         private string _extendedStatus;
         public string ExtendedStatus
@@ -120,6 +117,22 @@ namespace Balboa
                             {
                                 _status.Update(data.Content);
                                 ExtendedStatus = _status.ExtendedStatus;
+
+                                ////if (_activeDataPanel.GetType() != typeof(CurrentTrackPanel))
+                                //{
+                                //    if (_status.State == "stop")
+                                //    {
+                                //        TopTrackInfoPanel.Hide();
+                                //        BottomTrackInfoPanel.Hide();
+                                //    }
+                                //    else
+                                //    {
+                                //        if (MainWindowWIdth >= 920)
+                                //            BottomTrackInfoPanel.Show();
+                                //        else
+                                //            TopTrackInfoPanel.Show();
+                                //    }
+                                //}
                             }
                         }
 
@@ -140,10 +153,10 @@ namespace Balboa
             MainMenuPanel.RequestAction += OnDataPanelActionRequested;
             
 
-            TopTrackInfoPanel.SetLayout(DataPanelLayout.Horizontal);
+//            TopTrackInfoPanel.SetLayout(DataPanelLayout.Horizontal);
             TopTrackInfoPanel.Init(_server);
 
-            BottomTrackInfoPanel.SetLayout(DataPanelLayout.Vertical);
+//            BottomTrackInfoPanel.SetLayout(DataPanelLayout.Vertical);
             BottomTrackInfoPanel.Init(_server);
 
             _activeDataPanel = BottomTrackInfoPanel;
@@ -223,6 +236,8 @@ namespace Balboa
 
         private void RearangeTrackInfoPanels()
         {
+            // Control TrackInfoPanel's
+
             if (_activeDataPanel.GetType() == typeof(CurrentTrackPanel))
             {
                 TopTrackInfoPanel.Collapse();
@@ -236,9 +251,7 @@ namespace Balboa
                     BottomTrackInfoPanel.Show();
                 }
                 else
-                {
                     TopTrackInfoPanel.Expand();
-                }
             }
 
             if (MainWindowWIdth >= 920)
@@ -246,6 +259,8 @@ namespace Balboa
             else
                 BottomTrackInfoPanel.Collapse();
 
+
+            // Control DataInfoPanel
             if (_activeDataPanel as IDataPanelInfo != null)
                 DataInfoPanel.Width = Math.Max( MainWindowWIdth  
                                                 - ((IDataPanelInfo)_activeDataPanel).TotalButtonWidth 

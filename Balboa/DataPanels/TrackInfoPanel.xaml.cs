@@ -22,25 +22,11 @@ namespace Balboa
         public event PropertyChangedEventHandler PropertyChanged;
 
         private Server _server;
-        private Status _status = new Status();
+        private int _songId = -1;
         private Song _song = new Song();
  
         public Orientation Orientation { get; set; }
         public PanelVisualState VisualState { get; set; }     
-
-        private Visibility _panelVisibility = Visibility.Visible;
-        public Visibility PanelVisibility
-        {
-            get { return _panelVisibility; }
-            private set
-            {
-                if (_panelVisibility != value)
-                {
-                    _panelVisibility = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PanelVisibility)));
-                }
-            }
-        }
 
         private AlbumArt _albumArt = new AlbumArt();
         public AlbumArt AlbumArt
@@ -89,7 +75,6 @@ namespace Balboa
         public TrackInfoPanel()
         {
             this.InitializeComponent();
-                
         }
 
         public TrackInfoPanel(Server server):this()
@@ -130,29 +115,24 @@ namespace Balboa
 
             if (mpdData.Keyword == ResponseKeyword.OK)
             {
-                if (mpdData.Command.Op == "status")
-                    UpdateStatusData(mpdData.Content);
                 if (mpdData.Command.Op == "currentsong")
                     UpdateSongData(mpdData.Content);
             }
         }
 
-        private void UpdateStatusData(List<string> serverData)
-        {
-            _status.Update(serverData);
-            PanelVisibility= (_status.State == "play") ? Visibility.Visible : Visibility.Collapsed;
-        }
-
         private async void UpdateSongData(List<string> serverData)
         {
             _song.Update(serverData);
-
-            Title = _song.Title;
-            Artist = _song.Artist;
-            if (_song.File == null || _song.File == "")
-                return;
-            await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
-            await AlbumArt.UpdateImage();
+            if (_songId != _song.Id)
+            {
+                _songId = _song.Id;
+                Title = _song.Title;
+                Artist = _song.Artist;
+                if (_song.File == null || _song.File == "")
+                    return;
+                await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
+                await AlbumArt.UpdateImage();
+            }
         }
         public void Collapse()
         {
@@ -167,7 +147,6 @@ namespace Balboa
                 HorizontalCollapse.Begin();
             }
         }
-
 
         public void Expand()
         {
@@ -199,10 +178,10 @@ namespace Balboa
             MakeOpaque.Begin();
         }
 
-        public void SetLayout(DataPanelLayout layout)
-        {
-          //  VisualStateManager.GoToState(this, layout.ToString(), true);
-        }
+        //public void SetLayout(DataPanelLayout layout)
+        //{
+        //  //  VisualStateManager.GoToState(this, layout.ToString(), true);
+        //}
 
         public void Dispose()
         {
