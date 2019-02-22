@@ -332,7 +332,6 @@ namespace Balboa
             }
             _fileIconsUpdating = false;
             _ThreadEvent.Set();
-            //            _ThreadEvent.Reset();
             return;
         }
 
@@ -355,34 +354,6 @@ namespace Balboa
             ApplicationDataContainer LocalSettings = ApplicationData.Current.LocalSettings;
             LocalSettings.Values["CurrentMusicLibraryPath"] = _currentPath;
         }
-
-        //private async Task<IRandomAccessStream> GetFolderImageStream(string PathToAlbumArt)
-        //{
-        //    StorageFile file = null;
-        //    string[] CoverFileNames = _server.AlbumCoverFileNames.Split(';');
-
-        //    foreach (string albumCoverFilename in CoverFileNames)
-        //    {
-        //        try
-        //        {
-        //            var fileName = new StringBuilder(PathToAlbumArt).Append(@"\").Append(albumCoverFilename);
-        //            file = await StorageFile.GetFileFromPathAsync(fileName.ToString());
-        //            break;
-        //        }
-        //        catch (FileNotFoundException)
-        //        {
-        //            //sb.Remove(pathlength, albumcoverfilename.Length);
-        //        }
-        //    }
-
-        //    if (file == null)
-        //        return null;
-        //    IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read);
-        //    if (fileStream.Size == 0)
-        //        return null;
-        //    return fileStream;
-            
-        //}
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
