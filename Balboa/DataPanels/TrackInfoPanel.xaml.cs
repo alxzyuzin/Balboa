@@ -149,11 +149,10 @@ namespace Balboa
 
             Title = _song.Title;
             Artist = _song.Artist;
-            if (_song.File != null)
-            {
-                await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
-                await AlbumArt.UpdateImage();
-            }
+            if (_song.File == null || _song.File == "")
+                return;
+            await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
+            await AlbumArt.UpdateImage();
         }
         public void Collapse()
         {

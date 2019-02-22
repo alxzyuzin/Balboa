@@ -296,7 +296,6 @@ namespace Balboa
             AppbtnUpIsEnabled = false;
         }
 
-
         private void HighLiteLastOpenedFolder()
         {
             // При переходе на уровень вверх по файловой системе подсветим 
@@ -310,8 +309,6 @@ namespace Balboa
 
         }
 
-
-
         private async void UpdateFilesIcons(CancellationToken token)
         {
             if (_server.DisplayFolderPictures == false || _server.MusicCollectionFolder.Length == 0)
@@ -323,7 +320,7 @@ namespace Balboa
                 {
                     token.ThrowIfCancellationRequested();
                     var PathToAlbumArt = new StringBuilder(_currentPath.Replace('/', '\\'));
-                    if (PathToAlbumArt.Length>0 && !PathToAlbumArt.ToString().EndsWith(@"\"))
+                    if (PathToAlbumArt.Length > 0 && !PathToAlbumArt.ToString().EndsWith(@"\"))
                         PathToAlbumArt.Append(@"\");
                     PathToAlbumArt.Append(file.Name);
                     await file.AlbumArt.LoadImageData(_server.MusicCollectionFolder, PathToAlbumArt.ToString(), _server.AlbumCoverFileNames);
@@ -345,8 +342,6 @@ namespace Balboa
             file.AlbumArtWidth = new GridLength(60);
         }
 
-        
-
         private void RestoreStatus()
         {
             
@@ -361,34 +356,33 @@ namespace Balboa
             LocalSettings.Values["CurrentMusicLibraryPath"] = _currentPath;
         }
 
+        //private async Task<IRandomAccessStream> GetFolderImageStream(string PathToAlbumArt)
+        //{
+        //    StorageFile file = null;
+        //    string[] CoverFileNames = _server.AlbumCoverFileNames.Split(';');
 
-        private async Task<IRandomAccessStream> GetFolderImageStream(string PathToAlbumArt)
-        {
-            StorageFile file = null;
-            string[] CoverFileNames = _server.AlbumCoverFileNames.Split(';');
+        //    foreach (string albumCoverFilename in CoverFileNames)
+        //    {
+        //        try
+        //        {
+        //            var fileName = new StringBuilder(PathToAlbumArt).Append(@"\").Append(albumCoverFilename);
+        //            file = await StorageFile.GetFileFromPathAsync(fileName.ToString());
+        //            break;
+        //        }
+        //        catch (FileNotFoundException)
+        //        {
+        //            //sb.Remove(pathlength, albumcoverfilename.Length);
+        //        }
+        //    }
 
-            foreach (string albumCoverFilename in CoverFileNames)
-            {
-                try
-                {
-                    var fileName = new StringBuilder(PathToAlbumArt).Append(@"\").Append(albumCoverFilename);
-                    file = await StorageFile.GetFileFromPathAsync(fileName.ToString());
-                    break;
-                }
-                catch (FileNotFoundException)
-                {
-                    //sb.Remove(pathlength, albumcoverfilename.Length);
-                }
-            }
-
-            if (file == null)
-                return null;
-            IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read);
-            if (fileStream.Size == 0)
-                return null;
-            return fileStream;
+        //    if (file == null)
+        //        return null;
+        //    IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.Read);
+        //    if (fileStream.Size == 0)
+        //        return null;
+        //    return fileStream;
             
-        }
+        //}
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {

@@ -15,10 +15,9 @@ namespace Balboa.Common
         public event PropertyChangedEventHandler PropertyChanged;
 
         private ResourceLoader      _resldr = new ResourceLoader();
-//        private StorageFile         _file;
         private IRandomAccessStream _fileStream;
 
-        private BitmapImage _image;//
+        private BitmapImage _image;
         public BitmapImage Image
         {
             get { return _image; }
@@ -46,21 +45,21 @@ namespace Balboa.Common
             }
         }
 
-        public async Task LoadImageData(string musicCollectionFolder, string fileName, string albumCoverFileNames)
+        public async Task<bool> LoadImageData(string musicCollectionFolder, string fileName, string albumCoverFileNames)
         {
-            
+            if (fileName == "")
+                return false;
+
+            string ResourceStringException = _resldr.GetString("Exception");
 
             string folderName = ExtractFilePath(fileName);
-
+            // Remove all simbols "\" from end of musicCollectionFolder
             while (musicCollectionFolder.EndsWith("\\", StringComparison.Ordinal))
                 musicCollectionFolder = musicCollectionFolder.Substring(0, musicCollectionFolder.Length - 1);
 
             StringBuilder sb = new StringBuilder(musicCollectionFolder);
 
-            sb.Append('\\');
-            sb.Append(folderName);
-            sb.Replace('/', '\\');
-            sb.Append('\\');
+            sb.Append('\\').Append(folderName).Replace('/', '\\').Append('\\');
 
             int pathlength = sb.Length;
 
@@ -82,35 +81,47 @@ namespace Balboa.Common
                 catch (UnauthorizedAccessException)
                 {
                     Error = string.Format(_resldr.GetString("CheckDirectoryAvailability"), musicCollectionFolder);
+                    return false;
                 }
                 catch (Exception ee)
                 {
                     Error = string.Format(_resldr.GetString("Exception"), ee.GetType().ToString(), ee.Message);
+                    return false;
                 }
             }
-            
-                if (file == null) return;
+
+            if (file == null)
+                return false;
+
+            try
+            {
                 _fileStream = await file.OpenAsync(FileAccessMode.Read);
-            
+                if (_fileStream.Size == 0)
+                {
+                    Error = $"File {fileName} size is 0.";
+                    _fileStream.Dispose();
+                    _fileStream = null;
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Error = $"{ResourceStringException} {ex.GetType().ToString()} {}";
+                Error = string.Format(_resldr.GetString("Exception"), ex.GetType().ToString(), ex.Message);
+                _fileStream = null;
+                return false;
+            }
+            return true;
         }
 
 
         public async Task UpdateImage()
         {
-            if (_fileStream == null || _fileStream.Size == 0)
-                return;
-            Image = new BitmapImage();
-            try
+            if (_fileStream != null)
             {
+                Image = new BitmapImage();
                 await Image.SetSourceAsync(_fileStream);
-                //using (_fileStream)
-                //{
-                //await Image.SetSourceAsync(_fileStream);
-                //}
-            }
-            catch(Exception ex)
-            {
-                ;
             }
         }
 
@@ -122,10 +133,8 @@ namespace Balboa.Common
         /// Строка для разбора
         /// </param>
         /// <returns></returns>
-        public static string ExtractFilePath(string path)
+        private string ExtractFilePath(string path)
         {
-            //path ?? throw new BalboaNullValueException("AlbumArt.cs", "ExtractFilePath", "62", "path");
-
             if (path.Length == 0)
                 return path;
 
