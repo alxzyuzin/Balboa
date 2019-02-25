@@ -50,19 +50,15 @@ namespace Balboa.Common
             if (fileName == "")
                 return false;
 
-            string ResourceStringException = _resldr.GetString("Exception");
-
-            string folderName = ExtractFilePath(fileName);
+            string folderName = ExtractFilePath(fileName.Replace('/', '\\'));
             // Remove all simbols "\" from end of musicCollectionFolder
             while (musicCollectionFolder.EndsWith("\\", StringComparison.Ordinal))
                 musicCollectionFolder = musicCollectionFolder.Substring(0, musicCollectionFolder.Length - 1);
 
-            StringBuilder sb = new StringBuilder(musicCollectionFolder);
-
-            sb.Append('\\').Append(folderName).Replace('/', '\\').Append('\\');
+            StringBuilder sb = new StringBuilder(musicCollectionFolder).Append('\\').Append(folderName).Append('\\');
+            //sb.Append('\\').Append(folderName).Append('\\');
 
             int pathlength = sb.Length;
-
             string[] CoverFileNames = albumCoverFileNames.Split(';');
             StorageFile file =null;
             foreach (string albumCoverFileName in CoverFileNames)
@@ -125,8 +121,8 @@ namespace Balboa.Common
         }
 
         /// <summary>
-        /// Извлекает имя файла из строки передаваемой во входном параметре
-        /// Строка должна содержать корректное имя файла и путь
+        /// Извлекает путь к файлу из строки передаваемой во входном параметре
+        /// содержащей путь и имя файла
         /// </summary>
         /// <param name="s">
         /// Строка для разбора
@@ -134,17 +130,8 @@ namespace Balboa.Common
         /// <returns></returns>
         private string ExtractFilePath(string path)
         {
-            if (path.Length == 0)
-                return path;
-
-            string[] fileparts = path.Split('/');
-            StringBuilder filepath = new StringBuilder(fileparts[0]);
-            for (int i = 1; i < fileparts.Length - 1; i++)
-            {
-                filepath.Append('\\');
-                filepath.Append(fileparts[i]);
-            }
-            return filepath.ToString();
+            int i = path.LastIndexOf('\\');
+            return (i < 0)? path : path.Substring(0,i);
         }
     }
 }

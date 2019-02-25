@@ -60,7 +60,7 @@
                                  Storyboard.TargetProperty="(FrameworkElement.Height)"   
                                  Storyboard.TargetName="TrackInfo"
                                  EnableDependentAnimation="True" FillBehavior="HoldEnd">
-                <LinearDoubleKeyFrame Value="90" KeyTime="0:0:0.5" />
+                <LinearDoubleKeyFrame Value="{Binding MaxHeightForHorizontalMode}" KeyTime="0:0:0.5" />
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
 

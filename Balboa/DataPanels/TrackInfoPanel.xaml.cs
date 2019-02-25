@@ -71,6 +71,19 @@ namespace Balboa
             }
         }
 
+        private double _maxHeightForHorizontalMode = 90;
+        public double MaxHeightForHorizontalMode
+        {
+            get { return _maxHeightForHorizontalMode; }
+            private set
+            {
+                if (_maxHeightForHorizontalMode != value)
+                {
+                    _maxHeightForHorizontalMode = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxHeightForHorizontalMode)));
+                }
+            }
+        }
 
         public TrackInfoPanel()
         {

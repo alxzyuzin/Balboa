@@ -109,38 +109,8 @@ namespace Balboa
             this.SizeChanged += MainPage_SizeChanged;
 
             _server.ConnectionStatusChanged += (object sender, string status) => { ConnectionStatus = status; };
-            _server.DataReady += (object sender, MpdResponse data) => 
-                    {
-                        if (data.Keyword == ResponseKeyword.OK)
-                        {
-                            if (data.Command.Op == "status")
-                            {
-                                _status.Update(data.Content);
-                                ExtendedStatus = _status.ExtendedStatus;
-
-                                ////if (_activeDataPanel.GetType() != typeof(CurrentTrackPanel))
-                                //{
-                                //    if (_status.State == "stop")
-                                //    {
-                                //        TopTrackInfoPanel.Hide();
-                                //        BottomTrackInfoPanel.Hide();
-                                //    }
-                                //    else
-                                //    {
-                                //        if (MainWindowWIdth >= 920)
-                                //            BottomTrackInfoPanel.Show();
-                                //        else
-                                //            TopTrackInfoPanel.Show();
-                                //    }
-                                //}
-                            }
-                        }
-
-                        if (data.Keyword != ResponseKeyword.OK)
-                        {
-                            ;
-                        }
-                    };
+            _server.DataReady += OnServerDataReady; 
+                    
             _server.ServerError += async (object server, MpdResponse e) =>
                     {
                             await DisplayMessage(new Message(MsgBoxType.Error, e.ErrorMessage, MsgBoxButton.Close, 200));
@@ -151,21 +121,51 @@ namespace Balboa
 
             MainMenuPanel.Init(_server);
             MainMenuPanel.RequestAction += OnDataPanelActionRequested;
-            
-
-//            TopTrackInfoPanel.SetLayout(DataPanelLayout.Horizontal);
+ 
             TopTrackInfoPanel.Init(_server);
-
-//            BottomTrackInfoPanel.SetLayout(DataPanelLayout.Vertical);
             BottomTrackInfoPanel.Init(_server);
+            PlayControlPanel.Init(_server);
 
             _activeDataPanel = BottomTrackInfoPanel;
-            PlayControlPanel.Init(_server);
 
             if (_server.Initialized)
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
         }
 
+        private void OnServerDataReady(object sender, MpdResponse data)
+        {
+            {
+                if (data.Keyword == ResponseKeyword.OK)
+                {
+                    if (data.Command.Op == "status")
+                    {
+                        _status.Update(data.Content);
+                        ExtendedStatus = _status.ExtendedStatus;
+
+                        if (_activeDataPanel.GetType() != typeof(CurrentTrackPanel))
+                        {
+                            if (_status.State == "stop")
+                            {
+                                TopTrackInfoPanel.Hide();
+                                BottomTrackInfoPanel.Hide();
+                            }
+                            else
+                            {
+                                if (MainWindowWIdth >= 920)
+                                    BottomTrackInfoPanel.Show();
+                                else
+                                    TopTrackInfoPanel.Show();
+                            }
+                        }
+                    }
+                }
+
+                if (data.Keyword != ResponseKeyword.OK)
+                {
+                    ;
+                }
+            }
+        }
 
         /// <summary>
         ///  Функция вызывается когда одна из панелей запрашивает действие у главного окна
@@ -248,7 +248,8 @@ namespace Balboa
                 if (MainWindowWIdth >= 920)
                 {
                     TopTrackInfoPanel.Collapse();
-                    BottomTrackInfoPanel.Show();
+                    if (_status.State =="play")
+                        BottomTrackInfoPanel.Show();
                 }
                 else
                     TopTrackInfoPanel.Expand();
