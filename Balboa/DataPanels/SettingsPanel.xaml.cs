@@ -13,11 +13,8 @@ using Windows.UI.Xaml.Input;
 
 namespace Balboa
 {
-    public delegate void ErrorEventHandler<ErrorEventArgs>(object sender, ErrorEventArgs eventArgs);
 
-    
-
-    public sealed partial class SettingsPanel : UserControl, INotifyPropertyChanged, IDataPanel, 
+    public sealed partial class SettingsPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDataPanelInfo,
                                                              IRequestAction
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -26,6 +23,7 @@ namespace Balboa
         private AppSettings _appSettings = new AppSettings();
         private Server _server;
         private ResourceLoader _resldr = new ResourceLoader();
+        private string _musicCollectionFolderToken;
 
         private string _serverName;
         public string ServerName
@@ -40,7 +38,6 @@ namespace Balboa
                 }
             }
         }
-
         private string _port;
         public string Port
         {
@@ -67,7 +64,6 @@ namespace Balboa
                 }
             }
         }
-
         private string _viewUpdateInterval;
         public string ViewUpdateInterval
         {
@@ -81,7 +77,6 @@ namespace Balboa
                 }
             }
         }
-
         private string _musicCollectionFolder;
         public string MusicCollectionFolder
         {
@@ -108,7 +103,6 @@ namespace Balboa
                 }
             }
         }
-
         private bool? _displayFolderPictures;
         public bool? DisplayFolderPictures
         {
@@ -123,8 +117,10 @@ namespace Balboa
             }
         }
 
-        private string _musicCollectionFolderToken;
-               
+        
+        public double TotalButtonWidth => AppBarButtons.ActualWidth;
+        public string DataPanelInfo { get; set; }
+        public string DataPanelElementsCount { get; set; }
 
         public SettingsPanel()
         {
@@ -193,8 +189,6 @@ namespace Balboa
                 }
             }
 
-            //if (!_appSettings.SettingsChanged)
-            //      return;
             // Проверим возможность соединения с новыми параметрами перед их сохранением
             Connection connection = new Connection();
             await connection.Open(ServerName, Port, Password);

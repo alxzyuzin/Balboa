@@ -56,23 +56,19 @@ namespace Balboa.Common
                 musicCollectionFolder = musicCollectionFolder.Substring(0, musicCollectionFolder.Length - 1);
 
             StringBuilder sb = new StringBuilder(musicCollectionFolder).Append('\\').Append(folderName).Append('\\');
-            //sb.Append('\\').Append(folderName).Append('\\');
 
-            int pathlength = sb.Length;
             string[] CoverFileNames = albumCoverFileNames.Split(';');
-            StorageFile file =null;
+            StorageFile file = null;
             foreach (string albumCoverFileName in CoverFileNames)
             {
                 try
                 {
-                    sb.Append(albumCoverFileName);
-                    
-                    file = await StorageFile.GetFileFromPathAsync(sb.ToString());
+                    file = await StorageFile.GetFileFromPathAsync(new StringBuilder(sb.ToString()).Append(albumCoverFileName).ToString());
                     break;
                 }
                 catch (FileNotFoundException)
                 {
-                    sb.Remove(pathlength, albumCoverFileName.Length);
+                    //  Just catch exeption and do nothing hear. Try another file name from CoverFileNames
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -131,7 +127,7 @@ namespace Balboa.Common
         private string ExtractFilePath(string path)
         {
             int i = path.LastIndexOf('\\');
-            return (i < 0)? path : path.Substring(0,i);
+            return (i < 0) ? path : path.Substring(0,i);
         }
     }
 }

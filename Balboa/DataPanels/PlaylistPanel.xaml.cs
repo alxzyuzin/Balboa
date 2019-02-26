@@ -51,8 +51,6 @@ namespace Balboa
                 {
                     _loadedPlaylistName = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LoadedPlaylistName)));
-
-//                    PlaylistNameVisibility = _loadedPlaylistName?.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
         }
@@ -97,15 +95,17 @@ namespace Balboa
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
 
-            _server = server;
-            _server.DataReady += _server_DataReady;
+            Init(server);
 
-            _server.PlaylistInfo();
-            _server.CurrentSong();
+            //_server = server;
+            //_server.DataReady += _server_DataReady;
 
-            LoadedPlaylistName = _server.PlaylistName;
-            if (_loadedPlaylistName != null)
-                 DataPanelInfo = "Playlist name: " + _server.PlaylistName;
+            //_server.PlaylistInfo();
+            //_server.CurrentSong();
+
+            //LoadedPlaylistName = _server.PlaylistName;
+            //if (_loadedPlaylistName != null)
+            //     DataPanelInfo = "Playlist name: " + _server.PlaylistName;
  
         }
 
@@ -115,6 +115,14 @@ namespace Balboa
 
             _server = server;
             _server.DataReady += _server_DataReady;
+
+            Update();
+            //_server.PlaylistInfo();
+            //_server.CurrentSong();
+
+            LoadedPlaylistName = _server.PlaylistName;
+            if (_loadedPlaylistName != null)
+                DataPanelInfo = "Playlist name: " + _server.PlaylistName;
         }
 
         public void Update()
@@ -191,6 +199,7 @@ namespace Balboa
         {
             foreach (Track track in lv_PlayList.SelectedItems)
                 _server.DeleteId(track.Id);
+            _currentSongID = -1;
             Update();
         }
 
@@ -200,6 +209,7 @@ namespace Balboa
             _playlist.NotifyCollectionChanged();
              _server.Clear();
             LoadedPlaylistName = _server.PlaylistName = string.Empty;
+            EmptyContentMessageVisibility = Visibility.Visible;
         }
 
         private void appbtn_Playlist_Add_Tapped(object sender, TappedRoutedEventArgs e)
