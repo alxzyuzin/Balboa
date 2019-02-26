@@ -322,7 +322,7 @@ namespace Balboa
                     var PathToAlbumArt = new StringBuilder(_currentPath.Replace('/', '\\'));
                     if (PathToAlbumArt.Length > 0 && !PathToAlbumArt.ToString().EndsWith(@"\"))
                         PathToAlbumArt.Append(@"\");
-                    PathToAlbumArt.Append(file.Name);
+                    PathToAlbumArt.Append(file.Name).Append('\\').Append("folder.jpj");
                     await file.AlbumArt.LoadImageData(_server.MusicCollectionFolder, PathToAlbumArt.ToString(), _server.AlbumCoverFileNames);
                     ((IProgress<File>)_progress).Report(file);
                 }
