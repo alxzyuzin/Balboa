@@ -22,8 +22,8 @@
         <Style x:Key="SettingsTextBlockStyle" TargetType="TextBlock" >
             <Setter Property="FontSize" Value="22"/>
             <Setter Property="FontWeight" Value="ExtraLight"/>
-            <Setter Property="Height" Value="36" />
-            <Setter Property="Margin" Value="30,4,10,0" />
+            <Setter Property="Height" Value="Auto" />
+            <Setter Property="Margin" Value="20,4,10,0" />
             <Setter Property="VerticalAlignment" Value="Top" />
         </Style>
 
@@ -36,6 +36,15 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
+        <Style x:Key="SettingsButtonStyle" TargetType="Button" >
+            <Setter Property="Margin" Value="20,6,0,0"/>
+            <Setter Property="Height" Value="37" />
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
     </UserControl.Resources>
     <Grid>
         
@@ -45,27 +54,26 @@
             </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" MinWidth="180"/>
-            <ColumnDefinition Width="160"/>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="6*"/>
-        </Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" MinWidth="180"/>
+                <ColumnDefinition Width="3*" MinWidth="100"/>
+                <ColumnDefinition Width="3*" MinWidth="125"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-            <RowDefinition Height="0"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="87"/>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition Height="1.5*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="10"/>
+
         </Grid.RowDefinitions>
             <Grid.Resources>
             <Storyboard x:Name="gr_SettingsShowStoryboard">
@@ -75,70 +83,61 @@
             </Storyboard>
         </Grid.Resources>
 
-            <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource  SettingsTextBlockStyle}"/>
-            <TextBox   Grid.Row="2" Grid.Column="1" Width="150" 
-                           Style="{StaticResource  SettingsTextBoxStyle }"
-                           Text="{Binding ServerName, Mode=TwoWay}"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Server" Style="{StaticResource  SettingsTextBlockStyle}"/>
+            <TextBox   Grid.Row="1" Grid.Column="1" Style="{StaticResource  SettingsTextBoxStyle }"
+                           Text="{Binding ServerName, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Port"   Style="{StaticResource SettingsTextBlockStyle}"/>
-            <TextBox   Grid.Row="3" Grid.Column="1" Text="{Binding Port, Mode=TwoWay}"   Width="80" Style="{StaticResource  SettingsTextBoxStyle }"/>
-            <TextBlock Grid.Row="3" Grid.Column="2" Text="(1 - 6553)"   Grid.ColumnSpan="2"
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Port"   Style="{StaticResource SettingsTextBlockStyle}"/>
+            <TextBox   Grid.Row="2" Grid.Column="1" Text="{Binding Port, Mode=TwoWay}"   HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }"/>
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="(1 - 6553)"   Grid.ColumnSpan="2" Margin="10,0"
                            Style="{StaticResource  SettingsTextBlockStyle}"/>
 
-            <TextBlock Grid.Row="4" Grid.Column="0"  Text="Password"     Style="{StaticResource SettingsTextBlockStyle}"/>
-            <TextBox   Grid.Row="4" Grid.Column="1" Width="150"  
-                           Text="{Binding Password, Mode=TwoWay}"
-                           Style="{StaticResource  SettingsTextBoxStyle }"/>
-            <TextBlock Grid.Row="4" Grid.Column="2" Text="(optional)"   Style="{StaticResource SettingsTextBlockStyle}"/>
+            <TextBlock Grid.Row="3" Grid.Column="0"  Text="Password"     Style="{StaticResource SettingsTextBlockStyle}"/>
+            <TextBox   Grid.Row="3" Grid.Column="1"  Text="{Binding Password, Mode=TwoWay}"
+                           Style="{StaticResource  SettingsTextBoxStyle }" HorizontalAlignment="Stretch" />
+            <TextBlock Grid.Row="3" Grid.Column="2" Text="(optional)" 
+                       Style="{StaticResource SettingsTextBlockStyle}" Margin="10,0"/>
 
-            <TextBlock Grid.Row="6" Grid.Column="0" Grid.RowSpan="2" Text="View update interval"  
-                           Style="{StaticResource SettingsTextBlockStyle}"
-                           TextWrapping="WrapWholeWords" Height="70" />
-            <TextBox   Grid.Row="6" Grid.Column="1"   Width="80"    
-                   Style="{StaticResource  SettingsTextBoxStyle }" Text="{Binding ViewUpdateInterval, Mode=TwoWay}" />
-            <TextBlock  Grid.Row="6" Grid.Column="2" 
-                    Style="{StaticResource SettingsTextBlockStyle}" Text="(milliseconds)"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Text="View update interval"  
+                       Style="{StaticResource SettingsTextBlockStyle}" TextWrapping="WrapWholeWords"/>
+            <TextBox   Grid.Row="4" Grid.Column="1"   Width="80"    
+                       Style="{StaticResource  SettingsTextBoxStyle }" Text="{Binding ViewUpdateInterval, Mode=TwoWay}" />
+            <TextBlock Grid.Row="4" Grid.Column="2"  Text="(milliseconds)" MinWidth="122"
+                       Style="{StaticResource SettingsTextBlockStyle}" Margin="10,0"/>
 
-            <TextBlock  Grid.Row="8" Grid.Column="0" TextWrapping="WrapWholeWords" Height="70"
-                    Style="{StaticResource SettingsTextBlockStyle}" Text="Path to music collection" Grid.RowSpan="2"/>
-            <TextBox   Grid.Row="8" Grid.Column="1" HorizontalAlignment="Stretch" 
-                   Background="#FFF4F4F4" IsEnabled="False"
-                   Grid.RowSpan="2" Grid.ColumnSpan="2"
-                   VerticalAlignment="Top" Margin="0,3,50,0" 
-                   Style="{StaticResource  SettingsTextBoxStyle }"          
-                   Text="{Binding MusicCollectionFolder, Mode=TwoWay}" />
-
-            <Button x:Name="btn_SelectMusicCollectionPath" Content="Select" Grid.Row="8" Grid.Column="3"  
-                        Style="{StaticResource  UtilityButtonStyle}"  Margin="0,1,10,0" VerticalAlignment="Top"
-                        Height="37" Tapped="btn_SelectMusicCollectionPath_Tapped" FontSize="18" Grid.RowSpan="2"/>
-            <Button x:Name="btn_ClearMusicCollectionPath" Content="Clear" Grid.Row="8" Grid.Column="3"  
-                        Style="{StaticResource  UtilityButtonStyle}" HorizontalAlignment="Left" Margin="100,1,0,0" VerticalAlignment="Top"
-                        Height="37" Tapped="btn_ClearMusicCollectionPath_Tapped" FontSize="18" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
-
-            <TextBlock Text="Album cover file name" Grid.Row="10" Grid.Column="0"  Grid.RowSpan="2" 
-                           Style="{StaticResource SettingsTextBlockStyle}" Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
-            <TextBox     Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Top"
-                     HorizontalAlignment="Stretch" 
-                     Style="{StaticResource  SettingsTextBoxStyle }"
-                     Text="{Binding AlbumCoverFileNames, Mode=TwoWay}"/>
-            <TextBlock Grid.Row="10" Grid.Column="3" Grid.RowSpan="2" VerticalAlignment="Top" Height="75" Margin="20,0,30,0"
-                   Style="{StaticResource SettingsTextBlockStyle}" 
-                   Text="File names separated with semicolon"  TextWrapping="WrapWholeWords"/>
-
-            <TextBlock Grid.Row="12" Grid.Column="0"  Grid.RowSpan="2" Grid.ColumnSpan="2"
-                   Height="90" VerticalAlignment="Top" TextWrapping="WrapWholeWords"
-                   Style="{StaticResource SettingsTextBlockStyle}"
-                   Text="Display pictures for folders"/>
-            <CheckBox  Grid.Row="12" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"
-                   IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"/>
+            <TextBlock  Grid.Row="6" Grid.Column="0" TextWrapping="WrapWholeWords" Height="70"
+                        Style="{StaticResource SettingsTextBlockStyle}" Text="Path to music collection" Grid.RowSpan="2"/>
+            <TextBox    Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" 
+                        Background="#FFF4F4F4" IsEnabled="False"
+                        Grid.RowSpan="2" Grid.ColumnSpan="2"
+                        VerticalAlignment="Top" Margin="0,3,0,0" 
+                        Style="{StaticResource  SettingsTextBoxStyle }"          
+                        Text="{Binding MusicCollectionFolder, Mode=TwoWay}" />
+            <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal" Grid.ColumnSpan="2" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top" >
+                <Button Content="Select" Style="{StaticResource  SettingsButtonStyle}"  Tapped="btn_SelectMusicCollectionPath_Tapped" />
+                <Button Content="Clear"  Style="{StaticResource  SettingsButtonStyle}" Tapped="btn_ClearMusicCollectionPath_Tapped" />
+            </StackPanel>
+            <TextBlock  Text="Album cover file name" Grid.Row="8" Grid.Column="0"  Grid.RowSpan="2" 
+                        Style="{StaticResource SettingsTextBlockStyle}" Height="Auto" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
+            <StackPanel Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Height="60" VerticalAlignment="Top">
+                <TextBox  VerticalAlignment="Top" HorizontalAlignment="Stretch" 
+                          Text="{Binding AlbumCoverFileNames, Mode=TwoWay}" Style="{StaticResource  SettingsTextBoxStyle }"/>
+                <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Top" Height="Auto" Margin="20,0,0,0"
+                           Style="{StaticResource SettingsTextBlockStyle}" FontSize="18" HorizontalAlignment="Stretch"
+                           Text="(File names separated with semicolon)"  TextWrapping="WrapWholeWords" />
+            </StackPanel>
+            <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock Text="Display pictures for folders" Style="{StaticResource SettingsTextBlockStyle}" />
+                <CheckBox  IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"/>
+            </StackPanel>
         </Grid>
-        <StackPanel  x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <AppBarButton Icon="Preview" Label="Start session" Tapped="appbtn_StartSession_Tapped"/>
-            <AppBarButton Icon="Preview" Label="Stop session"  Tapped="appbtn_StopSession_Tapped"/>
-            <AppBarSeparator Visibility="Collapsed"/>
-            <AppBarButton Icon="Preview" Label="Test connection" Tapped="appbtn_TestConnection_Tapped"/>
-            <AppBarSeparator/>
-            <AppBarButton Icon="Save" Label="Save" Tapped="appbtn_SaveSettings_Tapped" />
+        <StackPanel  x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Width="420">
+            <AppBarButton Icon="Preview" Label="Start session" Width="90" Tapped="appbtn_StartSession_Tapped"/>
+            <AppBarButton Icon="Preview" Label="Stop session"  Width="90" Tapped="appbtn_StopSession_Tapped"/>
+            <AppBarButton Icon="Preview" Label="Test connection"  Width="90" Tapped="appbtn_TestConnection_Tapped"/>
+            <AppBarSeparator Width="60"/>
+            <AppBarButton Icon="Save" Label="Save" Width="80" Tapped="appbtn_SaveSettings_Tapped" />
         </StackPanel>
     </Grid>
 

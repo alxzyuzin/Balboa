@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -54,7 +53,6 @@ namespace Balboa
                     _emptyContentMessageVisibility = value;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(EmptyContentMessageVisibility)));
                 }
-
             }
         }
 
@@ -118,7 +116,7 @@ namespace Balboa
             }
         }
 
-        public double TotalButtonWidth => AppBarButtons.ActualWidth;
+        public double TotalButtonWidth => AppBarButtons.Width;
 
 
         public TrackDirectoryPanel()
@@ -182,7 +180,7 @@ namespace Balboa
                     AppbtnUpIsEnabled = _currentPath.Length>0 ? true : false;
                     EmptyDirectoryMessage = _files.Count == 0 ?
                          string.Format(_resldr.GetString("NoAudioFilesInFolder"), "\""+_currentPath+ "\"") : string.Empty;
-                    DataPanelElementsCount = $"contains {_files.Count.ToString()} items.";
+                    DataPanelElementsCount = $"{_files.Count.ToString()} items.";
                     _tokenSource = new CancellationTokenSource();
                     CancellationToken token = _tokenSource.Token;
                     WorkItemHandler workhandler = delegate { UpdateFilesIcons(token); };
@@ -320,8 +318,10 @@ namespace Balboa
                 {
                     token.ThrowIfCancellationRequested();
                     var PathToAlbumArt = new StringBuilder(_currentPath.Replace('/', '\\'));
-                    if (PathToAlbumArt.Length > 0 && !PathToAlbumArt.ToString().EndsWith(@"\"))
-                        PathToAlbumArt.Append(@"\");
+
+                    if (PathToAlbumArt.Length > 0 && !PathToAlbumArt.ToString().EndsWith("\\"))
+                        PathToAlbumArt.Append("\\");
+
                     PathToAlbumArt.Append(file.Name).Append('\\').Append("folder.jpj");
                     await file.AlbumArt.LoadImageData(_server.MusicCollectionFolder, PathToAlbumArt.ToString(), _server.AlbumCoverFileNames);
                     ((IProgress<File>)_progress).Report(file);
@@ -343,7 +343,6 @@ namespace Balboa
 
         private void RestoreStatus()
         {
-            
             ApplicationDataContainer LocalSettings = ApplicationData.Current.LocalSettings;
             Object value = LocalSettings.Values["CurrentMusicLibraryPath"];
             _currentPath = value as string ?? string.Empty;

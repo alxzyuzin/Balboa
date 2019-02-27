@@ -16,7 +16,6 @@ namespace Balboa
 
     public sealed partial class MainMenu : UserControl,  IRequestAction
     {
-
         private enum Panel
         {
             CurrentTrackPanel = 0,
@@ -57,10 +56,6 @@ namespace Balboa
             _server = server;
         }
 
-        //public void Update()
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
@@ -69,12 +64,12 @@ namespace Balboa
 
         public void Collaps()
         {
-            VisualStateManager.GoToState(this, "Narrow", true);
+                VisualStateManager.GoToState(this, "Narrow", true);
         }
 
         public void Expand()
         {
-            VisualStateManager.GoToState(this, "Wide", true);
+                VisualStateManager.GoToState(this, "Wide", true);
         }
 
         private void SwitchToCurrentTrackPanel(object sender, TappedRoutedEventArgs e)

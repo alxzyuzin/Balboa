@@ -177,7 +177,7 @@ namespace Balboa
             }
             _playlist.NotifyCollectionChanged();
             EmptyContentMessageVisibility = _playlist.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
-            DataPanelElementsCount = $"Playlist contains {_playlist.Count.ToString()} items.";
+            DataPanelElementsCount = $"{_playlist.Count.ToString()} items.";
             MakeOpaque.Begin();
         }
 

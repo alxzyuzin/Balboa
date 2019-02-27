@@ -45,6 +45,11 @@ namespace Balboa.Common
             }
         }
 
+        public AlbumArt()
+        {
+//          Lazy<BitmapImage>  _image = new Lazy<BitmapImage>();
+        }
+
         public async Task<bool> LoadImageData(string musicCollectionFolder, string fileName, string albumCoverFileNames)
         {
             if (fileName == "")

@@ -183,6 +183,7 @@ namespace Balboa
                 ActivatePanel(_activeDataPanel as IRequestAction);
 
                 RearangeTrackInfoPanels();
+                SetDataInfoPanelWidth();
             }
 
             if (actionParams.ActionType.HasFlag(ActionType.DisplayMessage))
@@ -196,8 +197,15 @@ namespace Balboa
         {
             MainWindowWIdth = e.NewSize.Width;
             RearangeTrackInfoPanels();
-            
+            SetDataInfoPanelWidth();
 
+            DataInfoPanel.Visibility = MainWindowWIdth >= 680 ? Visibility.Visible: Visibility.Collapsed ;
+            if (MainWindowWIdth >= 680)
+                MainMenuPanel.Expand();
+            else
+                MainMenuPanel.Collaps();
+
+            //var v = MainWindowWIdth >= 680 ? MainMenuPanel.Expand(): MainMenuPanel.Collaps();
             ////////////////////////////////////////////////////////////////////
             var displayinformation = DisplayInformation.GetForCurrentView();
 
@@ -262,12 +270,16 @@ namespace Balboa
 
 
             // Control DataInfoPanel
+
+        }
+
+        private void SetDataInfoPanelWidth()
+        {
             if (_activeDataPanel as IDataPanelInfo != null)
-                DataInfoPanel.Width = Math.Max( MainWindowWIdth  
-                                                - ((IDataPanelInfo)_activeDataPanel).TotalButtonWidth 
+                DataInfoPanel.Width = Math.Max(MainWindowWIdth
+                                                - ((IDataPanelInfo)_activeDataPanel).TotalButtonWidth
                                                 - BottomTrackInfoPanel.ActualWidth
-                                                - 40, 0); 
-            
+                                                - 40, 0);
         }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)

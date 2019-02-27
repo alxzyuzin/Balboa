@@ -12,6 +12,7 @@ namespace Balboa
     [Flags]
     public enum PanelVisualState
     {
+        Normal = 0,
         VerticalCollapsed = 1,
         HorizontalCollapsed = 2,
         Transparent = 4
