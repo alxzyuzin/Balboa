@@ -12,8 +12,16 @@
     d:DesignWidth="1100"
     DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
-            <common:TimeConverter  x:Key="TimeConverter"/>
-            <common:VolumeConverter x:Key="VolumeConverter"/>
+        <common:TimeConverter  x:Key="TimeConverter"/>
+        <common:VolumeConverter x:Key="VolumeConverter"/>
+
+        <Style  x:Key="PlayModeButtonStyle" TargetType ="Button">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
+        </Style>
     </UserControl.Resources>
     
     <Grid Margin="0,0,20,0">
@@ -50,37 +58,29 @@
                 </StackPanel>
             </Grid>
             <!-- Кнопки управления воспроизведением-->
-            <Grid  x:Name="grid_PlayControls" Height="80" Margin="0,20,0,0" >
+            <Grid Height="80" Margin="0,20,0,0" >
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"  x:Name="grid_PlayControls_StopColumn"/>
+                    <ColumnDefinition Width="Auto"  x:Name="grid_PlayControls_PlayModeColumn"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto" x:Name="grid_PlayControls_VolumeColumn"/>
+                    <ColumnDefinition Width="Auto" x:Name="grid_PlayControls_StopColumn"/>
                 </Grid.ColumnDefinitions>
 
-                <AppBarButton x:Name="appbtn_Stop"      Grid.Column="0" Icon="Stop"      
-                              Tapped="btn_Stop_Tapped"  FontWeight="Light"/>
-
-                <AppBarButton x:Name="appbtn_PrevTrack" Grid.Column="2" Icon="Previous"  Tapped="btn_PrevTrack_Tapped"  FontWeight="Light"/>
-                <Button       x:Name="appbtn_PlayPause" Grid.Column="3"  Content="{Binding PlayPauseButtonContent}" 
+                <StackPanel Grid.Column="0" Width="100" Height="90" VerticalAlignment="Center" Margin="0,-20,0,0" Visibility="Collapsed">
+                    <Button Content="Random" Style="{StaticResource PlayModeButtonStyle}" Tapped="Random_Tapped" Foreground="{Binding RandomColor}" />
+                    <Button Content="Repeat"  Style="{StaticResource PlayModeButtonStyle}" Tapped="Repeat_Tapped"  Foreground="{Binding RepeatColor}" />
+                    <Button Content="Consume" Style="{StaticResource PlayModeButtonStyle}" Tapped="Consume_Tapped" Foreground="{Binding ConsumeColor}" />
+                </StackPanel>
+                <AppBarButton Grid.Column="2" Icon="Previous"  Tapped="btn_PrevTrack_Tapped"  FontWeight="Light"/>
+                <Button       Grid.Column="3"  Content="{Binding PlayPauseButtonContent}" 
                               Tapped="btn_PlayPause_Tapped" Style="{StaticResource PlayButtonStyle}"
                               Margin="10,0,0,0"/>
-                <AppBarButton x:Name="appbtn_NextTrack" Grid.Column="4" Icon="Next"      
-                              Tapped="btn_NextTrack_Tapped"  FontWeight="Light" />
-
-                <AppBarButton x:Name="appbtn_Volume"    Grid.Column="7" Icon="Volume"  FontWeight="Light"  
-                              Tapped="appbtn_Volume_Tapped"/>
-                <!--
-                <Slider       x:Name="sl_Volume"        Grid.Column="0"  HorizontalAlignment="Stretch"  VerticalAlignment="Top"
-                                  Margin="30,-10,15,0"  Height="53"  Foreground="Orange"  Grid.ColumnSpan="2" Header="Volume" 
-                                  Minimum="0" Maximum="100" Value="{Binding Volume}"
-                                  ValueChanged="sl_Volume_ValueChanged"
-                                  PointerWheelChanged="sl_Volume_PointerWheelChanged" />
-                -->
-            </Grid>
+                <AppBarButton Grid.Column="4" Icon="Next" Tapped="btn_NextTrack_Tapped"  FontWeight="Light" />
+                <AppBarButton Grid.Column="7" Icon="Stop"  FontWeight="Light" Tapped="btn_Stop_Tapped"/>
+             </Grid>
         </StackPanel>
         <!-- Volume control-->
         <Grid Grid.Column="2" Margin="0,-15,-20,0">

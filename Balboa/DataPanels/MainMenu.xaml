@@ -63,7 +63,7 @@
                 <Button Content="&#xE115;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToSettingsPanel" />
             </StackPanel>
             <StackPanel x:Name="stp_MenuButtons">
-                 <Button x:Name="CurrentTrackPanel"   Content="Current track"    Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToCurrentTrackPanel"/>
+                 <Button x:Name="CurrentTrackPanel"   Content="Current track"   Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToCurrentTrackPanel"/>
                 <Button x:Name="PlaylistPanel"       Content="Current playlist" Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToPlaylistPanel"/>
                 <Button x:Name="TrackDirectoryPanel" Content="Music Library"    Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToTrackDirectoryPanel"/>
                 <Button x:Name="SavedPlaylistsPanel" Content="Saved Playlists"  Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToSavedPlaylistsPanel"/>

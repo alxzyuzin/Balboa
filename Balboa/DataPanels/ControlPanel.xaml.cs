@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using Windows.Foundation;
+using Windows.UI;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -18,7 +18,8 @@ namespace Balboa
     public sealed partial class ControlPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
+        private SolidColorBrush WhiteBrush = new SolidColorBrush(Colors.White);
+        private SolidColorBrush OrangeBrush = new SolidColorBrush(Colors.Orange);
         private Server _server;
         private Status _status = new Status();
         private Song _song = new Song();
@@ -108,6 +109,46 @@ namespace Balboa
             }
         }
 
+        private SolidColorBrush _randomColor;
+        public SolidColorBrush RandomColor
+        {
+            get { return _randomColor; }
+            set
+            {
+                if (_randomColor != value)
+                {
+                    _randomColor = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RandomColor)));
+                }
+            }
+        }
+        private SolidColorBrush _consumeColor;
+        public SolidColorBrush ConsumeColor
+        {
+            get { return _consumeColor; }
+            set
+            {
+                if (_consumeColor != value)
+                {
+                    _consumeColor = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ConsumeColor)));
+                }
+            }
+        }
+        private SolidColorBrush _repeatColor;
+        public SolidColorBrush RepeatColor
+        {
+            get { return _repeatColor; }
+            set
+            {
+                if (_repeatColor != value)
+                {
+                    _repeatColor = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RepeatColor)));
+                }
+            }
+        }
+
         public string DataPanelInfo
         {
             get
@@ -142,9 +183,7 @@ namespace Balboa
         public ControlPanel(Server server):this()
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
-
-            _server = server;
-            _server.DataReady += _server_DataReady;
+            Init(server);
         }
 
         public void Init(Server server)
@@ -153,6 +192,15 @@ namespace Balboa
 
             _server = server;
             _server.DataReady += _server_DataReady;
+            SizeChanged += (object sender, SizeChangedEventArgs e)=> 
+            {
+                grid_PlayControls_StopColumn.Width = (e.NewSize.Width < 600) ? new GridLength(0) : new GridLength(100);
+            };
+        }
+
+        private void ControlPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         public void Update()
@@ -183,6 +231,9 @@ namespace Balboa
             PlayPauseButtonContent = (_status.State == "play") ? '\xE103' : '\xE102';
             Volume = _status.Volume;
             VolumeSlider.Value = _status.Volume;
+            RandomColor = _status.Random ? OrangeBrush : WhiteBrush;
+            ConsumeColor = _status.Consume ? OrangeBrush : WhiteBrush;
+            RepeatColor = _status.Repeat ? OrangeBrush : WhiteBrush;
 
             if (_currentSongID != _status.SongId)
             {
@@ -254,8 +305,6 @@ namespace Balboa
             _server.Restart();
         }
 
-        #region VOLUME CONTROL
-
         private void VolumeSlider_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Value")
@@ -265,73 +314,6 @@ namespace Balboa
                 _server?.SetVolume(volume);
             }
         }
-
-        /// <summary>
-        ///  Display/Hide Volume control if appbtn_Volume_Tapped
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void appbtn_Volume_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            // нужно переписать под новую форму регулятора громкости
-
-            var appbarbutton = sender as AppBarButton;
-            var ttv = appbarbutton.TransformToVisual(this);
-            Point screenCoords = ttv.TransformPoint(new Point(15, -340));
-
-            popup_VolumeControl.HorizontalOffset = screenCoords.X;
-            popup_VolumeControl.VerticalOffset = screenCoords.Y;
-
-            if (popup_VolumeControl.IsOpen)
-                popup_VolumeControl.IsOpen = false;
-            else
-                popup_VolumeControl.IsOpen = true;
-        }
-
-        // Больше не требуестся
-        //private bool _volumeChangedByStatus = true;
-        //private void sl_Volume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        //{
-        //    var sl = sender as Slider;
-        //    if (!_volumeChangedByStatus && _status.State == "play")
-        //        _server.SetVolume((int)sl.Value);
-        //    _volumeChangedByStatus = false;
-        //}
-
-        #endregion
-
-//        private void OnStatusDataPropertyChanged(object sender, PropertyChangedEventArgs e)
-//        {
-//            switch (e.PropertyName)
-//            {
-//                case "TimeElapsed":
-//                    if (!_seekBarIsBeingDragged)
-//                        pb_Progress.Value = _server.StatusData.TimeElapsed;
-//                    break;
-//                case "SongId": _server.CurrentSong(); break;
-//                case "PlaylistId": _server.PlaylistInfo(); break;
-//                case "State": // "&#xE102;" - Play, "&#xE103;" - Pause
-//                    appbtn_PlayPause.Content = (_server.StatusData.State == "play") ? '\xE103' : '\xE102';
-
-//                    if (_server.StatusData.State == "stop")
-//                    {
-////                        if (stackpanel_MainPanelHeader.Opacity != 0)
-////                            stackpanel_MainPanelHeaderHideStoryboard.Begin();
-//                    }
-//                    else
-//                    {
-////                        if (stackpanel_MainPanelHeader.Opacity == 0)
-////                            stackpanel_MainPanelHeaderShowStoryboard.Begin();
-//                    }
-//                    break;
-//                case "Volume":
-////                    _volumeChangedByStatus = true;
-//                    sl_Volume.Value = _server.StatusData.Volume;
-////                    sl_VerticalVolume.Value = _server.StatusData.Volume;
-//                    break;
-//            }
-//        }
-
 
 
         #region Seek bar
@@ -360,7 +342,6 @@ namespace Balboa
             _seekBarIsBeingDragged = false;
         }
 
-     
         private void pb_Progress_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
             throw new NotImplementedException(nameof(pb_Progress_PointerWheelChanged));
@@ -394,8 +375,6 @@ namespace Balboa
             _server.SeekCurrent(soffset);
             _seekBarIsBeingDragged = false;
         }
-
-       
         
         #endregion
 
@@ -405,6 +384,19 @@ namespace Balboa
             _server.DataReady -= _server_DataReady;
         }
 
- 
+        private void Random_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            _server.Random(!_status.Random);
+        }
+
+        private void Repeat_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            _server.Repeat(!_status.Repeat);
+        }
+
+        private void Consume_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            _server.Consume(!_status.Consume);
+        }
     }  // class ControlPanel
 }

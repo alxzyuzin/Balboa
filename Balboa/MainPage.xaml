@@ -17,7 +17,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    MinWidth="510">
 
     <Page.Resources>
         <x:String x:Key="AppName">Balboa</x:String>
