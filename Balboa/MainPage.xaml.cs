@@ -12,6 +12,8 @@ using Balboa.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Resources;
@@ -48,16 +50,22 @@ namespace Balboa
         Narrow = 8
     }
 
+  
+
     public partial class MainPage : Page, INotifyPropertyChanged
     {
+        [Flags]
+        private enum ExtendedStatusMode { BitPersample = 1, Channels = 2 }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server  = new Server();
         private Status _status = new Status();
         private UserControl _activeDataPanel;
-        public PlaylistPanel ActiveDataPanel { get { return _activeDataPanel as PlaylistPanel; } }
+        public  PlaylistPanel ActiveDataPanel { get { return _activeDataPanel as PlaylistPanel; } }
 
+        private ExtendedStatusMode  _extendedStatusMode = ExtendedStatusMode.BitPersample | ExtendedStatusMode.Channels;
         private string _extendedStatus;
         public string ExtendedStatus
         {
@@ -140,7 +148,7 @@ namespace Balboa
                     if (data.Command.Op == "status")
                     {
                         _status.Update(data.Content);
-                        ExtendedStatus = _status.ExtendedStatus;
+                        ExtendedStatus = AssembleExtendedStatus();
 
                         if (_activeDataPanel.GetType() != typeof(CurrentTrackPanel))
                         {
@@ -165,6 +173,31 @@ namespace Balboa
                     ;
                 }
             }
+        }
+
+        private string AssembleExtendedStatus()
+        {
+            var sb = new StringBuilder();
+            switch (_status.State)
+            {
+                case "pause": sb.Append("Paused.   "); break; 
+                case "play": sb.Append("Playing.   "); break; 
+                case "stop": sb.Append("Stopped."); break;
+                case "restart": sb.Append("Restarting ..."); break;
+                default: return string.Empty;
+            }
+            if (_status.State == "stop")
+                return sb.ToString();
+
+            sb.Append($"Sample rate: {_status.SampleRate.ToString(CultureInfo.InvariantCulture)} kHz.");
+
+            if (_extendedStatusMode.HasFlag(ExtendedStatusMode.BitPersample))
+                sb.Append($" {_status.Bits.ToString(CultureInfo.InvariantCulture)} bits per sample.");
+
+            if (_extendedStatusMode.HasFlag(ExtendedStatusMode.Channels))
+                sb.Append($" channels: {_status.Channels.ToString(CultureInfo.InvariantCulture)}.");
+
+            return sb.ToString();
         }
 
         /// <summary>
@@ -204,6 +237,13 @@ namespace Balboa
                 MainMenuPanel.Expand();
             else
                 MainMenuPanel.Collaps();
+
+            _extendedStatusMode =  ExtendedStatusMode.BitPersample | ExtendedStatusMode.Channels;
+            if (MainWindowWIdth < 730)
+                _extendedStatusMode ^= ExtendedStatusMode.Channels;
+
+            if (MainWindowWIdth < 635)
+                _extendedStatusMode ^= ExtendedStatusMode.BitPersample; 
 
             //var v = MainWindowWIdth >= 680 ? MainMenuPanel.Expand(): MainMenuPanel.Collaps();
             ////////////////////////////////////////////////////////////////////
@@ -267,9 +307,6 @@ namespace Balboa
                 BottomTrackInfoPanel.Expand();
             else
                 BottomTrackInfoPanel.Collapse();
-
-
-            // Control DataInfoPanel
 
         }
 
