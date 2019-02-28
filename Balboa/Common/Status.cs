@@ -176,6 +176,7 @@ namespace Balboa.Common
                     case "mixrampdb": MixRampDB = float.Parse(statusvalue, CultureInfo.InvariantCulture); break;        // mixrampdb: mixramp threshold in dB
                     case "mixrampdelay": MixRampDelay = statusvalue; break;               // mixrampdelay: mixrampdelay in seconds
                     case "audio":
+                        //int.TryParse()
                         SampleRate = Regex.IsMatch(statusvalue, notNumber) ? 0 : int.Parse(statusvalue, CultureInfo.InvariantCulture);         // audio: sampleRate:bits:channels
                         Bits = Regex.IsMatch(statusitem[2], notNumber) ? 0 : int.Parse(statusitem[2], CultureInfo.InvariantCulture);
                         Channels = Regex.IsMatch(statusitem[3], notNumber) ? 0 : int.Parse(statusitem[3], CultureInfo.InvariantCulture);

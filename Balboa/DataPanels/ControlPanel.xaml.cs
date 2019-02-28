@@ -194,13 +194,10 @@ namespace Balboa
             _server.DataReady += _server_DataReady;
             SizeChanged += (object sender, SizeChangedEventArgs e)=> 
             {
-                grid_PlayControls_StopColumn.Width = (e.NewSize.Width < 600) ? new GridLength(0) : new GridLength(100);
+                //grid_PlayControls_StopColumn.Width = (e.NewSize.Width < 600) ? new GridLength(0) : new GridLength(100);
+                PlayModeButtons.Width = (e.NewSize.Width < 600) ? 0 : 100; 
+                StopButton.Width = (e.NewSize.Width < 700) ? 0 : 100;
             };
-        }
-
-        private void ControlPanel_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         public void Update()
@@ -269,25 +266,6 @@ namespace Balboa
                 case "pause":_server.Pause(); break;
                 case "play": _server.Pause(); break;
             }
-
-            //bool playedtrackselected = false; // Устанавливаем пизнак того что проигрываемый трек не подсвечен
-            //// Ищем в Playlist трек с установленным признаком IsPlaying
-            //// и если такой трек находится то прокручиваем Playlist так чтобы трек быд виден
-            //foreach (Track item in _server.PlaylistData)
-            //{
-            //    if (item.IsPlaying)
-            //    {
-            //        playedtrackselected = true;
-            //        //                    lv_PlayList.ScrollIntoView(item);
-            //        return;
-            //    }
-            //}
-            //// Если трек с признаком IsPlaying не найден и Playlist не пуст устанавливаем признак проигрываемого трека
-            //// на первый элемент в Playlist
-            //if (!playedtrackselected && _server.PlaylistData.Count > 0)
-            //{
-            //    _server.PlaylistData[0].IsPlaying = true;
-            //}
         }
 
         private void btn_NextTrack_Tapped(object sender, TappedRoutedEventArgs e)
