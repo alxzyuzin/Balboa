@@ -235,14 +235,17 @@ namespace Balboa
             if (_currentSongID != _status.SongId)
             {
                 Duration = _status.Duration;
+                ProgressValue = 0;
                 _currentSongID = _status.SongId;
                 _server.CurrentSong();
             }
             if (Duration > 0)
             {
                 TimeLeft = Duration - TimeElapsed;
-                ProgressValue = _status.TimeElapsed / Duration;
-                pb_Progress.Value = _status.TimeElapsed / Duration;
+               
+               if (!_seekBarIsBeingDragged)
+                     //ProgressValue = _status.TimeElapsed;
+                    pb_Progress.Value = _status.TimeElapsed;   
             }
 
         }
@@ -300,7 +303,6 @@ namespace Balboa
 
         private void pb_Progress_ManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            throw new NotImplementedException(nameof(pb_Progress_ManipulationStarted));
             _seekBarIsBeingDragged = true;
             var sl = sender as Slider;
             _currentTrackPosition = sl.Value;
@@ -308,22 +310,18 @@ namespace Balboa
 
         private void pb_Progress_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
-            throw new NotImplementedException(nameof(pb_Progress_ManipulationCompleted));
-
             var sl = sender as Slider;
             double offset = sl.Value - _currentTrackPosition;
 
             string soffset = offset.ToString(CultureInfo.InvariantCulture);
             if (offset > 0)
                 soffset = "+" + soffset;
-            _server.SeekCurrent(soffset);
             _seekBarIsBeingDragged = false;
+            _server.SeekCurrent(soffset);
         }
 
         private void pb_Progress_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
-            throw new NotImplementedException(nameof(pb_Progress_PointerWheelChanged));
-
             var sl = sender as Slider;
             var cp = e.GetCurrentPoint((UIElement)sender) as PointerPoint;
             int mouseweeldelta = cp.Properties.MouseWheelDelta / 24; // считаем что каждый клик смещает позицию в треке на 5 сек
@@ -339,21 +337,6 @@ namespace Balboa
             }
 
         }
-
-        private void pb_Progress_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-
-            var sl = sender as Slider;
-            _currentTrackPosition = pb_Progress.Value;
-            double offset = sl.Value - _currentTrackPosition;
-
-            string soffset = offset.ToString(CultureInfo.InvariantCulture);
-            if (offset > 0)
-                soffset = "+" + soffset;
-            _server.SeekCurrent(soffset);
-            _seekBarIsBeingDragged = false;
-        }
-        
         #endregion
 
 
@@ -376,5 +359,7 @@ namespace Balboa
         {
             _server.Consume(!_status.Consume);
         }
+
+ 
     }  // class ControlPanel
 }
