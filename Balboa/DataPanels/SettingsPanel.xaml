@@ -47,12 +47,11 @@
 
     </UserControl.Resources>
     <Grid>
-        
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="87"/>
             </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        <Grid x:Name="ServerParams"  MaxHeight="800"  VerticalAlignment="Stretch"  >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*" MinWidth="180"/>
                 <ColumnDefinition Width="3*" MinWidth="100"/>
@@ -132,7 +131,8 @@
                 <CheckBox  IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"/>
             </StackPanel>
         </Grid>
-        <StackPanel  x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Width="420">
+
+            <StackPanel  x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Width="420">
             <AppBarButton Icon="Preview" Label="Start session" Width="90" Tapped="appbtn_StartSession_Tapped"/>
             <AppBarButton Icon="Preview" Label="Stop session"  Width="90" Tapped="appbtn_StopSession_Tapped"/>
             <AppBarButton Icon="Preview" Label="Test connection"  Width="90" Tapped="appbtn_TestConnection_Tapped"/>
