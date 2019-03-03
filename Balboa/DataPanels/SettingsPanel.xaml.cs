@@ -121,13 +121,38 @@ namespace Balboa
         public double TotalButtonWidth => AppBarButtons.ActualWidth;
         public string DataPanelInfo { get; set; }
         public string DataPanelElementsCount { get; set; }
-        public Orientation Orientation { get; set; }
+        private Orientation _orientation;
+        public Orientation Orientation
+        {
+            get
+            {
+                return _orientation;
+            }
+
+            set
+            {
+                if (_orientation != value)
+                {
+                    _orientation = value;
+                    if (value == Orientation.Vertical)
+                    {
+                        ServerParams.Height = 700;
+                        ServerParams.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Top;
+                        
+                    }
+                    else
+                    {
+                        ServerParams.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Stretch;
+                        ServerParams.Height = this.ActualHeight - AppBarButtons.Height;
+                    }
+                }
+            }
+        }
 
         public SettingsPanel()
         {
             this.InitializeComponent();
         }
-
 
         public SettingsPanel(Server server):this()
         {
@@ -149,22 +174,22 @@ namespace Balboa
             _server = server;
             _appSettings.Restore();
 
-            SizeChanged += SettingsPanel_SizeChanged;
+//            SizeChanged += SettingsPanel_SizeChanged;
         }
 
-        private void SettingsPanel_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
-        {
-            if (e.NewSize.Height > 600)
-            {
-                ServerParams.Height = 700;
-                ServerParams.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Top;
-            }
-            else
-            {
-                ServerParams.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Stretch;
-                ServerParams.Height = e.NewSize.Height - AppBarButtons.Height;
-            }
-        }
+        //private void SettingsPanel_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)
+        //{
+        //    if (e.NewSize.Height > 600)
+        //    {
+        //        ServerParams.Height = 700;
+        //        ServerParams.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Top;
+        //    }
+        //    else
+        //    {
+        //        ServerParams.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Stretch;
+        //        ServerParams.Height = e.NewSize.Height - AppBarButtons.Height;
+        //    }
+        //}
 
         public void Update() { }
 

@@ -214,7 +214,6 @@ namespace Balboa
                         RightCurrentTrackData.Width = 400;
                     }
                 }
-                
             }
         }
 
