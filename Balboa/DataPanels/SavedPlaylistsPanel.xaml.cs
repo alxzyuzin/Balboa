@@ -68,6 +68,8 @@ namespace Balboa
             }
         }
 
+        public Orientation Orientation { get; set; }
+
         public SavedPlaylistsPanel()
         {
             this.InitializeComponent();

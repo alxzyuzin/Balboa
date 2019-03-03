@@ -10,11 +10,13 @@ using Windows.UI.Xaml.Controls;
 
 namespace Balboa
 {
-    public sealed partial class CurrentTrackPanel : UserControl, INotifyPropertyChanged, IDataPanel,
-                                                    IRequestAction, IDisposable
+    public sealed partial class CurrentTrackPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDisposable,
+                                                    IRequestAction
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler RequestAction;
+
+        //public event ActionRequestedEventHandler RequestAction;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
@@ -188,31 +190,46 @@ namespace Balboa
             }
         }
 
-        public string DataPanelInfo
+        private Orientation _orientation;
+        public Orientation Orientation
         {
             get
             {
-                throw new NotImplementedException();
+                return _orientation;
             }
 
             set
             {
-                throw new NotImplementedException();
+                if(_orientation != value)
+                {
+                    _orientation = value;
+                    if (value == Orientation.Vertical)
+                    {
+                        BottomCurrentTrackData.Height =300;
+                        RightCurrentTrackData.Width = 0;
+                    }
+                    else
+                    {
+                        BottomCurrentTrackData.Height = 0;
+                        RightCurrentTrackData.Width = 400;
+                    }
+                }
+                
             }
         }
 
-        public string DataPanelElementsCount
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
+        //public string DataPanelElementsCount
+        //{
+        //    get
+        //    {
+        //        throw new NotImplementedException();
+        //    }
 
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        //    set
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
 
         public CurrentTrackPanel()
         {
@@ -232,6 +249,7 @@ namespace Balboa
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
             _server = server;
+            
             _server.DataReady += _server_DataReady;
         }
 

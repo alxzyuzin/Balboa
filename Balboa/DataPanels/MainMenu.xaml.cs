@@ -48,8 +48,7 @@ namespace Balboa
             Grid.SetRow(this, row);
             Grid.SetColumn(this, column);
             Grid.SetRowSpan(this, 2);
-            //Margin =  new Windows.UI.Xaml.Thickness(0, 10, 0, 0);
-        }
+         }
 
         public void Init(Server server)
         {

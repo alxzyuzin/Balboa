@@ -81,6 +81,9 @@ namespace Balboa
             }
         }
 
+        public Orientation Orientation { get; set; }
+
+
         public SearchPanel()
         {
             this.InitializeComponent();

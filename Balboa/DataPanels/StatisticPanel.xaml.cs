@@ -117,7 +117,9 @@ namespace Balboa
                 }
             }
         }
-        
+
+        public Orientation Orientation { get; set; }
+
         public StatisticPanel()
         {
             this.InitializeComponent();

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Balboa;
 using Balboa.Common;
 using System.ComponentModel;
+using Windows.UI.Xaml.Controls;
 
 namespace Balboa
 {
@@ -24,7 +25,8 @@ namespace Balboa
     {
         void Init(Server server);
         void Update();
-     }
+        Orientation Orientation { get; set; }
+    }
 
     public interface IRequestAction
     {
@@ -61,9 +63,10 @@ namespace Balboa
            
         }
 
-        public ActionParams SetPanel<T>(T panel) where T : IRequestAction
+        public ActionParams SetPanel<T>(T panel) where T : IDataPanel, IRequestAction
         {
             Panel = panel;
+            ((IDataPanel)Panel).Orientation = Orientation.Horizontal;
             return this;
         }
 

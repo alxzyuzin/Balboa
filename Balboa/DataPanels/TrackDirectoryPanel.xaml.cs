@@ -117,7 +117,7 @@ namespace Balboa
         }
 
         public double TotalButtonWidth => AppBarButtons.Width;
-
+        public Orientation Orientation { get; set; }
 
         public TrackDirectoryPanel()
         {

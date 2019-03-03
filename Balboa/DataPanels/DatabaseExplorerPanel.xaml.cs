@@ -48,6 +48,19 @@ namespace Balboa
             }
         }
 
+        public Orientation Orientation
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public DatabaseExplorerPanel()
         {
             this.InitializeComponent();

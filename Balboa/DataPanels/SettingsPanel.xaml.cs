@@ -121,6 +121,7 @@ namespace Balboa
         public double TotalButtonWidth => AppBarButtons.ActualWidth;
         public string DataPanelInfo { get; set; }
         public string DataPanelElementsCount { get; set; }
+        public Orientation Orientation { get; set; }
 
         public SettingsPanel()
         {

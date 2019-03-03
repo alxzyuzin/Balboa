@@ -10,13 +10,15 @@ using Windows.UI.Xaml.Controls;
 
 namespace Balboa
 {
-    public sealed partial class OutputsPanel : UserControl, IRequestAction, IDisposable
+    public sealed partial class OutputsPanel : UserControl, IDataPanel, IDisposable, IRequestAction
     {
 
         private Server _server;
         private List<Output> _outputs = new List<Output>();
         private ResourceLoader _resldr = new ResourceLoader();
 
+        public Orientation Orientation { get; set; }
+        
         public event ActionRequestedEventHandler RequestAction;
 
         public OutputsPanel()
@@ -101,6 +103,11 @@ namespace Balboa
         }
 
         public void HandleUserResponse(MsgBoxButton pressedButton)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Init(Server server)
         {
             throw new NotImplementedException();
         }

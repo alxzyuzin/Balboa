@@ -161,7 +161,6 @@ namespace Balboa
                 throw new NotImplementedException();
             }
         }
-
         public string DataPanelElementsCount
         {
             get
@@ -174,6 +173,10 @@ namespace Balboa
                 throw new NotImplementedException();
             }
         }
+
+        Orientation IDataPanel.Orientation { get; set; }
+
+       
 
         public ControlPanel()
         {

@@ -217,6 +217,7 @@ namespace Balboa
 
                 RearangeTrackInfoPanels();
                 SetDataInfoPanelWidth();
+        //        SetActiveDataPanelOrientation();
             }
 
             if (actionParams.ActionType.HasFlag(ActionType.DisplayMessage))
@@ -231,6 +232,7 @@ namespace Balboa
             MainWindowWIdth = e.NewSize.Width;
             RearangeTrackInfoPanels();
             SetDataInfoPanelWidth();
+            SetActiveDataPanelOrientation();
 
             DataInfoPanel.Visibility = MainWindowWIdth >= 680 ? Visibility.Visible: Visibility.Collapsed ;
             if (MainWindowWIdth >= 680)
@@ -243,43 +245,60 @@ namespace Balboa
                 _extendedStatusMode ^= ExtendedStatusMode.Channels;
 
             if (MainWindowWIdth < 635)
-                _extendedStatusMode ^= ExtendedStatusMode.BitPersample; 
+                _extendedStatusMode ^= ExtendedStatusMode.BitPersample;
 
-            //var v = MainWindowWIdth >= 680 ? MainMenuPanel.Expand(): MainMenuPanel.Collaps();
-            ////////////////////////////////////////////////////////////////////
-            var displayinformation = DisplayInformation.GetForCurrentView();
 
-            if (displayinformation.CurrentOrientation == DisplayOrientations.Landscape || displayinformation.CurrentOrientation == DisplayOrientations.LandscapeFlipped)
-            {
-                if (e.NewSize.Width >= 1100)
-                {
-                    VisualStateManager.GoToState(this, "Default", true);
-                }
+            
 
-                if (e.NewSize.Width < 1100)
-                {
-                    // Прячем горизонтальный регулятор громкости
-                    // Показываем кнопку регулятора громкости
-                    // Меняем размер колонки 1 в панели управления воспроизведения grid_PlayControls.ColumnDefinitions[1];
-                    // (меняем 300 на 20*
-                    VisualStateManager.GoToState(this, "Filled", true);
-                }
 
-                if (e.NewSize.Width < 900)
-                {
-                    VisualStateManager.GoToState(this, "Narrow", true);
-                }
 
-                if (e.NewSize.Width < 620)
-                {
-                    VisualStateManager.GoToState(this, "SuperNarrow", true);
-                }
+
+
+                //var v = MainWindowWIdth >= 680 ? MainMenuPanel.Expand(): MainMenuPanel.Collaps();
+                ////////////////////////////////////////////////////////////////////
+                //var displayinformation = DisplayInformation.GetForCurrentView();
+
+                //if (displayinformation.CurrentOrientation == DisplayOrientations.Landscape || displayinformation.CurrentOrientation == DisplayOrientations.LandscapeFlipped)
+                //{
+                //    if (e.NewSize.Width >= 1100)
+                //    {
+                //        VisualStateManager.GoToState(this, "Default", true);
+                //    }
+
+                //    if (e.NewSize.Width < 1100)
+                //    {
+                //        // Прячем горизонтальный регулятор громкости
+                //        // Показываем кнопку регулятора громкости
+                //        // Меняем размер колонки 1 в панели управления воспроизведения grid_PlayControls.ColumnDefinitions[1];
+                //        // (меняем 300 на 20*
+                //        VisualStateManager.GoToState(this, "Filled", true);
+                //    }
+
+                //    if (e.NewSize.Width < 900)
+                //    {
+                //        VisualStateManager.GoToState(this, "Narrow", true);
+                //    }
+
+                //    if (e.NewSize.Width < 620)
+                //    {
+                //        VisualStateManager.GoToState(this, "SuperNarrow", true);
+                //    }
+                //}
+
+                //if (displayinformation.CurrentOrientation == DisplayOrientations.Portrait || displayinformation.CurrentOrientation == DisplayOrientations.PortraitFlipped)
+                //{
+                //    VisualStateManager.GoToState(this, "Portrait", true); 
+                //}
             }
 
-            //if (displayinformation.CurrentOrientation == DisplayOrientations.Portrait || displayinformation.CurrentOrientation == DisplayOrientations.PortraitFlipped)
-            //{
-            //    VisualStateManager.GoToState(this, "Portrait", true); 
-            //}
+        private void SetActiveDataPanelOrientation()
+        {
+            var displayOrientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
+
+            if (displayOrientation == DisplayOrientations.Landscape || displayOrientation == DisplayOrientations.LandscapeFlipped)
+                ((IDataPanel)_activeDataPanel).Orientation = Orientation.Horizontal;
+            else
+                ((IDataPanel)_activeDataPanel).Orientation = Orientation.Vertical;
         }
 
         private void RearangeTrackInfoPanels()
@@ -316,7 +335,7 @@ namespace Balboa
                 DataInfoPanel.Width = Math.Max(MainWindowWIdth
                                                 - ((IDataPanelInfo)_activeDataPanel).TotalButtonWidth
                                                 - BottomTrackInfoPanel.ActualWidth
-                                                - 40, 0);
+                                                - 20, 0);
         }
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
@@ -371,6 +390,7 @@ namespace Balboa
             DataPanel.Child = panel as UserControl;
             DataInfoPanel.DataContext = panel as IDataPanelInfo;
             MainMenuPanel.HighLiteSelectedItem(panel.GetType().Name);
+            SetActiveDataPanelOrientation();
         }
 
         private enum MainMenuState { Narrow, Wide}
