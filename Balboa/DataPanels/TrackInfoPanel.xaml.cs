@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -35,17 +34,7 @@ namespace Balboa
                 if (_orientation != value)
                 {
                     _orientation = value;
-                    if (_orientation == Orientation.Vertical)
-                    {
-                        AlbumArtImage.Width = 190;
-                        VerticalExpand.Begin();
-                    }
-                    else
-                    {
-                        AlbumArtImage.Width = 90;
-                        HorizontalExpand.Begin();
-                    }
-
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Orientation)));
                 }
             }
         }
@@ -116,9 +105,6 @@ namespace Balboa
         public TrackInfoPanel(Server server):this()
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
-
-            //_server = server;
-            //_server.DataReady += ServerDataReady;
             Init(server);
         }
 
@@ -127,17 +113,6 @@ namespace Balboa
             if (server == null) throw new ArgumentNullException(nameof(server));
 
             _server = server;
-            if (Orientation == Orientation.Vertical)
-            {
-                AlbumArtImage.Width = 190;
-                VerticalExpand.Begin();
-            }
-            else
-            {
-                AlbumArtImage.Width = 90;
-                HorizontalExpand.Begin();
-            }
-
             _server.DataReady += ServerDataReady;
         }
 
@@ -215,16 +190,9 @@ namespace Balboa
             MakeOpaque.Begin();
         }
 
-        //public void SetLayout(DataPanelLayout layout)
-        //{
-        //  //  VisualStateManager.GoToState(this, layout.ToString(), true);
-        //}
-
         public void Dispose()
         {
             _server.DataReady -= ServerDataReady;
         }
-
-        
     }
 }

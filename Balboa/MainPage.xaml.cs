@@ -72,6 +72,8 @@ namespace Balboa
         private Server _server  = new Server();
         private Status _status = new Status();
         private UserControl _activeDataPanel;
+        private DisplayOrientations _displayOrientation;
+
         public  PlaylistPanel ActiveDataPanel { get { return _activeDataPanel as PlaylistPanel; } }
 
         private ExtendedStatusMode  _extendedStatusMode = ExtendedStatusMode.BitPersample | ExtendedStatusMode.Channels;
@@ -121,9 +123,12 @@ namespace Balboa
         public MainPage()
         {
             this.InitializeComponent();
+            _displayOrientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
+
             Application.Current.Suspending += OnSuspending;
             Application.Current.Resuming += OnResuming;
             this.SizeChanged += MainPage_SizeChanged;
+            
 
             _server.ConnectionStatusChanged += (object sender, string status) => { ConnectionStatus = status; };
             _server.DataReady += OnServerDataReady; 
@@ -150,6 +155,10 @@ namespace Balboa
 
             if (_server.Initialized)
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
+
+            //var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new PlaylistPanel(_server));
+            //OnDataPanelActionRequested(this, actionParams);
+        
         }
 
         private void OnServerDataReady(object sender, MpdResponse data)
@@ -227,8 +236,7 @@ namespace Balboa
                 _activeDataPanel = actionParams.Panel as UserControl;
                 ActivatePanel(_activeDataPanel as IRequestAction);
 
-                RearangeTrackInfoPanels();
-                SetDataInfoPanelWidth();
+
             }
 
             if (actionParams.ActionType.HasFlag(ActionType.DisplayMessage))
@@ -241,9 +249,9 @@ namespace Balboa
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             MainWindowWIdth = e.NewSize.Width;
-            RearangeTrackInfoPanels();
             SetDataInfoPanelWidth();
             SetActiveDataPanelOrientation();
+            RearangeTrackInfoPanels();
 
             DataInfoPanel.Visibility = MainWindowWIdth >= Width_2 ? Visibility.Visible: Visibility.Collapsed ;
             if (MainWindowWIdth >= Width_2)
@@ -263,20 +271,23 @@ namespace Balboa
 
         private void SetActiveDataPanelOrientation()
         {
-            if (_activeDataPanel == null)
-                return;
-            var displayOrientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
-
-            if (displayOrientation == DisplayOrientations.Landscape || displayOrientation == DisplayOrientations.LandscapeFlipped)
+            var newDisplayOrientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
+            if (_displayOrientation != newDisplayOrientation)
             {
-                ((IDataPanel)_activeDataPanel).Orientation = Orientation.Horizontal;
-//                TopTrackInfoPanel.ImageWidth = 90;
-            }
-            else
-            {
-                ((IDataPanel)_activeDataPanel).Orientation = Orientation.Vertical;
-//                TopTrackInfoPanel.ImageWidth = 244;
-            }
+                _displayOrientation = newDisplayOrientation;
+                if (_displayOrientation == DisplayOrientations.Landscape || _displayOrientation == DisplayOrientations.LandscapeFlipped)
+                {
+                    if (_activeDataPanel != null)
+                        ((IDataPanel)_activeDataPanel).Orientation = Orientation.Horizontal;
+                    TopTrackInfoPanel.ImageWidth = 90;
+                }
+                else
+                {
+                    if (_activeDataPanel != null)
+                        ((IDataPanel)_activeDataPanel).Orientation = Orientation.Vertical;
+                    TopTrackInfoPanel.ImageWidth = 190;
+                }
+             }
         }
 
         private void RearangeTrackInfoPanels()
@@ -375,9 +386,12 @@ namespace Balboa
             }
             panel.RequestAction += OnDataPanelActionRequested;
             DataPanel.Child = panel as UserControl;
+            ((IDataPanel)panel).Update();
             DataInfoPanel.DataContext = panel as IDataPanelInfo;
             MainMenuPanel.HighLiteSelectedItem(panel.GetType().Name);
             SetActiveDataPanelOrientation();
+            RearangeTrackInfoPanels();
+            SetDataInfoPanelWidth();
         }
 
         private enum MainMenuState { Narrow, Wide}
@@ -396,8 +410,7 @@ namespace Balboa
             }
         }
 
-
-         private async Task<MsgBoxButton> DisplayMessage(Message messageArgs)
+        private async Task<MsgBoxButton> DisplayMessage(Message messageArgs)
         {
             MsgBox.SetButtons(messageArgs.Buttons);
             MsgBox.Message = messageArgs.Text;
