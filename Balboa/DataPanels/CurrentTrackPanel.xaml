@@ -49,9 +49,9 @@
         </Grid.ColumnDefinitions>
         <TextBlock x:Name="textblock_Title" Text="{Binding Title}" Grid.Row="0" Grid.Column="0"  Grid.ColumnSpan="2"  
                        Style="{StaticResource  CurrentTrackTextBlockStyle}"  FontSize="30" Margin="30,0,10,20" 
-                           Height="Auto" TextWrapping="WrapWholeWords" VerticalAlignment="Top" />
-        <Image x:Name="image_AlbumCover" Grid.Row="1" Grid.Column="0" Margin="20" Source="{Binding AlbumArt.Image}"/>
-        <Grid x:Name="RightCurrentTrackData" Grid.Row="1" Grid.Column="1" Margin="10,10,0,0" >
+                           Height="Auto" TextWrapping="WrapWholeWords" VerticalAlignment="Top" HorizontalAlignment="Center" />
+        <Image x:Name="image_AlbumCover" Grid.Row="1" Grid.Column="0" Margin="20" Source="{Binding AlbumArt.Image}" VerticalAlignment="Top"/>
+        <Grid x:Name="RightCurrentTrackData" Grid.Row="1" Grid.Column="1" Margin="10,10,0,0" MaxWidth="280" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -78,7 +78,7 @@
                 <TextBlock Text="{Binding Track}"        Style="{StaticResource  CurrentTrackTextBlockStyle}"/>
                 <TextBlock Text="{Binding Duration , Converter={StaticResource TimeConverter}}"     Style="{StaticResource  CurrentTrackTextBlockStyle}" />
                 <TextBlock Text="{Binding Genre}"        Style="{StaticResource  CurrentTrackTextBlockStyle}"/>
-                <TextBlock Text="{Binding File}"         Style="{StaticResource  CurrentTrackTextBlockStyle}" Height="80" TextWrapping="WrapWholeWords"/>
+                <TextBlock Text="{Binding File}"         Style="{StaticResource  CurrentTrackTextBlockStyle}" Height="140" TextWrapping="WrapWholeWords"/>
             </StackPanel>
         </Grid>
 

@@ -10,6 +10,16 @@
     d:DesignWidth="400">
 
     <UserControl.Resources>
+
+        <Style x:Key="MsgBoxButtonStyle" TargetType="Button" >
+            <Setter Property="Margin" Value="20,0,0,0"/>
+            <Setter Property="Height" Value="40" />
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
         <Storyboard x:Name="ShowControl">
             <DoubleAnimation
                 Storyboard.TargetName="BoxBorder"

@@ -25,8 +25,30 @@ namespace Balboa
         private Server _server;
         private int _songId = -1;
         private Song _song = new Song();
- 
-        public Orientation Orientation { get; set; }
+
+        private Orientation _orientation; 
+        public Orientation Orientation
+        {
+            get { return _orientation; }
+            set
+            {
+                if (_orientation != value)
+                {
+                    _orientation = value;
+                    if (_orientation == Orientation.Vertical)
+                    {
+                        AlbumArtImage.Width = 190;
+                        VerticalExpand.Begin();
+                    }
+                    else
+                    {
+                        AlbumArtImage.Width = 90;
+                        HorizontalExpand.Begin();
+                    }
+
+                }
+            }
+        }
         public PanelVisualState VisualState { get; set; }     
 
         private AlbumArt _albumArt = new AlbumArt();
@@ -72,16 +94,16 @@ namespace Balboa
             }
         }
 
-        private double _maxHeightForHorizontalMode = 90;
-        public double MaxHeightForHorizontalMode
+        private double _imageWidth = 90;
+        public double ImageWidth
         {
-            get { return _maxHeightForHorizontalMode; }
-            private set
+            get { return _imageWidth; }
+            set
             {
-                if (_maxHeightForHorizontalMode != value)
+                if (_imageWidth != value)
                 {
-                    _maxHeightForHorizontalMode = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(MaxHeightForHorizontalMode)));
+                    _imageWidth = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageWidth)));
                 }
             }
         }
@@ -95,8 +117,9 @@ namespace Balboa
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
 
-            _server = server;
-            _server.DataReady += ServerDataReady;
+            //_server = server;
+            //_server.DataReady += ServerDataReady;
+            Init(server);
         }
 
         public void Init(Server server)
@@ -114,7 +137,7 @@ namespace Balboa
                 AlbumArtImage.Width = 90;
                 HorizontalExpand.Begin();
             }
-                
+
             _server.DataReady += ServerDataReady;
         }
 

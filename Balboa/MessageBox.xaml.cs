@@ -25,14 +25,29 @@ namespace Balboa
         Warning
     }
 
+    //[Flags]
+    //public enum MsgBoxButton : byte
+    //{
+    //    Yes = 1,
+    //    No = 2,
+    //    Continue = 4,
+    //    Cancel = 8,
+    //    Close = 16
+    //}
+
+
     [Flags]
-    public enum MsgBoxButton : byte
+    public enum MsgBoxButton
     {
-        Yes = 1,
-        No = 2,
+        OK = 1,
+        Cancel = 2,
         Continue = 4,
-        Cancel = 8,
-        Close = 16
+        Retry = 8,
+        Exit = 16,
+        GoToSettings = 32,
+        CloseApplication = 64,
+        Reconnect = 128,
+        Close =256
     }
 
 
@@ -137,7 +152,7 @@ namespace Balboa
                     newButton.Name = b.ToString();
                     newButton.Content = b.ToString();
                     newButton.Width = Math.Max(b.ToString().Length, 5) * 12 + 20;
-//                    newButton.Style = Application.Current.Resources["CmdButtonStyle"] as Style;
+                    newButton.Style = this.Resources["MsgBoxButtonStyle"] as Style;
                     newButton.Tapped += button_Tapped;
                     ButtonsPanel.Children.Add(newButton);
                 }

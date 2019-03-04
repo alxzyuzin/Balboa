@@ -54,6 +54,15 @@ namespace Balboa
 
     public partial class MainPage : Page, INotifyPropertyChanged
     {
+
+        // Screen width level for switching sreen layouts
+
+        // if MainWindowWidth < Width_1 hide BottomTrackInfoPanel and display TopTrackInfoPanel
+        private const int Width_1 = 920;
+        // if MainWindowWidth < Width_2 hide DataInfoPanel
+        private const int Width_2 = 680;
+
+
         [Flags]
         private enum ExtendedStatusMode { BitPersample = 1, Channels = 2 }
 
@@ -121,11 +130,16 @@ namespace Balboa
                     
             _server.ServerError += async (object server, MpdResponse e) =>
                     {
-                            await DisplayMessage(new Message(MsgBoxType.Error, e.ErrorMessage, MsgBoxButton.Close, 200));
+                        MsgBoxButton pressedButton = await DisplayMessage(new Message(MsgBoxType.Error, 
+                                                                          e.ErrorMessage, 
+                                                                          MsgBoxButton.Reconnect | MsgBoxButton.Exit,
+                                                                          200));
+                        switch(pressedButton)
+                        {
+                            case MsgBoxButton.Reconnect: _server.Start(); break;
+                            case MsgBoxButton.Exit: App.Current.Exit(); break;
+                        }
                     };
-
-            //_server.Error += OnServerError;
-            //_server.CriticalError += OnServerCriticalError;
 
             MainMenuPanel.Init(_server);
             MainMenuPanel.RequestAction += OnDataPanelActionRequested;
@@ -133,8 +147,6 @@ namespace Balboa
             TopTrackInfoPanel.Init(_server);
             BottomTrackInfoPanel.Init(_server);
             PlayControlPanel.Init(_server);
-
-            _activeDataPanel = BottomTrackInfoPanel;
 
             if (_server.Initialized)
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
@@ -150,7 +162,7 @@ namespace Balboa
                         _status.Update(data.Content);
                         ExtendedStatus = AssembleExtendedStatus();
 
-                        if (_activeDataPanel.GetType() != typeof(CurrentTrackPanel))
+                        if (!(_activeDataPanel is CurrentTrackPanel))
                         {
                             if (_status.State == "stop")
                             {
@@ -159,7 +171,7 @@ namespace Balboa
                             }
                             else
                             {
-                                if (MainWindowWIdth >= 920)
+                                if (MainWindowWIdth >= Width_1)
                                     BottomTrackInfoPanel.Show();
                                 else
                                     TopTrackInfoPanel.Show();
@@ -217,7 +229,6 @@ namespace Balboa
 
                 RearangeTrackInfoPanels();
                 SetDataInfoPanelWidth();
-        //        SetActiveDataPanelOrientation();
             }
 
             if (actionParams.ActionType.HasFlag(ActionType.DisplayMessage))
@@ -234,8 +245,8 @@ namespace Balboa
             SetDataInfoPanelWidth();
             SetActiveDataPanelOrientation();
 
-            DataInfoPanel.Visibility = MainWindowWIdth >= 680 ? Visibility.Visible: Visibility.Collapsed ;
-            if (MainWindowWIdth >= 680)
+            DataInfoPanel.Visibility = MainWindowWIdth >= Width_2 ? Visibility.Visible: Visibility.Collapsed ;
+            if (MainWindowWIdth >= Width_2)
                 MainMenuPanel.Expand();
             else
                 MainMenuPanel.Collaps();
@@ -247,72 +258,39 @@ namespace Balboa
             if (MainWindowWIdth < 635)
                 _extendedStatusMode ^= ExtendedStatusMode.BitPersample;
 
-
-            
-
-
-
-
-
-                //var v = MainWindowWIdth >= 680 ? MainMenuPanel.Expand(): MainMenuPanel.Collaps();
-                ////////////////////////////////////////////////////////////////////
-                //var displayinformation = DisplayInformation.GetForCurrentView();
-
-                //if (displayinformation.CurrentOrientation == DisplayOrientations.Landscape || displayinformation.CurrentOrientation == DisplayOrientations.LandscapeFlipped)
-                //{
-                //    if (e.NewSize.Width >= 1100)
-                //    {
-                //        VisualStateManager.GoToState(this, "Default", true);
-                //    }
-
-                //    if (e.NewSize.Width < 1100)
-                //    {
-                //        // Прячем горизонтальный регулятор громкости
-                //        // Показываем кнопку регулятора громкости
-                //        // Меняем размер колонки 1 в панели управления воспроизведения grid_PlayControls.ColumnDefinitions[1];
-                //        // (меняем 300 на 20*
-                //        VisualStateManager.GoToState(this, "Filled", true);
-                //    }
-
-                //    if (e.NewSize.Width < 900)
-                //    {
-                //        VisualStateManager.GoToState(this, "Narrow", true);
-                //    }
-
-                //    if (e.NewSize.Width < 620)
-                //    {
-                //        VisualStateManager.GoToState(this, "SuperNarrow", true);
-                //    }
-                //}
-
-                //if (displayinformation.CurrentOrientation == DisplayOrientations.Portrait || displayinformation.CurrentOrientation == DisplayOrientations.PortraitFlipped)
-                //{
-                //    VisualStateManager.GoToState(this, "Portrait", true); 
-                //}
+ 
             }
 
         private void SetActiveDataPanelOrientation()
         {
+            if (_activeDataPanel == null)
+                return;
             var displayOrientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
 
             if (displayOrientation == DisplayOrientations.Landscape || displayOrientation == DisplayOrientations.LandscapeFlipped)
+            {
                 ((IDataPanel)_activeDataPanel).Orientation = Orientation.Horizontal;
+//                TopTrackInfoPanel.ImageWidth = 90;
+            }
             else
+            {
                 ((IDataPanel)_activeDataPanel).Orientation = Orientation.Vertical;
+//                TopTrackInfoPanel.ImageWidth = 244;
+            }
         }
 
         private void RearangeTrackInfoPanels()
         {
             // Control TrackInfoPanel's
 
-            if (_activeDataPanel.GetType() == typeof(CurrentTrackPanel))
+            if (_activeDataPanel is CurrentTrackPanel)
             {
                 TopTrackInfoPanel.Collapse();
                 BottomTrackInfoPanel.Hide();
             }
             else
             {
-                if (MainWindowWIdth >= 920)
+                if (MainWindowWIdth >= Width_1)
                 {
                     TopTrackInfoPanel.Collapse();
                     if (_status.State =="play")
@@ -322,10 +300,19 @@ namespace Balboa
                     TopTrackInfoPanel.Expand();
             }
 
-            if (MainWindowWIdth >= 920)
+            var displayOrientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
+            //if (displayOrientation == DisplayOrientations.Landscape || displayOrientation == DisplayOrientations.LandscapeFlipped)
+            //    TopTrackInfoPanel.ImageWidth = 90;
+            //else
+            //    TopTrackInfoPanel.ImageWidth = 244;
+
+            if (MainWindowWIdth >= Width_1)
                 BottomTrackInfoPanel.Expand();
             else
                 BottomTrackInfoPanel.Collapse();
+
+
+
 
         }
 
@@ -361,17 +348,17 @@ namespace Balboa
             //            }
         }
 
-        private async void OnServerCriticalError(object sender, EventArgs eventArgs)
-        {
-            //_server.Halt();
-            //MsgBoxButtons responce = await MessageBox(_resldr.GetString("CriticalError"), ((ServerEventArgs)eventArgs).Message, MsgBoxButtons.GoToSettings | MsgBoxButtons.CloseApplication);
-            //switch (responce)
-            //{
-            //    case MsgBoxButtons.CloseApplication: Application.Current.Exit();break;
-            //    case MsgBoxButtons.Retry: _server.Restart();break;
-            //                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
-            //            }
-        }
+        //private async void OnServerCriticalError(object sender, EventArgs eventArgs)
+        //{
+        //    //_server.Halt();
+        //    //MsgBoxButtons responce = await MessageBox(_resldr.GetString("CriticalError"), ((ServerEventArgs)eventArgs).Message, MsgBoxButtons.GoToSettings | MsgBoxButtons.CloseApplication);
+        //    //switch (responce)
+        //    //{
+        //    //    case MsgBoxButtons.CloseApplication: Application.Current.Exit();break;
+        //    //    case MsgBoxButtons.Retry: _server.Restart();break;
+        //    //                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
+        //    //            }
+        //}
 
         #endregion
  
@@ -410,10 +397,7 @@ namespace Balboa
         }
 
 
-        [Flags]
-        private enum MsgBoxButtons { OK = 1,Cancel = 2, Continue = 4, Retry = 8,  Exit = 16, GoToSettings = 32, CloseApplication = 64 }
-
-        private async Task<MsgBoxButton> DisplayMessage(Message messageArgs)
+         private async Task<MsgBoxButton> DisplayMessage(Message messageArgs)
         {
             MsgBox.SetButtons(messageArgs.Buttons);
             MsgBox.Message = messageArgs.Text;
