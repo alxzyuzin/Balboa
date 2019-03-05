@@ -197,9 +197,10 @@ namespace Balboa
             _server.DataReady += _server_DataReady;
             SizeChanged += (object sender, SizeChangedEventArgs e)=> 
             {
-                //grid_PlayControls_StopColumn.Width = (e.NewSize.Width < 600) ? new GridLength(0) : new GridLength(100);
-                PlayModeButtons.Width = (e.NewSize.Width < 600) ? 0 : 100; 
                 StopButton.Width = (e.NewSize.Width < 700) ? 0 : 100;
+                PlayModeButtons.Width = (e.NewSize.Width < 600) ? 0 : 100;
+                VolumeControl.Width = (e.NewSize.Width < 510) ? 0 : 160;
+                
             };
         }
 

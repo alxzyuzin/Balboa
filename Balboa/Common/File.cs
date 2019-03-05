@@ -31,7 +31,7 @@ namespace Balboa.Common
                 if (_albumArt != value)
                 {
                     _albumArt = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
+ //                   PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
                 }
             }
         }

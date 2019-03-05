@@ -386,7 +386,7 @@ namespace Balboa
             }
             panel.RequestAction += OnDataPanelActionRequested;
             DataPanel.Child = panel as UserControl;
-            ((IDataPanel)panel).Update();
+ //           ((IDataPanel)panel).Update();
             DataInfoPanel.DataContext = panel as IDataPanelInfo;
             MainMenuPanel.HighLiteSelectedItem(panel.GetType().Name);
             SetActiveDataPanelOrientation();

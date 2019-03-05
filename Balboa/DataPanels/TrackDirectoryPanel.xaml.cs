@@ -157,8 +157,9 @@ namespace Balboa
         private async void _server_DataReady(object sender, EventArgs e)
         {
             var mpdData = e as MpdResponse;
-                
-            if (mpdData.Keyword == ResponseKeyword.OK && mpdData.Command.Op == "lsinfo")
+
+            if (mpdData.Keyword != ResponseKeyword.OK || mpdData.Command.Op != "lsinfo")
+                return;
             {
                 if (_fileIconsUpdating)
                 {
@@ -167,25 +168,29 @@ namespace Balboa
                     while (_fileIconsUpdating){ await Task.Delay(100); }
                 }
                 
-                    UpdateControlData(mpdData.Content);
-                    HighLiteLastOpenedFolder();
-                    if (_currentPath.Length>0 && _newPathChunck.Length>0)
-                        _currentPath += "/";
-                    _currentPath += _newPathChunck;
+                UpdateControlData(mpdData.Content);
+                HighLiteLastOpenedFolder();
+                if (_currentPath.Length > 0 && _newPathChunck.Length > 0)
+                    _currentPath += "/";
+                _currentPath += _newPathChunck;
+                _newPathChunck = string.Empty;
 
                 DataPanelInfo = $"Folder /{_currentPath}";
 
-                    _newPathChunck = string.Empty;
+                AppbtnUpIsEnabled = _currentPath.Length>0 ? true : false;
+                EmptyDirectoryMessage = ( _files.Count == 0 ) 
+                                        ? string.Format(_resldr.GetString("NoAudioFilesInFolder"), "\""+_currentPath+ "\"") 
+                                        : string.Empty;
+                DataPanelElementsCount = $"{_files.Count.ToString()} items.";
 
-                    AppbtnUpIsEnabled = _currentPath.Length>0 ? true : false;
-                    EmptyDirectoryMessage = _files.Count == 0 ?
-                         string.Format(_resldr.GetString("NoAudioFilesInFolder"), "\""+_currentPath+ "\"") : string.Empty;
-                    DataPanelElementsCount = $"{_files.Count.ToString()} items.";
+                if (_server.DisplayFolderPictures == true && _server.MusicCollectionFolder.Length > 0)
+                {
                     _tokenSource = new CancellationTokenSource();
                     CancellationToken token = _tokenSource.Token;
                     WorkItemHandler workhandler = delegate { UpdateFilesIcons(token); };
-                    
+
                     await ThreadPool.RunAsync(workhandler, WorkItemPriority.High, WorkItemOptions.TimeSliced);
+                }
              }
          }
 
@@ -309,8 +314,8 @@ namespace Balboa
 
         private async void UpdateFilesIcons(CancellationToken token)
         {
-            if (_server.DisplayFolderPictures == false || _server.MusicCollectionFolder.Length == 0)
-                return;
+            //if (_server.DisplayFolderPictures == false || _server.MusicCollectionFolder.Length == 0)
+            //    return;
             try
             {
                 _fileIconsUpdating = true;
@@ -324,7 +329,7 @@ namespace Balboa
 
                     PathToAlbumArt.Append(file.Name).Append('\\').Append("folder.jpj");
                     await file.AlbumArt.LoadImageData(_server.MusicCollectionFolder, PathToAlbumArt.ToString(), _server.AlbumCoverFileNames);
-                    ((IProgress<File>)_progress).Report(file);
+                   ((IProgress<File>)_progress).Report(file);
                 }
             }
             catch (OperationCanceledException)

@@ -87,7 +87,7 @@ namespace Balboa
         /// <param name="e">Details about the navigation failure</param>
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
-            throw new BalboaException("App.xaml.cs","App", "OnNavigationFailed","92","Failed to load Page " + e.SourcePageType.FullName);
+            throw new  BalboaException("App.xaml.cs","App", "OnNavigationFailed","92","Failed to load Page " + e.SourcePageType.FullName);
         }
 
         /// <summary>

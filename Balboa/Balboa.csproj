@@ -125,10 +125,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="DataPanels\DatabaseExplorerPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="DataPanels\MainMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -225,9 +221,6 @@
     </Compile>
     <Compile Include="DataPanels\CurrentTrackPanel.xaml.cs">
       <DependentUpon>CurrentTrackPanel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DataPanels\DatabaseExplorerPanel.xaml.cs">
-      <DependentUpon>DatabaseExplorerPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="DataPanels\TrackInfoPanel.xaml.cs">
       <DependentUpon>TrackInfoPanel.xaml</DependentUpon>
