@@ -157,10 +157,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PlayMode.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="DataPanels\SettingsPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -173,10 +169,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="VolumeInput.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -185,7 +177,6 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="Common\AlbumArt.cs" />
     <Compile Include="Common\BalboaExeption.cs" />
-    <Compile Include="Common\CommonGridItem.cs" />
     <Compile Include="Common\Connection.cs" />
     <Compile Include="Common\ObservableObjectCollection.cs" />
     <Compile Include="Common\SavedPlaylistItem.cs" />
@@ -218,7 +209,6 @@
       <DependentUpon>TrackInfoPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="IDataPanel.cs" />
-    <Compile Include="IPropertyChanged.cs" />
     <Compile Include="DataPanels\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
@@ -241,9 +231,6 @@
     <Compile Include="DataPanels\SearchPanel.xaml.cs">
       <DependentUpon>SearchPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PlayMode.xaml.cs">
-      <DependentUpon>PlayMode.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Server.cs" />
     <Compile Include="DataPanels\SettingsPanel.xaml.cs">
@@ -254,9 +241,6 @@
     </Compile>
     <Compile Include="DataPanels\TrackDirectoryPanel.xaml.cs">
       <DependentUpon>TrackDirectoryPanel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="VolumeInput.xaml.cs">
-      <DependentUpon>VolumeInput.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
