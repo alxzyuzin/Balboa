@@ -51,7 +51,7 @@
                        Style="{StaticResource  CurrentTrackTextBlockStyle}"  FontSize="30" Margin="30,0,10,20" 
                            Height="Auto" TextWrapping="WrapWholeWords" VerticalAlignment="Top" HorizontalAlignment="Center" />
         <Image x:Name="image_AlbumCover" Grid.Row="1" Grid.Column="0" Margin="20" Source="{Binding AlbumArt.Image}" VerticalAlignment="Top"/>
-        <Grid x:Name="RightCurrentTrackData" Grid.Row="1" Grid.Column="1" Margin="10,10,0,0" MaxWidth="280" >
+        <Grid x:Name="RightCurrentTrackData" Grid.Row="1" Grid.Column="1" Margin="10,10,0,0" MaxWidth="400" MinWidth="0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -82,7 +82,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid x:Name="BottomCurrentTrackData" Grid.Row="2" Grid.Column="0" Margin="10,10,0,0" >
+        <Grid x:Name="BottomCurrentTrackData" Grid.Row="2" Grid.Column="0" Margin="10,10,0,0" MaxHeight="300" MinHeight="0" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="60"/>
@@ -131,6 +131,80 @@
             </Grid>
         </Grid>
 
+        
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="Horizontal">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                                       Storyboard.TargetName="RightCurrentTrackData"
+                                                       Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                                       EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                        <DiscreteDoubleKeyFrame Value="{Binding ElementName=RightCurrentTrackData, Path=MaxWidth}" KeyTime="0:0:0.1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                        <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                                       Storyboard.TargetName="BottomCurrentTrackData"
+                                                       Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                                                       EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <DiscreteDoubleKeyFrame Value="{Binding ElementName=RightCurrentTrackData, Path=MinWidth}" KeyTime="0:0:0.1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+            </VisualState>
+            <VisualState x:Name="Vertical">
+                <Storyboard>
+                    <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                                   Storyboard.TargetName="RightCurrentTrackData"
+                                                   Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                                   EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <DiscreteDoubleKeyFrame Value="{Binding ElementName=BottomCurrentTrackData, Path=MinHeight}" KeyTime="0:0:0.1"/>
+                    </DoubleAnimationUsingKeyFrames>
+                    <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                                   Storyboard.TargetName="BottomCurrentTrackData"
+                                                   Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                                                   EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <DiscreteDoubleKeyFrame Value="{Binding ElementName=BottomCurrentTrackData, Path=MaxHeight}" KeyTime="0:0:0.1"/>
+                    </DoubleAnimationUsingKeyFrames>
+                </Storyboard>
+            </VisualState>
+                <!--
+                <VisualStateGroup.Transitions>
+                    <VisualTransition From="Horizontal" GeneratedDuration="0:0:0.3" To="Vertical" >
+                        <Storyboard>
+                            <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                                   Storyboard.TargetName="RightCurrentTrackData"
+                                                   Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                                   EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                                <LinearDoubleKeyFrame Value="0" KeyTime="0:0:0.1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                                       Storyboard.TargetName="BottomCurrentTrackData"
+                                                       Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                                                       EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                                <LinearDoubleKeyFrame Value="300" KeyTime="0:0:0.1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="Vertical" GeneratedDuration="0:0:0.3" To="Horizontal" >
+                        <Storyboard>
+                            <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                                   Storyboard.TargetName="RightCurrentTrackData"
+                                                   Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                                   EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                                <LinearDoubleKeyFrame Value="400" KeyTime="0:0:0.1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                                       Storyboard.TargetName="BottomCurrentTrackData"
+                                                       Storyboard.TargetProperty="(FrameworkElement.Height)"   
+                                                       EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                                <LinearDoubleKeyFrame Value="0" KeyTime="0:0:0.1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                </VisualStateGroup.Transitions>
+                -->
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        
     </Grid>
-   
+
 </UserControl>

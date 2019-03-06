@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml;
 
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -193,10 +194,7 @@ namespace Balboa
         private Orientation _orientation;
         public Orientation Orientation
         {
-            get
-            {
-                return _orientation;
-            }
+            get { return _orientation; }
 
             set
             {
@@ -204,15 +202,9 @@ namespace Balboa
                 {
                     _orientation = value;
                     if (value == Orientation.Vertical)
-                    {
-                        BottomCurrentTrackData.Height =300;
-                        RightCurrentTrackData.Width = 0;
-                    }
+                        VisualStateManager.GoToState(this, "Vertical", true);
                     else
-                    {
-                        BottomCurrentTrackData.Height = 0;
-                        RightCurrentTrackData.Width = 400;
-                    }
+                        VisualStateManager.GoToState(this, "Horizontal", true);
                 }
             }
         }

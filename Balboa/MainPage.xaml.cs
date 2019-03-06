@@ -130,7 +130,12 @@ namespace Balboa
             this.SizeChanged += MainPage_SizeChanged;
             
 
-            _server.ConnectionStatusChanged += (object sender, string status) => { ConnectionStatus = status; };
+            _server.ConnectionStatusChanged += (object sender, string status) =>
+                                            {
+                                                ConnectionStatus = status;
+                                                if (_server.IsConnected)
+                                                    ((IDataPanel)_activeDataPanel)?.Update();
+                                             };
             _server.DataReady += OnServerDataReady; 
                     
             _server.ServerError += async (object server, MpdResponse e) =>
@@ -156,8 +161,8 @@ namespace Balboa
             if (_server.Initialized)
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
 
-            //var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new PlaylistPanel(_server));
-            //OnDataPanelActionRequested(this, actionParams);
+            var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new PlaylistPanel(_server));
+            OnDataPanelActionRequested(this, actionParams);
         
         }
 
@@ -235,8 +240,6 @@ namespace Balboa
             {
                 _activeDataPanel = actionParams.Panel as UserControl;
                 ActivatePanel(_activeDataPanel as IRequestAction);
-
-
             }
 
             if (actionParams.ActionType.HasFlag(ActionType.DisplayMessage))
@@ -272,7 +275,7 @@ namespace Balboa
         private void SetActiveDataPanelOrientation()
         {
             var newDisplayOrientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
-            if (_displayOrientation != newDisplayOrientation)
+//            if (_displayOrientation != newDisplayOrientation)
             {
                 _displayOrientation = newDisplayOrientation;
                 if (_displayOrientation == DisplayOrientations.Landscape || _displayOrientation == DisplayOrientations.LandscapeFlipped)
@@ -381,12 +384,10 @@ namespace Balboa
             if (DataPanel.Child != null)
             {
                 ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
-                if (DataPanel.Child as IDisposable != null)
-                    ((IDisposable)DataPanel.Child).Dispose();
+                ((IDisposable)DataPanel.Child)?.Dispose();
             }
             panel.RequestAction += OnDataPanelActionRequested;
             DataPanel.Child = panel as UserControl;
- //           ((IDataPanel)panel).Update();
             DataInfoPanel.DataContext = panel as IDataPanelInfo;
             MainMenuPanel.HighLiteSelectedItem(panel.GetType().Name);
             SetActiveDataPanelOrientation();
