@@ -128,13 +128,13 @@ namespace Balboa
 
         public StatisticPanel(Server server):this()
         {
-            _server = server;
-            _server.DataReady += _server_DataReady;
-            _server.Stats();
+            Init(server);
+            Update();
         }
 
         public void Init(Server server)
         {
+            if (server == null) throw new ArgumentNullException(nameof(server));
             _server = server;
             _server.DataReady += _server_DataReady;
         }

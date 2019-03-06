@@ -17,6 +17,40 @@ namespace Balboa.Common
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public Track()
+        { }
+
+        public Track(Track track)
+        {
+            this.File = track.File;
+            this.LastModified = track.LastModified;
+            this.Time = track.Time;
+            this.Artist = track.Artist;
+            this.Title = track.Title;
+            this.Album = track.Album;
+            this.Date = track.Date;
+            this.TrackNo = track.TrackNo;
+            this.Genre = track.Genre;
+            this.Composer = track.Composer;
+            this.AlbumArtist = track.AlbumArtist;
+            this.Disc = track.Disc;
+            this.Position = track.Position;
+            this.Id = track.Id;
+            this.IsPlaying = track.IsPlaying;
+            this.IsSelected = track.IsSelected;
+            this.ArtistSort = track.ArtistSort;
+            this.AlbumSort = track.AlbumSort;
+            this.AlbumArtistSort = track.AlbumArtistSort;
+            this.Name = track.Name;
+            this.Performer = track.Performer;
+            this.Comment = track.Comment;
+            this.MusicBrainzArtistId = track.MusicBrainzArtistId;
+            this.MusicBrainzAlbumId = track.MusicBrainzAlbumId;
+            this.MusicBrainzAlbumArtistId = track.MusicBrainzAlbumArtistId;
+            this.MusicBrainzTrackId = track.MusicBrainzTrackId;
+            this.MusicBrainzReleaseTrackId = track.MusicBrainzReleaseTrackId;
+        }
+
         // Playlistitem properties
         public string File { get; set; }
         public string LastModified { get; set; }

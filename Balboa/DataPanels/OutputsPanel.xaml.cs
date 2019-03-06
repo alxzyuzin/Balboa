@@ -28,6 +28,8 @@ namespace Balboa
 
         public OutputsPanel(Server server):this()
         {
+            if (server == null) throw new ArgumentNullException(nameof(server));
+
             _server = server;
             _server.DataReady += _server_DataReady;
             _server.Outputs();

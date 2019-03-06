@@ -16,17 +16,7 @@ namespace Balboa
 
     public sealed partial class MainMenu : UserControl,  IRequestAction
     {
-        private enum Panel
-        {
-            CurrentTrackPanel = 0,
-            PlaylistPanel = 1,
-            TrackDirectoryPanel = 2,
-            SavedPlaylistsPanel = 3,
-            SearchPanel = 4,
-            StatisticPanel = 5,
-            OutputsPanel = 6, 
-            SettingsPanel = 7
-        }
+        
 
         public bool _displayButtonsOnly;
         public bool DisplayButtonsOnly
@@ -122,6 +112,19 @@ namespace Balboa
         {
            var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new SettingsPanel(_server));
            RequestAction.Invoke(this, actionParams);
+        }
+
+
+        private enum Panel
+        {
+            CurrentTrackPanel = 0,
+            PlaylistPanel = 1,
+            TrackDirectoryPanel = 2,
+            SavedPlaylistsPanel = 3,
+            SearchPanel = 4,
+            StatisticPanel = 5,
+            OutputsPanel = 6,
+            SettingsPanel = 7
         }
 
         public void HighLiteSelectedItem(string className)

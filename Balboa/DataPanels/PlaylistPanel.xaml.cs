@@ -20,7 +20,7 @@ namespace Balboa
         public event ActionRequestedEventHandler RequestAction;
 
         private Server _server;
-        private TrackCollection<Track> _playlist = new TrackCollection<Track>();
+        private ObservableCollection<Track> _playlist = new ObservableCollection<Track>();
         private ListViewItem _listViewItemInFocus;
         private int _currentSongID = -1;
 
@@ -94,10 +94,7 @@ namespace Balboa
 
         public PlaylistPanel(Server server):this()
         {
-            if (server == null) throw new ArgumentNullException(nameof(server));
-
             Init(server);
-
         }
 
         public void Init(Server server)
@@ -164,7 +161,6 @@ namespace Balboa
                 track.Update(serverData);
                 _playlist.Add(track);
             }
-            _playlist.NotifyCollectionChanged();
             EmptyContentMessageVisibility = _playlist.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
             DataPanelElementsCount = $"{_playlist.Count.ToString()} items.";
             MakeOpaque.Begin();
@@ -195,8 +191,7 @@ namespace Balboa
         private void appbtn_Playlist_Clear_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _playlist.Clear();
-            _playlist.NotifyCollectionChanged();
-             _server.Clear();
+            _server.Clear();
             LoadedPlaylistName = _server.PlaylistName = string.Empty;
             EmptyContentMessageVisibility = Visibility.Visible;
         }
@@ -217,16 +212,25 @@ namespace Balboa
         private void HightlightCurrentPlaingTrack()
         {
             Track track;
-            track =  lv_PlayList.Items.FirstOrDefault(item => (item as Track).IsPlaying) as Track;
-            if (track!= null)
-                track.IsPlaying = false;
-            track = lv_PlayList.Items.FirstOrDefault(item => (item as Track).Id == _currentSongID) as Track;
+            // Deem previouse played track 
+            track = _playlist.FirstOrDefault(item => (item as Track).IsPlaying) as Track;
             if (track != null)
-                track.IsPlaying = true;
-        
-            _playlist.NotifyCollectionChanged();
+                SetTrackIsPlaying(track, false);
+            // Highlite current playing track
+            track = _playlist.FirstOrDefault(item => (item as Track).Id == _currentSongID) as Track;
+            if (track != null)
+                track = SetTrackIsPlaying(track, true);
             lv_PlayList.ScrollIntoView(track);
         }
+
+        private Track SetTrackIsPlaying(Track track, bool isPlaying)
+        {
+            Track newTrack = new Track(track);
+            newTrack.IsPlaying = isPlaying;
+            _playlist[_playlist.IndexOf(track)] = newTrack;
+            return newTrack;
+        }
+
 
         private void appbtn_Playlist_Save_Tapped(object sender, TappedRoutedEventArgs e)
         {

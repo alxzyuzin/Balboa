@@ -20,7 +20,7 @@ namespace Balboa
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
-        private TrackCollection<Track> _foundTracks = new TrackCollection<Track>();
+        private ObservableCollection<Track> _foundTracks = new ObservableCollection<Track>();
         public ObservableCollection<Track> Tracks => _foundTracks;
 
         private string _dataPanelInfo;
@@ -93,12 +93,12 @@ namespace Balboa
 
         public SearchPanel(Server server):this()
         {
-            _server = server;
-            _server.DataReady += _server_DataReady;
+            Init(server);
         }
 
         public void Init(Server server)
         {
+            if (server == null) throw new ArgumentNullException(nameof(server));
             _server = server;
             _server.DataReady += _server_DataReady;
         }
@@ -122,20 +122,15 @@ namespace Balboa
                         track.Update(mpdData.Content);
                         _foundTracks.Add(track);
                     }
-                    _foundTracks.NotifyCollectionChanged();
                     string searchresult = _foundTracks.Count == 0 ? "Nothing found." : $"{ _foundTracks.Count} tracks found.";
                     DataPanelElementsCount = $"SearchComplete. {searchresult}";
-
                 }
             }
-
-
         }
 
         private void appbtn_Search_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _foundTracks.Clear();
-            _foundTracks.NotifyCollectionChanged();
             DataPanelElementsCount = "Searching ...";
             string wts = WhereToSearch.Content.ToString();
             wts = wts == "Year" ? "Date" : wts;

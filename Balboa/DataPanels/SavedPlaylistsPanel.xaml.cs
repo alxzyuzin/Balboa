@@ -78,12 +78,7 @@ namespace Balboa
 
         public SavedPlaylistsPanel(Server server):this()
         {
-            if (server == null) throw new ArgumentNullException(nameof(server));
-
-            _server = server;
-            _server.DataReady += _server_DataReady;
-
-            _server.ListPlaylists();
+            Init(server);
         }
 
         public void Init(Server server)
@@ -92,6 +87,8 @@ namespace Balboa
 
             _server = server;
             _server.DataReady += _server_DataReady;
+
+            Update();
         }
 
         public void Update()

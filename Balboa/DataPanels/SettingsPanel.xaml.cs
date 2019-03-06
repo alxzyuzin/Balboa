@@ -171,6 +171,7 @@ namespace Balboa
 
         public void Init(Server server)
         {
+            if (server == null) throw new ArgumentNullException(nameof(server));
             _server = server;
             _appSettings.Restore();
         }
