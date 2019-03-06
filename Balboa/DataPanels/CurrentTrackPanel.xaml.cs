@@ -1,4 +1,13 @@
-﻿using Balboa.Common;
+﻿/*-----------------------------------------------------------------------
+ * Copyright 2019 Alexandr Zyuzin.
+ *
+ * This file is part of MPD client Balboa.
+ *
+ * Display current playing track info and Album art.
+ *
+ --------------------------------------------------------------------------*/
+
+using Balboa.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,8 +25,6 @@ namespace Balboa
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler RequestAction;
-
-        //public event ActionRequestedEventHandler RequestAction;
 
         private ResourceLoader _resldr = new ResourceLoader();
         private Server _server;
@@ -209,19 +216,7 @@ namespace Balboa
             }
         }
 
-        //public string DataPanelElementsCount
-        //{
-        //    get
-        //    {
-        //        throw new NotImplementedException();
-        //    }
-
-        //    set
-        //    {
-        //        throw new NotImplementedException();
-        //    }
-        //}
-
+ 
         public CurrentTrackPanel()
         {
             this.InitializeComponent();

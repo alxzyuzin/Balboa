@@ -1,5 +1,5 @@
 ﻿/*-----------------------------------------------------------------------
- * Copyright 2017 Alexandr Zyuzin.
+ * Copyright 2019 Alexandr Zyuzin.
  *
  * This file is part of MPD client Balboa.
  *

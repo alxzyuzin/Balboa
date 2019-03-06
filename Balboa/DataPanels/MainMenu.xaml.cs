@@ -28,6 +28,22 @@ namespace Balboa
             SettingsPanel = 7
         }
 
+        public bool _displayButtonsOnly;
+        public bool DisplayButtonsOnly
+        {
+            get { return _displayButtonsOnly; }
+            set
+            {
+                if (_displayButtonsOnly != value)
+                {
+                    _displayButtonsOnly = value;
+                    if (_displayButtonsOnly)
+                        VisualStateManager.GoToState(this, "Narrow", true);
+                    else
+                        VisualStateManager.GoToState(this, "Wide", true);
+                }
+            }
+        }
 
         private Server _server;
         private ResourceLoader _resldr = new ResourceLoader();
@@ -59,16 +75,6 @@ namespace Balboa
         public void HandleUserResponse(MsgBoxButton pressedButton)
         {
             throw new NotImplementedException();
-        }
-
-        public void Collaps()
-        {
-                VisualStateManager.GoToState(this, "Narrow", true);
-        }
-
-        public void Expand()
-        {
-                VisualStateManager.GoToState(this, "Wide", true);
         }
 
         private void SwitchToCurrentTrackPanel(object sender, TappedRoutedEventArgs e)

@@ -176,7 +176,7 @@ namespace Balboa
 
         Orientation IDataPanel.Orientation { get; set; }
 
-       
+      
 
         public ControlPanel()
         {
@@ -185,7 +185,6 @@ namespace Balboa
 
         public ControlPanel(Server server):this()
         {
-            if (server == null) throw new ArgumentNullException(nameof(server));
             Init(server);
         }
 
@@ -195,13 +194,12 @@ namespace Balboa
 
             _server = server;
             _server.DataReady += _server_DataReady;
-            SizeChanged += (object sender, SizeChangedEventArgs e)=> 
+            SizeChanged += (object sender, SizeChangedEventArgs e) => 
             {
                 StopButton.Width = (e.NewSize.Width < 700) ? 0 : 100;
                 PlayModeButtons.Width = (e.NewSize.Width < 600) ? 0 : 100;
                 VolumeControl.Width = (e.NewSize.Width < 510) ? 0 : 160;
-                
-            };
+             };
         }
 
         public void Update()

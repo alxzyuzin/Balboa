@@ -257,40 +257,31 @@ namespace Balboa
             RearangeTrackInfoPanels();
 
             DataInfoPanel.Visibility = MainWindowWIdth >= Width_2 ? Visibility.Visible: Visibility.Collapsed ;
-            if (MainWindowWIdth >= Width_2)
-                MainMenuPanel.Expand();
-            else
-                MainMenuPanel.Collaps();
 
+            MainMenuPanel.DisplayButtonsOnly = (MainWindowWIdth < Width_2) ? true : false;
+            
             _extendedStatusMode =  ExtendedStatusMode.BitPersample | ExtendedStatusMode.Channels;
             if (MainWindowWIdth < 730)
                 _extendedStatusMode ^= ExtendedStatusMode.Channels;
 
             if (MainWindowWIdth < 635)
                 _extendedStatusMode ^= ExtendedStatusMode.BitPersample;
-
- 
             }
 
         private void SetActiveDataPanelOrientation()
         {
-            var newDisplayOrientation = DisplayInformation.GetForCurrentView().CurrentOrientation;
-//            if (_displayOrientation != newDisplayOrientation)
+            if (_displayOrientation == DisplayOrientations.Landscape || _displayOrientation == DisplayOrientations.LandscapeFlipped)
             {
-                _displayOrientation = newDisplayOrientation;
-                if (_displayOrientation == DisplayOrientations.Landscape || _displayOrientation == DisplayOrientations.LandscapeFlipped)
-                {
-                    if (_activeDataPanel != null)
-                        ((IDataPanel)_activeDataPanel).Orientation = Orientation.Horizontal;
-                    TopTrackInfoPanel.ImageWidth = 90;
-                }
-                else
-                {
-                    if (_activeDataPanel != null)
-                        ((IDataPanel)_activeDataPanel).Orientation = Orientation.Vertical;
-                    TopTrackInfoPanel.ImageWidth = 190;
-                }
-             }
+                if (_activeDataPanel != null)
+                    ((IDataPanel)_activeDataPanel).Orientation = Orientation.Horizontal;
+                TopTrackInfoPanel.ImageWidth = 90;
+            }
+            else
+            {
+                if (_activeDataPanel != null)
+                    ((IDataPanel)_activeDataPanel).Orientation = Orientation.Vertical;
+                TopTrackInfoPanel.ImageWidth = 190;
+            }
         }
 
         private void RearangeTrackInfoPanels()
@@ -395,20 +386,9 @@ namespace Balboa
             SetDataInfoPanelWidth();
         }
 
-        private enum MainMenuState { Narrow, Wide}
-        private MainMenuState _mainMenuState = MainMenuState.Wide;
         private void SwitchMenuState(object sender, TappedRoutedEventArgs e)
         {
-            if (_mainMenuState ==  MainMenuState.Wide)
-            {
-                MainMenuPanel.Collaps();
-                _mainMenuState = MainMenuState.Narrow;
-            }
-            else
-            {
-                MainMenuPanel.Expand();
-                _mainMenuState = MainMenuState.Wide;
-            }
+            MainMenuPanel.DisplayButtonsOnly = !MainMenuPanel.DisplayButtonsOnly;
         }
 
         private async Task<MsgBoxButton> DisplayMessage(Message messageArgs)
