@@ -22,7 +22,7 @@ namespace Balboa
         private Server _server;
         private ObservableCollection<Track> _playlist = new ObservableCollection<Track>();
         private ListViewItem _listViewItemInFocus;
-        private int _currentSongID = -1;
+        private Song _song = new Song();
 
         public ObservableCollection<Track> Playlist => _playlist;
 
@@ -113,8 +113,8 @@ namespace Balboa
 
         public void Update()
         {
-            _server?.PlaylistInfo();
-            _server?.CurrentSong();
+            _server.PlaylistInfo();
+            _server.CurrentSong();
         }
 
         private void _server_DataReady(object sender, EventArgs e)
@@ -125,29 +125,11 @@ namespace Balboa
                 if (mpdData.Command.Op == "playlistinfo")
                 {
                     UpdateControlData(mpdData.Content);
-
                 }
                 if (mpdData.Command.Op == "currentsong")
                 {
-                    Song song = new Song();
-                    song.Update(mpdData.Content);
-                    if (_currentSongID != song.Id)
-                    {
-                        _currentSongID = song.Id;
-                        HightlightCurrentPlaingTrack();
-                    }
-                }
-                if (mpdData.Command.Op == "save")
-                {
-                    ;
-                }
-            }
-
-            if (mpdData.Keyword != ResponseKeyword.OK)
-            {
-                if (mpdData.Command.Op == "save")
-                {
-                    ;
+                    _song.Update(mpdData.Content);
+                    HightlightCurrentPlaingTrack();
                 }
             }
         }
@@ -184,7 +166,6 @@ namespace Balboa
         {
             foreach (Track track in lv_PlayList.SelectedItems)
                 _server.DeleteId(track.Id);
-            _currentSongID = -1;
             Update();
         }
 
@@ -205,7 +186,6 @@ namespace Balboa
         {
             _server.Shuffle();
             _server.PlaylistInfo();
-            _currentSongID = -1;
             _server.CurrentSong();
         }
 
@@ -217,7 +197,7 @@ namespace Balboa
             if (track != null)
                 SetTrackIsPlaying(track, false);
             // Highlite current playing track
-            track = _playlist.FirstOrDefault(item => (item as Track).Id == _currentSongID) as Track;
+            track = _playlist.FirstOrDefault(item => (item as Track).Id == _song.Id) as Track;
             if (track != null)
                 track = SetTrackIsPlaying(track, true);
             lv_PlayList.ScrollIntoView(track);

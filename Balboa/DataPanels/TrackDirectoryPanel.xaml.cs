@@ -204,7 +204,7 @@ namespace Balboa
                 if(file.Nature == FileNature.File || file.Nature == FileNature.Directory)
                     _files.Add(file);
             }
-
+            
             EmptyContentMessageVisibility = _files.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
