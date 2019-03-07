@@ -15,7 +15,7 @@ namespace Balboa
 {
 
     public sealed partial class SettingsPanel : UserControl, INotifyPropertyChanged, IDataPanel, IDataPanelInfo,
-                                                             IRequestAction
+                                                             IRequestAction, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler RequestAction;
@@ -304,6 +304,10 @@ namespace Balboa
         {
            // throw new NotImplementedException();
         }
-    
+
+        public void Dispose()
+        {
+            //throw new NotImplementedException();
+        }
     }
 }

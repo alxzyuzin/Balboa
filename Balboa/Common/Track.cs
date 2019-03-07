@@ -13,10 +13,8 @@ using System;
 
 namespace Balboa.Common
 {
-    public sealed class Track : INotifyPropertyChanged
+    public sealed class Track
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public Track()
         { }
 
@@ -66,37 +64,10 @@ namespace Balboa.Common
         public string Disc { get; set; }                // the disc number in a multi-disc album.
         public string Position { get; set; }
         public int    Id { get; set; }
-
-        private bool _isPlaying = false;
-        public bool   IsPlaying
-        {
-            get { return _isPlaying; }
-            set
-            {
-                if (_isPlaying!=value)
-                {
-                    _isPlaying = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsPlaying)));
-                }
-            }
-        }
-
-        private bool _isSelected = false;
-        public bool  IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                if (_isSelected != value)
-                {
-                    _isSelected = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
-                }
-            }
-        }
+        public bool   IsPlaying { get; set; }
+        public bool  IsSelected { get; set; }
 
         // Database properties
-
         public string ArtistSort { get; set; }          // same as artist, but for sorting.This usually omits prefixes such as "The". 
         public string AlbumSort { get; set; }           // same as album, but for sorting.
         public string AlbumArtistSort { get; set; }     // same as albumartist, but for sorting.
