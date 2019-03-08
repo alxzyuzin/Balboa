@@ -30,19 +30,7 @@ namespace Balboa
         private Server _server;
         private Song _song = new Song();
 
-        private AlbumArt _albumArt = new AlbumArt();
-        public AlbumArt AlbumArt
-        {
-            get { return _albumArt; }
-            private set
-            {
-                if (_albumArt != value)
-                {
-                    _albumArt = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
-                }
-            }
-        }
+        public AlbumArt AlbumArt => _server.AlbumArt;
 
         private string _title;
         public string Title
@@ -216,12 +204,10 @@ namespace Balboa
             }
         }
 
- 
         public CurrentTrackPanel()
         {
             this.InitializeComponent();
          }
-
 
         public CurrentTrackPanel(Server server) : this()
         {
@@ -241,7 +227,7 @@ namespace Balboa
 
         public void Update()
         {
-            _server?.CurrentSong();
+            _server.CurrentSong();
         }
 
         private void _server_DataReady(object sender, EventArgs e)
@@ -268,11 +254,6 @@ namespace Balboa
             Duration    = _song.Duration.ToString();
             Genre       = _song.Genre;
             File        = _song.File;
-            if (_song.File != null)
-            {
-               await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
-               await AlbumArt.UpdateImage();
-            }
         }
 
         public void HandleUserResponse(MsgBoxButton pressedButton)

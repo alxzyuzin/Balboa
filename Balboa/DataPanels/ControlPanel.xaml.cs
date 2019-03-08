@@ -256,7 +256,8 @@ namespace Balboa
         {
             _song.Update(serverData);
             Duration = _song.Duration;
-         }
+            _server.UpdateAlbumArt(_song.File);
+        }
 
         private void btn_PrevTrack_Tapped(object sender, TappedRoutedEventArgs e)
         {

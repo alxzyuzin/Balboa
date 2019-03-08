@@ -78,8 +78,22 @@ namespace Balboa
         public bool   Initialized => _appSettings.InitialSetupDone ;
         public bool   IsConnected         { get { return _Connection.IsActive; } }
         public bool   IsRunning           { get; private set; }=false;
+        private AlbumArt _albumArt = new AlbumArt();
+        public AlbumArt AlbumArt => _albumArt;
+        //{
+        //    get { return _albumArt; }
+        //    private set
+        //    {
+        //        if (_albumArt != value)
+        //        {
+        //            _albumArt = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
+        //        }
+        //    }
+        //}
 
-         #endregion
+
+        #endregion
 
         public Server()
         {
@@ -317,6 +331,15 @@ namespace Balboa
                 ((IProgress<MpdResponse>)_status).Report(mpdresp);
             }
             return response;
+        }
+
+        public async void UpdateAlbumArt(string file)
+        {
+            if (file != null && file != "")
+            {
+                await AlbumArt.LoadImageData(MusicCollectionFolder, file, AlbumCoverFileNames);
+                await AlbumArt.UpdateImage();
+            }
         }
 
         #endregion

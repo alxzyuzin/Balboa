@@ -38,21 +38,21 @@ namespace Balboa
                 }
             }
         }
-        public PanelVisualState VisualState { get; set; }     
+        public PanelVisualState VisualState { get; set; }
 
-        private AlbumArt _albumArt = new AlbumArt();
-        public AlbumArt AlbumArt
-        {
-            get { return _albumArt; }
-            private set
-            {
-                if (_albumArt != value)
-                {
-                    _albumArt = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
-                }
-            }
-        }
+        //        private AlbumArt _albumArt = new AlbumArt();
+        public AlbumArt AlbumArt => _server.AlbumArt;
+        //{
+        //    get { return _albumArt; }
+        //    private set
+        //    {
+        //        if (_albumArt != value)
+        //        {
+        //            _albumArt = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
+        //        }
+        //    }
+        //}
 
         private string _title;
         public string Title
@@ -140,10 +140,6 @@ namespace Balboa
                 _songId = _song.Id;
                 Title = _song.Title;
                 Artist = _song.Artist;
-                if (_song.File == null || _song.File == "")
-                    return;
-                await AlbumArt.LoadImageData(_server.MusicCollectionFolder, _song.File, _server.AlbumCoverFileNames);
-                await AlbumArt.UpdateImage();
             }
         }
         public void Collapse()
