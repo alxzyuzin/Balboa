@@ -67,20 +67,6 @@ namespace Balboa
             }
         }
 
-        private double _progressValue;
-        public double ProgressValue
-        {
-            get { return _progressValue; }
-            private set
-            {
-                if (_progressValue != value)
-                {
-                    _progressValue = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProgressValue)));
-                }
-            }
-        }
-
         private char _PlayPauseButtonContent = (char)0xE103;
         public char PlayPauseButtonContent
         {
@@ -226,7 +212,6 @@ namespace Balboa
             _status.Update(serverData);
 
             TimeLeft    = _status.TimeLeft;
-            TimeElapsed = _status.TimeElapsed;
             PlayPauseButtonContent = (_status.State == "play") ? '\xE103' : '\xE102';
             Volume = _status.Volume;
             VolumeSlider.Value = _status.Volume;
@@ -237,19 +222,18 @@ namespace Balboa
             if (_currentSongID != _status.SongId)
             {
                 Duration = _status.Duration;
-                ProgressValue = 0;
+                TimeElapsed = 0;
                 _currentSongID = _status.SongId;
                 _server.CurrentSong();
             }
             if (Duration > 0)
             {
-                TimeLeft = Duration - TimeElapsed;
-               
-               if (!_seekBarIsBeingDragged)
-                     //ProgressValue = _status.TimeElapsed;
-                    pb_Progress.Value = _status.TimeElapsed;   
+                if (!_seekBarIsBeingDragged)
+                {
+                    TimeLeft = _status.Duration - _status.TimeElapsed;
+                    TimeElapsed = _status.TimeElapsed;
+                }
             }
-
         }
 
         private void UpdateSongData(List<string> serverData)
@@ -282,6 +266,8 @@ namespace Balboa
         private void btn_Stop_Tapped(object sender, TappedRoutedEventArgs e)
         {
             _server.Stop();
+            TimeElapsed = 0;
+//            pb_Progress.Value = 0;
         }
 
         private void btn_Restart_Tapped(object sender, TappedRoutedEventArgs e)
@@ -329,7 +315,7 @@ namespace Balboa
             var cp = e.GetCurrentPoint((UIElement)sender) as PointerPoint;
             int mouseweeldelta = cp.Properties.MouseWheelDelta / 24; // считаем что каждый клик смещает позицию в треке на 5 сек
 
-            _currentTrackPosition = pb_Progress.Value;
+            _currentTrackPosition = TimeElapsed;// pb_Progress.Value;
             if (((sl.Value + mouseweeldelta) > 0) && ((sl.Value + mouseweeldelta) < sl.Maximum))
             {
                 string soffset = mouseweeldelta.ToString(CultureInfo.InvariantCulture);
