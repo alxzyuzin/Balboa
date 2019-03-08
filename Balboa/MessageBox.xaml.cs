@@ -68,14 +68,14 @@ namespace Balboa
         public MessageBox()
         {
             this.InitializeComponent();
-            GridMain.DataContext = this;
         }
 
 
         public MessageBox(int height) : this()
         {
             _height = height;
-            GridMain.RowDefinitions[1].Height = new GridLength(height);
+            
+            GridMain.RowDefinitions[1].Height = new GridLength(_height);
         }
 
         public MessageBox(int width, int height) : this()
@@ -83,8 +83,8 @@ namespace Balboa
             _width = width;
             _height = height;
 
-            GridMain.ColumnDefinitions[1].Width = new GridLength(width);
-            GridMain.RowDefinitions[1].Height = new GridLength(height);
+            GridMain.ColumnDefinitions[1].Width = new GridLength(_width);
+            GridMain.RowDefinitions[1].Height = new GridLength(_height);
         }
 
         public string Message
@@ -93,26 +93,38 @@ namespace Balboa
             set { SetValue(MessageProperty, value); }
         }
 
-        public int BoxHeight
+        public double InnerBoxHeight
         {
-            get { return (int)GetValue(BoxHeightProperty); }
-            set { SetValue(BoxHeightProperty, value); }
+            get { return (double)GetValue(InnerBoxHeightProperty); }
+            set { SetValue(InnerBoxHeightProperty, value); }
+        }
+
+        public double InnerBoxWidth
+        {
+            get { return (double)GetValue(InnerBoxWidthProperty); }
+            set { SetValue(InnerBoxWidthProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Message. 
         //This enables animation, styling, binding, etc...
-        
+
         public static readonly DependencyProperty MessageProperty =
             DependencyProperty.Register("Message", typeof(string), typeof(MessageBox), null);
 
-        public static readonly DependencyProperty BoxHeightProperty =
-            DependencyProperty.Register("BoxHeight", typeof(int), typeof(MessageBox), null);
+        public static readonly DependencyProperty InnerBoxHeightProperty =
+            DependencyProperty.Register("BoxHeight", typeof(double), typeof(MessageBox), null);
+
+        public static readonly DependencyProperty InnerBoxWidthProperty =
+                    DependencyProperty.Register("BoxHeight", typeof(double), typeof(MessageBox), null);
+
 
         public async Task<MsgBoxButton> Show()
         {
             ((Grid)this.Parent).SizeChanged += OnMainpage_SizeChanged;
 
-            GridMain.RowDefinitions[1].Height = new GridLength(BoxHeight);
+            GridMain.RowDefinitions[1].Height = new GridLength(InnerBoxHeight);
+            GridMain.ColumnDefinitions[1].Width = new GridLength(InnerBoxWidth);
+            GridMain.ColumnDefinitions[0].Width = new GridLength((((Grid)this.Parent).ActualWidth - InnerBoxWidth) /2);
             this.Visibility = Visibility.Visible;
 
             ShowControl.Begin();
@@ -129,8 +141,11 @@ namespace Balboa
 
         private void OnMainpage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.Width = ((Grid)this.Parent).ActualWidth;
-            this.Height = ((Grid)this.Parent).ActualHeight;
+            var parent = ((Grid)this.Parent);
+            this.Width = parent.ActualWidth;
+            this.Height = parent.ActualHeight;
+            GridMain.ColumnDefinitions[1].Width = new GridLength(InnerBoxWidth);
+            GridMain.ColumnDefinitions[0].Width = new GridLength((parent.ActualWidth - InnerBoxWidth) / 2);
         }
 
         private void button_Tapped(object sender, TappedRoutedEventArgs e)

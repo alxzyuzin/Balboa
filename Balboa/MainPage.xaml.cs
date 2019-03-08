@@ -142,8 +142,7 @@ namespace Balboa
                     {
                         MsgBoxButton pressedButton = await DisplayMessage(new Message(MsgBoxType.Error, 
                                                                           e.ErrorMessage, 
-                                                                          MsgBoxButton.Reconnect | MsgBoxButton.Exit,
-                                                                          200));
+                                                                          MsgBoxButton.Reconnect | MsgBoxButton.Exit));
                         switch(pressedButton)
                         {
                             case MsgBoxButton.Reconnect: _server.Start(); break;
@@ -391,11 +390,12 @@ namespace Balboa
             MainMenuPanel.DisplayButtonsOnly = !MainMenuPanel.DisplayButtonsOnly;
         }
 
-        private async Task<MsgBoxButton> DisplayMessage(Message messageArgs)
+        private async Task<MsgBoxButton> DisplayMessage(Message message)
         {
-            MsgBox.SetButtons(messageArgs.Buttons);
-            MsgBox.Message = messageArgs.Text;
-            MsgBox.BoxHeight = messageArgs.BoxHeight;
+            MsgBox.SetButtons(message.Buttons);
+            MsgBox.Message = message.Text;
+            MsgBox.InnerBoxHeight = message.BoxHeight;
+            MsgBox.InnerBoxWidth = message.BoxWidth;
             return await MsgBox.Show();
         }
     }

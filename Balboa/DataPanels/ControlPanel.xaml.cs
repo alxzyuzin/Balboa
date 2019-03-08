@@ -267,7 +267,6 @@ namespace Balboa
         {
             _server.Stop();
             TimeElapsed = 0;
-//            pb_Progress.Value = 0;
         }
 
         private void btn_Restart_Tapped(object sender, TappedRoutedEventArgs e)
@@ -315,7 +314,7 @@ namespace Balboa
             var cp = e.GetCurrentPoint((UIElement)sender) as PointerPoint;
             int mouseweeldelta = cp.Properties.MouseWheelDelta / 24; // считаем что каждый клик смещает позицию в треке на 5 сек
 
-            _currentTrackPosition = TimeElapsed;// pb_Progress.Value;
+            _currentTrackPosition = TimeElapsed;
             if (((sl.Value + mouseweeldelta) > 0) && ((sl.Value + mouseweeldelta) < sl.Maximum))
             {
                 string soffset = mouseweeldelta.ToString(CultureInfo.InvariantCulture);

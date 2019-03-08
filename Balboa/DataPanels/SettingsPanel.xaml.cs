@@ -184,7 +184,7 @@ namespace Balboa
 
             if (!int.TryParse(Port, out ParseResult))
             {
-                var message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeNumber"), MsgBoxButton.Close, 200);
+                var message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeNumber"));
                 RequestAction?.Invoke(this, new ActionParams(message));
                 return;
             }
@@ -192,7 +192,7 @@ namespace Balboa
             {
                 if (ParseResult > 65535 || ParseResult == 0)
                 {
-                    var message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeLess65536"), MsgBoxButton.Close, 200);
+                    var message = new Message(MsgBoxType.Error, _resldr.GetString("PortValueMustBeLess65536"));
                     RequestAction?.Invoke(this, new ActionParams(message));
                     return;
                 }
@@ -200,7 +200,7 @@ namespace Balboa
 
             if (!int.TryParse(ViewUpdateInterval, out ParseResult))
             {
-                var message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustNumber"), MsgBoxButton.Close, 200);
+                var message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustNumber"));
                 RequestAction?.Invoke(this, new ActionParams(message));
                 return;
             }
@@ -209,7 +209,7 @@ namespace Balboa
                 int updateinterval = int.Parse(ViewUpdateInterval);
                 if (ParseResult < 100)
                 {
-                    var message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustBe100"), MsgBoxButton.Close, 200);
+                    var message = new Message(MsgBoxType.Error, _resldr.GetString("ViewUpdateIntervalMustBe100"));
                     RequestAction?.Invoke(this, new ActionParams(message));
                     return;
                 }
@@ -221,13 +221,13 @@ namespace Balboa
             
             if (!connection.IsActive)
             {
-                var message = new Message(MsgBoxType.Info, $"Connection to {ServerName} failed.\n {connection.Error}.", MsgBoxButton.Close, 200);
+                var message = new Message(MsgBoxType.Info, $"Connection to {ServerName} failed.\n {connection.Error}.");
                 RequestAction?.Invoke(this, new ActionParams(message));
                 return;
             }
             if ((_appSettings.ServerName != ServerName) && (_appSettings.MusicCollectionFolderToken == _musicCollectionFolderToken))
             {
-                var message = new Message(MsgBoxType.Warning, _resldr.GetString("ServerNameChanged"), MsgBoxButton.Close, 200);
+                var message = new Message(MsgBoxType.Warning, _resldr.GetString("ServerNameChanged"));
                 MusicCollectionFolder = string.Empty;            
                 StorageApplicationPermissions.FutureAccessList.Clear();
                 _musicCollectionFolderToken = String.Empty;
@@ -261,7 +261,7 @@ namespace Balboa
                 msg = $"Succesfully connected to {ServerName}. \n{connection.InitialResponse}";
             else
                 msg = connection.Error;
-            var message =  new Message(MsgBoxType.Info, msg, MsgBoxButton.Close, 200);
+            var message =  new Message(MsgBoxType.Info, msg);
             connection.Close();
             RequestAction?.Invoke(this, new ActionParams(message));
 

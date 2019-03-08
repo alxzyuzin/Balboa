@@ -77,18 +77,20 @@ namespace Balboa
 
     public class Message
     {
-        public Message(MsgBoxType type, string text, MsgBoxButton buttons, int height)
+        public Message(MsgBoxType type, string text, MsgBoxButton buttons = MsgBoxButton.Close, double height = 200, double width = 500)
         {
             Type = type;
             Text = text;
             Buttons = buttons;
             BoxHeight = height;
+            BoxWidth = width;
     }
         
         public MsgBoxType Type { get; private set; }
         public string Text { get; private set; }
         public MsgBoxButton Buttons { get; private set; }
-        public int BoxHeight { get; private set; }
+        public double BoxHeight { get; private set; }
+        public double BoxWidth { get; private set; }
     } // class Message
 
 } // namespace Balboa

@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="1000"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
     <UserControl.Resources>
 
@@ -34,7 +35,7 @@
 
     </UserControl.Resources>
 
-    <Grid x:Name="GridMain" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid x:Name="GridMain" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="2*"/>
@@ -45,23 +46,28 @@
             <RowDefinition Height="2*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <!-- deem main window -->
         <Border  x:Name="PopUpBorder" BorderThickness="1" Background="Black" 
-                     Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
-                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0.6"/>
-        <Border x:Name="BoxBorder" Grid.Column="1" Grid.Row="1" 
+                     Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
+                     HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0.7"/>
+        <!-- MessageBox border -->
+        <Border x:Name="BoxBorder" Grid.Column="1" Grid.Row="1"     
                     BorderBrush="White" BorderThickness="1" Background="Gray" Opacity="0">
 
-            <Grid MinHeight="100"  MinWidth="300" Margin="20,20,20,0">
+            <Grid MinWidth="500" MinHeight="100" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="80"/>
                 </Grid.RowDefinitions>
                 <TextBlock x:Name="MessageText" Grid.Row="0" Text="{Binding Message}" 
-                           Margin="10,10,10,10" TextWrapping="WrapWholeWords" VerticalAlignment="Center"
+                           Margin="20,10,20,10" TextWrapping="WrapWholeWords" VerticalAlignment="Center" HorizontalAlignment="Stretch"
                            FontFamily="Segoe UI Light" FontSize="20"/>
-                <StackPanel x:Name="ButtonsPanel" Grid.Row="2" Orientation="Horizontal" Height="60" 
-                                VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,10,0">
-                </StackPanel>
+                <Grid Grid.Row="2" >
+                    <StackPanel x:Name="ButtonsPanel" Orientation="Horizontal"  
+                                VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,40,0">
+                        
+                    </StackPanel>
+                </Grid>
             </Grid>
 
         </Border>
