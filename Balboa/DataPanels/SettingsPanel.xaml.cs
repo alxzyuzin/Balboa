@@ -221,7 +221,8 @@ namespace Balboa
             
             if (!connection.IsActive)
             {
-                var message = new Message(MsgBoxType.Info, $"Connection to {ServerName} failed.\n {connection.Error}.");
+                var message = new Message(MsgBoxType.Info, $"Connection to '{ServerName}' failed.\n {connection.Error}.",
+                    MsgBoxButton.Close, 300);
                 RequestAction?.Invoke(this, new ActionParams(message));
                 return;
             }

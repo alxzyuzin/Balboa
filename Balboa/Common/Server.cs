@@ -80,18 +80,6 @@ namespace Balboa
         public bool   IsRunning           { get; private set; }=false;
         private AlbumArt _albumArt = new AlbumArt();
         public AlbumArt AlbumArt => _albumArt;
-        //{
-        //    get { return _albumArt; }
-        //    private set
-        //    {
-        //        if (_albumArt != value)
-        //        {
-        //            _albumArt = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
-        //        }
-        //    }
-        //}
-
 
         #endregion
 
@@ -218,8 +206,7 @@ namespace Balboa
                        if (_CommandQueue.Count > 0)
                        { // Есть команды к выполнению. Забираем команду из очереди  и разморахиваем процесс
                            command = _CommandQueue.Dequeue();
-                         //_MpdResponseQueue.Enqueue(new MpdResponse(ResponseKeyword.New, command, null));
-                            _ThreadEvent.Reset();
+                           _ThreadEvent.Reset();
                        }
                     }
                     if (command == null)

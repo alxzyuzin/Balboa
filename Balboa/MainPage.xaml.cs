@@ -28,19 +28,10 @@ using Windows.UI.Xaml.Input;
 
 namespace Balboa
 {
-
-    //public static IEnumerable<T> ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
-    //{
-    //    foreach (T item in enumeration)
-    //    {
-    //        action(item);
-    //        yield return item;
-    //    }
-    //}
     // Change the current culture to the French culture,
     // and parsing the same string yields a different value.
     //  Thread.CurrentThread.CurrentCulture = new CultureInfo("Fr-fr", true);
-    //  myDateTime = DateTime.Parse(dt);
+   
     [Flags]
     public enum DataPanelLayout
     {
@@ -49,8 +40,6 @@ namespace Balboa
         Wide = 4,
         Narrow = 8
     }
-
-  
 
     public partial class MainPage : Page, INotifyPropertyChanged
     {
@@ -128,27 +117,10 @@ namespace Balboa
             Application.Current.Suspending += OnSuspending;
             Application.Current.Resuming += OnResuming;
             this.SizeChanged += MainPage_SizeChanged;
-            
 
-            _server.ConnectionStatusChanged += (object sender, string status) =>
-                                            {
-                                                ConnectionStatus = status;
-                                                if (_server.IsConnected)
-                                                    ((IDataPanel)_activeDataPanel)?.Update();
-                                             };
-            _server.DataReady += OnServerDataReady; 
-                    
-            _server.ServerError += async (object server, MpdResponse e) =>
-                    {
-                        MsgBoxButton pressedButton = await DisplayMessage(new Message(MsgBoxType.Error, 
-                                                                          e.ErrorMessage, 
-                                                                          MsgBoxButton.Reconnect | MsgBoxButton.Exit));
-                        switch(pressedButton)
-                        {
-                            case MsgBoxButton.Reconnect: _server.Start(); break;
-                            case MsgBoxButton.Exit: App.Current.Exit(); break;
-                        }
-                    };
+            _server.ConnectionStatusChanged += OnServerConnectionStatusChanged;
+            _server.DataReady += OnServerDataReady;
+            _server.ServerError += OnServerError;
 
             MainMenuPanel.Init(_server);
             MainMenuPanel.RequestAction += OnDataPanelActionRequested;
@@ -160,9 +132,7 @@ namespace Balboa
             if (_server.Initialized)
                 _server.Start();         // Запускаем сеанс взаимодействия с MPD
 
-            var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new PlaylistPanel(_server));
-            OnDataPanelActionRequested(this, actionParams);
-        
+            ActivatePanel(new PlaylistPanel(_server));
         }
 
         private void OnServerDataReady(object sender, MpdResponse data)
@@ -197,6 +167,36 @@ namespace Balboa
                 {
                     ;
                 }
+            }
+        }
+
+        private async void OnServerConnectionStatusChanged(object sender, string status)
+        {
+            ConnectionStatus = status;
+            if (status == "Disconnected" && _server.Connection.Error.Length > 0)
+                {
+                    MsgBoxButton pressedButton = await DisplayMessage(new Message(MsgBoxType.Error, _server.Connection.Error,
+                                          MsgBoxButton.Reconnect | MsgBoxButton.GoToSettings | MsgBoxButton.CloseApplication));
+                switch (pressedButton)
+                {
+                    case MsgBoxButton.Reconnect:        _server.Start(); break;
+                    case MsgBoxButton.CloseApplication: App.Current.Exit(); break;
+                    case MsgBoxButton.GoToSettings:     ActivatePanel(new SettingsPanel(_server)); break;
+                }
+            }
+
+                if (_server.IsConnected)
+                    ((IDataPanel)_activeDataPanel)?.Update();
+        }
+
+        private async void OnServerError(object server, MpdResponse e)
+        {
+            MsgBoxButton pressedButton = await DisplayMessage(new Message(MsgBoxType.Error, e.ErrorMessage,
+                                                              MsgBoxButton.Reconnect | MsgBoxButton.CloseApplication));
+            switch (pressedButton)
+            {
+                    case MsgBoxButton.Reconnect: _server.Start(); break;
+                    case MsgBoxButton.CloseApplication: App.Current.Exit(); break;
             }
         }
 
@@ -236,16 +236,10 @@ namespace Balboa
         private async void OnDataPanelActionRequested(Object sender, ActionParams actionParams)
         {
             if (actionParams.ActionType.HasFlag(ActionType.ActivateDataPanel))
-            {
-                _activeDataPanel = actionParams.Panel as UserControl;
-                ActivatePanel(_activeDataPanel as IRequestAction);
-            }
+                ActivatePanel(actionParams.Panel as IRequestAction);
 
             if (actionParams.ActionType.HasFlag(ActionType.DisplayMessage))
-            {
-                MsgBoxButton pressedButton = await DisplayMessage(actionParams.Message);
-                ((IRequestAction)sender).HandleUserResponse(pressedButton);
-            }
+                ((IRequestAction)sender).HandleUserResponse(await DisplayMessage(actionParams.Message));
         }
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -339,34 +333,6 @@ namespace Balboa
             _server.Start();
         }
 
-        #region Обработчики событий объекта Server
-
-        private async void OnServerError(object sender, EventArgs eventArgs)
-        {
-            //_server.Halt();
-            //switch(await MessageBox(_resldr.GetString("Error"),((ServerEventArgs) eventArgs).Message, MsgBoxButtons.GoToSettings | MsgBoxButtons.Retry | MsgBoxButtons.Exit))
-            //{
-            //    case MsgBoxButtons.Exit: Application.Current.Exit(); break;
-            //    case MsgBoxButtons.Retry: _server.Start(); break;
-            //                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
-            //            }
-        }
-
-        //private async void OnServerCriticalError(object sender, EventArgs eventArgs)
-        //{
-        //    //_server.Halt();
-        //    //MsgBoxButtons responce = await MessageBox(_resldr.GetString("CriticalError"), ((ServerEventArgs)eventArgs).Message, MsgBoxButtons.GoToSettings | MsgBoxButtons.CloseApplication);
-        //    //switch (responce)
-        //    //{
-        //    //    case MsgBoxButtons.CloseApplication: Application.Current.Exit();break;
-        //    //    case MsgBoxButtons.Retry: _server.Restart();break;
-        //    //                case MsgBoxButtons.GoToSettings: SwitchDataPanelsTo(DataPanelState.Settings);break;
-        //    //            }
-        //}
-
-        #endregion
- 
-
         private void ActivatePanel(IRequestAction panel)
         {
             if (panel == null) throw new ArgumentNullException(nameof(panel),"Not defined panel to activate");
@@ -376,6 +342,7 @@ namespace Balboa
                 ((IRequestAction)DataPanel.Child).RequestAction -= OnDataPanelActionRequested;
                 ((IDisposable)DataPanel.Child)?.Dispose();
             }
+            _activeDataPanel = panel as UserControl;
             panel.RequestAction += OnDataPanelActionRequested;
             DataPanel.Child = panel as UserControl;
             DataInfoPanel.DataContext = panel as IDataPanelInfo;

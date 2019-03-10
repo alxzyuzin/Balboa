@@ -13,12 +13,13 @@
     <UserControl.Resources>
 
         <Style x:Key="MsgBoxButtonStyle" TargetType="Button" >
-            <Setter Property="Margin" Value="20,0,0,0"/>
+            <Setter Property="Margin" Value="10,0,0,0"/>
             <Setter Property="Height" Value="40" />
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="Normal"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="#FF606060"/>
         </Style>
 
         <Storyboard x:Name="ShowControl">
@@ -64,8 +65,8 @@
                            FontFamily="Segoe UI Light" FontSize="20"/>
                 <Grid Grid.Row="2" >
                     <StackPanel x:Name="ButtonsPanel" Orientation="Horizontal"  
-                                VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,40,0">
-                        
+                                VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,20,0">
+                        <Button Content=" uuuuuu"/>
                     </StackPanel>
                 </Grid>
             </Grid>

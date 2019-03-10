@@ -40,20 +40,32 @@ namespace Balboa
     public enum MsgBoxButton
     {
         OK = 1,
-        Cancel = 2,
-        Continue = 4,
-        Retry = 8,
-        Exit = 16,
+        Close = 2,
+        Cancel = 4,
+        Continue = 8,
+        Retry = 16,
         GoToSettings = 32,
-        CloseApplication = 64,
-        Reconnect = 128,
-        Close =256
+        Reconnect = 64,
+        CloseApplication = 128,
     }
 
 
 
     public sealed partial class MessageBox : UserControl
     {
+
+        private Dictionary<MsgBoxButton, string> MsgBoxButtonsNames = new Dictionary<MsgBoxButton, string>
+        {
+            { MsgBoxButton.OK, "OK" },
+            { MsgBoxButton.Close, "Close" },
+            { MsgBoxButton.Cancel, "Cancel" },
+            { MsgBoxButton.Continue, "Continue" },
+            { MsgBoxButton.Retry, "Retry" },
+            { MsgBoxButton.GoToSettings, "Go to 'Settings'"},
+            { MsgBoxButton.Reconnect, "Reconnect" },
+            { MsgBoxButton.CloseApplication, "Close application" } ,
+        };
+
         private bool _stopWating;
         private int _width;
         private int _height;
@@ -165,8 +177,8 @@ namespace Balboa
                 {
                     Button newButton = new Button();
                     newButton.Name = b.ToString();
-                    newButton.Content = b.ToString();
-                    newButton.Width = Math.Max(b.ToString().Length, 5) * 12 + 20;
+                    newButton.Content = MsgBoxButtonsNames[b];
+                    newButton.Width = Math.Max(MsgBoxButtonsNames[b].Length, 5) * 7 + 50;
                     newButton.Style = this.Resources["MsgBoxButtonStyle"] as Style;
                     newButton.Tapped += button_Tapped;
                     ButtonsPanel.Children.Add(newButton);

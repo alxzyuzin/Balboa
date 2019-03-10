@@ -106,6 +106,7 @@ namespace Balboa.Common
             _host = host;
             _port = port;
             IsActive = false;
+            _error = string.Empty;
             Status = $"Connecting to {_host} port: {_port}.";
             try
             {

@@ -84,7 +84,7 @@ namespace Balboa
             Buttons = buttons;
             BoxHeight = height;
             BoxWidth = width;
-    }
+        }
         
         public MsgBoxType Type { get; private set; }
         public string Text { get; private set; }
