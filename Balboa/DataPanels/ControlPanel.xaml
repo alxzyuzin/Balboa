@@ -139,6 +139,7 @@
             </Grid>
             
             <!-- Кнопки управления воспроизведением-->
+            <Border Margin="0,0,20,0">
             <Grid Height="90" Margin="0,10,0,0" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"  x:Name="grid_PlayControls_PlayModeColumn"/>
@@ -162,6 +163,7 @@
                 <AppBarButton Grid.Column="4" Icon="Next"  Tapped="btn_NextTrack_Tapped"  FontWeight="Light" />
                 <AppBarButton x:Name="StopButton" Grid.Column="7" Icon="Stop" Width="90" Tapped="btn_Stop_Tapped"/>
              </Grid>
+            </Border>
         </StackPanel>
         <!-- Volume control-->
         <Grid x:Name="VolumeControl" Grid.Column="2" Margin="0,-15,-20,0" >
@@ -171,7 +173,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
-            <SiroccoControls:RoundSlider x:Name="VolumeSlider" Width="160" Height="160"  Grid.RowSpan="3" Radius="70"
+            <SiroccoControls:RoundSlider x:Name="VolumeSlider" Width="160" Height="160"  Grid.RowSpan="3" Radius="60"
                                      Minimum="0" Maximum="100"
                                      Background="{StaticResource MainBackgroundBrush}"
                                      SliderBrush="Orange" SliderBackgroundBrush="DimGray" SliderThickness="4"
@@ -185,14 +187,6 @@
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        FontSize="25" Foreground="Orange"/>
         </Grid>
-       <!--
-        <Popup x:Name="popup_VolumeControl" Visibility="Collapsed">
-            <Popup.ChildTransitions>
-                <TransitionCollection>
-                    <PaneThemeTransition Edge="Bottom"/>
-                </TransitionCollection>
-            </Popup.ChildTransitions>
-        </Popup>
--->
+
     </Grid>
 </UserControl>

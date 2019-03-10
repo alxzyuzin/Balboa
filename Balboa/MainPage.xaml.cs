@@ -244,8 +244,9 @@ namespace Balboa
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            MainWindowWIdth = e.NewSize.Width;
-            SetDataInfoPanelWidth();
+            //MainWindowWIdth = e.NewSize.Width;
+            MainWindowWIdth = this.ActualWidth;
+            
             SetActiveDataPanelOrientation();
             RearangeTrackInfoPanels();
 
@@ -259,21 +260,30 @@ namespace Balboa
 
             if (MainWindowWIdth < 635)
                 _extendedStatusMode ^= ExtendedStatusMode.BitPersample;
-            }
+
+            SetDataInfoPanelWidth();
+        }
 
         private void SetActiveDataPanelOrientation()
         {
-            if (_displayOrientation == DisplayOrientations.Landscape || _displayOrientation == DisplayOrientations.LandscapeFlipped)
+            if (_displayOrientation == DisplayOrientations.Landscape ||
+                _displayOrientation == DisplayOrientations.LandscapeFlipped)
             {
-                if (_activeDataPanel != null)
-                    ((IDataPanel)_activeDataPanel).Orientation = Orientation.Horizontal;
                 TopTrackInfoPanel.ImageWidth = 90;
+                if (_activeDataPanel != null)
+                {
+                    if (_activeDataPanel is CurrentTrackPanel && MainWindowWIdth < 850)
+                        ((IDataPanel)_activeDataPanel).Orientation = Orientation.Vertical;
+                    else
+                        ((IDataPanel)_activeDataPanel).Orientation = Orientation.Horizontal;
+                }
             }
             else
             {
+                TopTrackInfoPanel.ImageWidth = 190;
                 if (_activeDataPanel != null)
                     ((IDataPanel)_activeDataPanel).Orientation = Orientation.Vertical;
-                TopTrackInfoPanel.ImageWidth = 190;
+                
             }
         }
 
@@ -349,6 +359,7 @@ namespace Balboa
             MainMenuPanel.HighLiteSelectedItem(panel.GetType().Name);
             SetActiveDataPanelOrientation();
             RearangeTrackInfoPanels();
+//            MainPage_SizeChanged(this, null);
             SetDataInfoPanelWidth();
         }
 

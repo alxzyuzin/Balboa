@@ -31,6 +31,8 @@
             </Grid>
         </DataTemplate>
 
+        
+        
         <Storyboard x:Name="gr_FileSystemShowStoryboard">
             <DoubleAnimation  Storyboard.TargetName="gr_FileSystem"
                                           Storyboard.TargetProperty="Opacity"
@@ -57,15 +59,12 @@
                            VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25"
                            Text="{Binding EmptyDirectoryMessage}" Visibility="{Binding EmptyContentMessageVisibility}"
                            TextWrapping="WrapWholeWords"/>
-                
-        <StackPanel x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" 
-                     Width="340">
-            <AppBarButton    Icon="Home"         Label="Home"  Width="85"  Tapped="appbtn_Home_Tapped"/>
-            <AppBarButton    Icon="Up"         Label="Up"  Width="85"  IsEnabled="{Binding AppbtnUpIsEnabled}"
-                             Tapped="appbtn_Up_Tapped"/>
-           <!-- <AppBarSeparator Width="65" /> -->
-            <AppBarButton    Icon="SyncFolder" Label="Rescan database"  Width="85"  Margin="-7,0,0,0" Tapped="appbtn_RescanDatabase_Tapped"/>
-            <AppBarButton    Icon="Add"        Label="Add selected"  Width="85"  Tapped="appbtn_AddFromFileSystem_Tapped"/>
+
+        <StackPanel x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Width="350">
+            <AppBarButton Icon="Home"       Label="Home"  Width="85"  Tapped="appbtn_Home_Tapped"/>
+            <AppBarButton Icon="Up"         Label="Up"  Width="85"  IsEnabled="{Binding AppbtnUpIsEnabled}" Tapped="appbtn_Up_Tapped"/>
+            <AppBarButton Icon="SyncFolder" Label="Rescan database"  Width="94"  Margin="-12,0,0,0" Tapped="appbtn_RescanDatabase_Tapped"/>
+            <AppBarButton Icon="Add"        Label="Add selected"  Width="85"  Tapped="appbtn_AddFromFileSystem_Tapped"/>
         </StackPanel>
     </Grid>
 </UserControl>
