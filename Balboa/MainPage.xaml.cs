@@ -135,39 +135,37 @@ namespace Balboa
             ActivatePanel(new PlaylistPanel(_server));
         }
 
-        private void OnServerDataReady(object sender, MpdResponse data)
+        private async void OnServerDataReady(object sender, MpdResponse data)
         {
-            {
-                if (data.Keyword == ResponseKeyword.OK)
-                {
-                    if (data.Command.Op == "status")
+           if (data.Keyword == ResponseKeyword.OK)
+           {
+               if (data.Command.Op == "status")
+               {
+                    _status.Update(data.Content);
+                    ExtendedStatus = AssembleExtendedStatus();
+
+                    if (!(_activeDataPanel is CurrentTrackPanel))
                     {
-                        _status.Update(data.Content);
-                        ExtendedStatus = AssembleExtendedStatus();
-
-                        if (!(_activeDataPanel is CurrentTrackPanel))
+                        if (_status.State == "stop")
                         {
-                            if (_status.State == "stop")
-                            {
-                                TopTrackInfoPanel.Hide();
-                                BottomTrackInfoPanel.Hide();
-                            }
-                            else
-                            {
-                                if (MainWindowWIdth >= Width_1)
-                                    BottomTrackInfoPanel.Show();
-                                else
-                                    TopTrackInfoPanel.Show();
-                            }
+                            TopTrackInfoPanel.Hide();
+                            BottomTrackInfoPanel.Hide();
                         }
-                    }
-                }
-
-                if (data.Keyword != ResponseKeyword.OK)
-                {
-                    ;
+                        else
+                        {
+                           if (MainWindowWIdth >= Width_1)
+                               BottomTrackInfoPanel.Show();
+                           else
+                               TopTrackInfoPanel.Show();
+                        }
+                     }
                 }
             }
+            if (data.Keyword != ResponseKeyword.OK)
+            {
+                await DisplayMessage(new Message(MsgBoxType.Error, data.ErrorMessage, MsgBoxButton.Continue, 300));
+            }
+
         }
 
         private async void OnServerConnectionStatusChanged(object sender, string status)

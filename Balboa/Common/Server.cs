@@ -391,6 +391,12 @@ namespace Balboa
         #endregion
 
         #region Informational commands
+        public void GetAlbumArt(string uri)
+        {
+           AddCommand(new MpdCommand("albumart"));
+        }
+        
+        
         /// <summary>
         /// Получение статистической информации
         /// </summary>

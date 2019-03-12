@@ -180,7 +180,7 @@
     <Compile Include="Common\Connection.cs" />
     <Compile Include="Common\SavedPlaylistItem.cs" />
     <Compile Include="Common\Song.cs" />
-    <Compile Include="Common\FileItemStyleSelector.cs" />
+    <Compile Include="Common\StyleSelectors.cs" />
     <Compile Include="Common\GenericComparer.cs" />
     <Compile Include="Common\Log.cs" />
     <Compile Include="Common\File.cs" />
@@ -190,7 +190,6 @@
     <Compile Include="Common\ServerEventArg.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\Track.cs" />
-    <Compile Include="Common\PlaylistItemStyleSelector.cs" />
     <Compile Include="Common\Statistic.cs" />
     <Compile Include="Common\Status.cs" />
     <Compile Include="Common\TimeConverter.cs" />

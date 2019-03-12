@@ -13,7 +13,7 @@
 
     <UserControl.Resources>
 
-        <common:FileItemStyleSelector x:Key="FileItemStyleSelector" />
+        <common:StyleSelectors x:Key="FileItemStyleSelector" />
         <!-- ШАБЛОН для представления элемента FILESYSTEM-->
         <DataTemplate x:Key="FileSystemItemTemplate"  >
             <Grid x:Name="gr_FileSystemItemTemplate" Margin="5,2,0,2">

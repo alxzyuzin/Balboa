@@ -22,7 +22,9 @@ namespace Balboa.Common
         public MpdCommand Command { get; private set; }
         private List<string> _content = new List<string>();
         public List<string> Content { get { return _content; }  }
-        public string ErrorMessage { get; set; } = string.Empty;
+        private string _rowContent;
+        public string RowContent { get { return _rowContent; } }
+        public string ErrorMessage { get; private set; } = string.Empty;
 
         public MpdResponse()
         {
@@ -34,9 +36,10 @@ namespace Balboa.Common
             Command = command;
             if (keyword == ResponseKeyword.OK)
             {
+                _rowContent = content;
                 _content.AddRange(content.Split('\n'));
                 // Уберём из ответа два последних элемента (ОК и \n)
-                _content.RemoveRange(_content.Count - 2, 2);
+                _content.RemoveRange(Content.Count - 2, 2);
             }
             else
                 ErrorMessage = content;

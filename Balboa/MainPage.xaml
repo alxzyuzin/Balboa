@@ -88,10 +88,10 @@
                    Text="{Binding ExtendedStatus}" FontSize="15" Margin="20,0,0,0"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Right"
                    Text="{Binding ConnectionStatus}" FontSize="15" Margin="0,0,20,0"/>
-        <!-- -->
+        <!-- 
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" TextAlignment="Center"
                    Text="{Binding MainWindowWIdth}" FontSize="15" Margin="0,0,20,0"/>
-        <!-- -->
+        -->
         <local:MessageBox x:Name="MsgBox" Grid.Row="0" Grid.Column="0" 
                           Grid.ColumnSpan="2" Grid.RowSpan="3" Visibility="Collapsed"/>
     </Grid>
