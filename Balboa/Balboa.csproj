@@ -193,7 +193,6 @@
     <Compile Include="Common\Statistic.cs" />
     <Compile Include="Common\Status.cs" />
     <Compile Include="Common\TimeConverter.cs" />
-    <Compile Include="Common\Utils.cs" />
     <Compile Include="DataPanels\ControlPanel.xaml.cs">
       <DependentUpon>ControlPanel.xaml</DependentUpon>
     </Compile>

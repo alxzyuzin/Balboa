@@ -19,33 +19,33 @@ namespace Balboa.Common
     {
         public event PropertyChangedEventHandler PropertyChanged;
  
-        private string _fileName = string.Empty;
-        public string FileName
-        {
-            get { return _fileName; }
-            set
-            {
-                if (_fileName != value)
-                {
-                    _fileName = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FileName)));
-                }
-            }
-        }
+//        private string _fileName = string.Empty;
+        public string FileName { get; set; }
+        //{
+        //    get { return _fileName; }
+        //    set
+        //    {
+        //        if (_fileName != value)
+        //        {
+        //            _fileName = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FileName)));
+        //        }
+        //    }
+        //}
 
-        private string _lastModificationDate = string.Empty;
-        public string LastModificationDate
-        {
-            get { return _lastModificationDate; }
-            set
-            {
-                if (_lastModificationDate != value)
-                {
-                    _lastModificationDate = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastModificationDate)));
-                }
-            }
-        }
+//        private string _lastModificationDate = string.Empty;
+        public string LastModificationDate { get; set; }
+        //{
+        //    get { return _lastModificationDate; }
+        //    set
+        //    {
+        //        if (_lastModificationDate != value)
+        //        {
+        //            _lastModificationDate = value;
+        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastModificationDate)));
+        //        }
+        //    }
+        //}
 
 
   
