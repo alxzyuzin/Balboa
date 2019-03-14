@@ -66,8 +66,9 @@ namespace Balboa.Common
                         FileName = tagvalue;
                         break;
                     case "last-modified":
-                        var sb = new StringBuilder(tagvalue).Replace('T', ' ').Append(items[2]).Append(items[3]).Replace('Z', ' ');
-                        //LastModificationDate = tagvalue.Replace('T', ' ');
+                        LastModificationDate = new StringBuilder(tagvalue).Replace('T', ' ').Append(':')
+                                                                          .Append(items[2]).Append(':')
+                                                                          .Append(items[3]).Replace('Z', ' ').ToString();
                         break;
                 }
                 i++;

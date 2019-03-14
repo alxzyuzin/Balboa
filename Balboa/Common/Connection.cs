@@ -167,8 +167,10 @@ namespace Balboa.Common
             catch (Exception e)
             {
                 Clear();
+
+                string ExceptionMsg = e.Message.Contains("\r\n") ? e.Message.Substring(0, e.Message.IndexOf("\r\n")) : e.Message;
                 Error = string.Format(CultureInfo.CurrentCulture, _resldr.GetString("ConnectionErrorDescription"),
-                                        _host, _port, Utilities.GetExceptionMsg(e));
+                                        _host, _port, ExceptionMsg);
                 IsActive = false;
                 Status = "Disconnected";
                 return false;

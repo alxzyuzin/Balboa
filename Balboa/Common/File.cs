@@ -150,12 +150,12 @@ namespace Balboa.Common
                 switch (tagname)
                 {
                     case "file":
-                        Name = Utilities.ExtractFileName(tagvalue, false);
+                        Name = tagvalue.Substring(tagvalue.LastIndexOf('/') + 1);
                         Nature = FileNature.File;
                         Icon += '\xE189';
                         break;           // 57737     // E189
                     case "directory":
-                        Name = Utilities.ExtractFileName(tagvalue, false);
+                        Name = tagvalue.Substring(tagvalue.LastIndexOf('/') + 1);
                         Nature = FileNature.Directory;
                         Icon += '\xE188';
                         break; // 57736    // E188
@@ -171,7 +171,6 @@ namespace Balboa.Common
 
             response.RemoveRange(0, i);
         }
-
 
         /// <summary>
         /// Реализует интерфейс IComparable
@@ -225,7 +224,6 @@ namespace Balboa.Common
             char[] c = this.Name.ToCharArray();
             return (int) c[0];
         }
-
 
         public static bool operator ==(File left, File right)
         {

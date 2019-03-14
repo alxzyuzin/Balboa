@@ -229,21 +229,21 @@ namespace Balboa
             }
             catch (Exception ex)
             {
-                Type type = ex.GetType();
+                string ExceptionMsg = ex.Message.Contains("\r\n") ? ex.Message.Substring(0, ex.Message.IndexOf("\r\n")) : ex.Message;
+
                 // Ошибки которые вызывают Exceptions
                 // "No mapping for the Unicode character exists in the target multi-byte code page.\r\n\
                 MpdResponse mpdresp;
                 if (SocketError.GetStatus(ex.HResult) == SocketErrorStatus.Unknown)
                 {
                     var er = SocketError.GetStatus(ex.HResult);
-                    mpdresp = new MpdResponse(ResponseKeyword.InternalError, null, _resldr.GetString("CommunicationError") + Utilities.GetExceptionMsg(ex));
-                    ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                    mpdresp = new MpdResponse(ResponseKeyword.InternalError, null, _resldr.GetString("CommunicationError") + ExceptionMsg);
                 }
                 else
                 {
-                    mpdresp = new MpdResponse(ResponseKeyword.SocketError, null, _resldr.GetString("SocketError") + Utilities.GetExceptionMsg(ex));
-                    ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                    mpdresp = new MpdResponse(ResponseKeyword.SocketError, null, _resldr.GetString("SocketError") + ExceptionMsg);
                 }
+               ((IProgress<MpdResponse>)_status).Report(mpdresp);
                 IsRunning = false;
             }
         }
@@ -789,6 +789,7 @@ namespace Balboa
         #endregion
 
         #endregion
+
 
 
         public void Dispose()

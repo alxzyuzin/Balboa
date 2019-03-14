@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Balboa.Common
 {
@@ -53,7 +54,7 @@ namespace Balboa.Common
                     case "Last-Modified": LastModified = tagvalue; break;
                     case "Time": Duration = float.Parse(tagvalue, System.Globalization.CultureInfo.InvariantCulture); break;
                     case "Artist": Artist = tagvalue.Length > 0 ? tagvalue: " Unknown artist"; break;
-                    case "Title": Title = tagvalue.Length>0 ? tagvalue : Utilities.ExtractFileName(File ?? "", true); break;
+                    case "Title": Title = tagvalue.Length>0 ? tagvalue : ExtractFileName(File ?? ""); break;
                     case "Album": Album = tagvalue.Length > 0 ? tagvalue : " Unknown album"; break;
                     case "Date": Date = tagvalue.Length > 0 ? tagvalue : " Unknown year"; break;
                     case "Track": Track = tagvalue; break;
@@ -66,6 +67,16 @@ namespace Balboa.Common
                 }
             }
         }
+
+        public static string ExtractFileName(string path)
+        {
+            string res = path.Substring(path.LastIndexOf('/') + 1);
+            int i = res.LastIndexOf('.');
+            if (i>=0)
+                res = res.Substring(0, i);
+             return res.Trim();
+        }
+
 
         private void Clear()
         {

@@ -121,7 +121,7 @@ namespace Balboa.Common
                     case "musicbrainz_releasetrackid": MusicBrainzReleaseTrackId = tagvalue; break; //  the release track id in the MusicBrainz database.
                 }
                 // Заполним пустые параметры значениями по умолчанию
-                if (Title == null) Title = Utilities.ExtractFileName(File ?? "", true);
+                if (Title == null) Title = ExtractFileName(File ?? "");
                 if (Artist == null) Artist = " Unknown artist";
                 if (Album == null) Album = " Unknown album";
                 if (Date == null) Date = " Unknown year";
@@ -131,5 +131,15 @@ namespace Balboa.Common
 
             response.RemoveRange(0, i);
         }
+
+        public static string ExtractFileName(string path)
+        {
+            string res = path.Substring(path.LastIndexOf('/') + 1);
+            int i = res.LastIndexOf('.');
+            if (i >= 0)
+                res = res.Substring(0, i);
+            return res.Trim();
+        }
+
     }
 }
