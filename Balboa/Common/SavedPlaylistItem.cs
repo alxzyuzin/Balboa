@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text;
 
 namespace Balboa.Common
 {
@@ -47,20 +48,7 @@ namespace Balboa.Common
         }
 
 
-        //public void Update(List<string> response)
-        //{
-        //    if (response == null) throw new ArgumentNullException(nameof(response));
-            
-
-        //    string[] items = response[0].Split(':');
-        //    if (items.Length > 1)
-        //        Name = items[1].Trim();
-        //    else
-        //        Name = "Undefined";
-        //    response.RemoveAt(0);
-        //}
-
-
+  
         public void Update(List<string> response)
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
@@ -75,10 +63,11 @@ namespace Balboa.Common
                 switch (tagname)
                 {
                     case "playlist":
-                        FileName = Utilities.ExtractFileName(tagvalue, false);
-                         break;
+                        FileName = tagvalue;
+                        break;
                     case "last-modified":
-                        LastModificationDate = Utilities.ExtractFileName(tagvalue, false);
+                        var sb = new StringBuilder(tagvalue).Replace('T', ' ').Append(items[2]).Append(items[3]).Replace('Z', ' ');
+                        //LastModificationDate = tagvalue.Replace('T', ' ');
                         break;
                 }
                 i++;
