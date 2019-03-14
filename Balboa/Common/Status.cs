@@ -18,19 +18,12 @@ using System.Collections.Generic;
 namespace Balboa.Common
 {
 
-    public sealed class Status: INotifyPropertyChanged
+    public sealed class Status
     {
-        private const string _modName = "Status.cs";
-
-        private Page   _mainPage;
-        
         public enum ServerState
         {
             Play, Stop, Pause
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
 
         #region Properties
         public int  Volume { get; private set; }      // volume: 0-100 
@@ -62,91 +55,19 @@ namespace Balboa.Common
         public int    SampleRate { get; private set; }     // audio: sampleRate:bits:channels
         public int    Bits { get; private set; }
         public int    Channels { get; private set; }// audio: sampleRate:bits:channels
-
-
-        //private string _playButtonState;
-        //public string   PlayButtonState
-        //{
-        //    get { return _playButtonState; }
-        //    set
-        //    { if (_playButtonState!=value)
-        //        {
-        //            _playButtonState = value;
-        //            NotifyPropertyChanged("PlayButtonState");
-        //        }
-        //    }
-        //}
-
-        //        private int     _updatingDbJobID;//updating_db: job id
         public int      UpdatingDbJobId { get; set; }
-       
-        //        private string  _error;
         public string   Error { get; set; }
 
         #endregion
-
-        public Status(Page mainPage)
-        {
-            _mainPage = mainPage;
-        }
 
         public Status()
         {
         }
 
-        //public void Update(MpdResponseCollection statusInfo)
-        //{
-        //    if (statusInfo == null)
-        //        throw new BalboaNullValueException(_modName, "Update", "323", "statusInfo");
-
-        //    string notNumber = @"\D{1,}";
-
-        //    foreach (string item in statusInfo)
-        //    {
-        //        string[] statusitem = item.Split(':');
-        //        string statusvalue = statusitem[1].TrimStart(' ');
-        //        switch (statusitem[0])
-        //        {
-        //            case "volume": Volume = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;                // volume: 0-100 
-        //            case "repeat": Repeat = (statusvalue == "1") ? true : false; break;   // repeat: 0 or 1 
-        //            case "random": Random = (statusvalue == "1") ? true : false; break;   // random: 0 or 1 
-        //            case "single": Single = (statusvalue == "1") ? true : false; break;   // single:  0 or 1 
-        //            case "consume": Consume = (statusvalue == "1") ? true : false; break;  // consume: 0 or 1 
-        //            case "playlist": PlaylistId = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;          // playlist: 31-bit unsigned integer, the playlist version number
-        //            case "playlistlength": PlaylistLength = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;// playlistlength: integer, the length of the playlist
-        //            case "state": State = statusvalue; break;                             // state: play, stop, or pause
-        //            case "song": Song = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;                    // song: playlist song number of the current song stopped on or playing
-        //            case "songid": SongId = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;                // songid: playlist songid of the current song stopped on or playing
-        //            case "nextsong": NextSong = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;            // nextsong:   playlist song number of the next song to be played
-        //            case "nextsongid": NextSongId = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;        // nextsongid: playlist songid of the next song to be played
-        //            case "time": Time = float.Parse(statusvalue, CultureInfo.InvariantCulture); break;                  // time: total time elapsed(of current playing/paused song)
-        //            case "elapsed": TimeElapsed = float.Parse(statusvalue, CultureInfo.InvariantCulture); break;        // elapsed:  Total time elapsed within the current song, but with higher resolution.
-        //            case "bitrate": Bitrate = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;              // bitrate: instantaneous bitrate in kbps
-        //            case "xfade": XFade = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;                  // xfade: crossfade in seconds
-        //            case "mixrampdb": MixRampdB = float.Parse(statusvalue, CultureInfo.InvariantCulture); break;        // mixrampdb: mixramp threshold in dB
-        //            case "mixrampdelay": MixRampDelay = statusvalue; break;               // mixrampdelay: mixrampdelay in seconds
-        //            case "audio":
-        //                SampleRate = Regex.IsMatch(statusvalue, notNumber) ? 0 : int.Parse(statusvalue, CultureInfo.InvariantCulture);         // audio: sampleRate:bits:channels
-        //                Bits       = Regex.IsMatch(statusitem[2], notNumber) ? 0:int.Parse(statusitem[2], CultureInfo.InvariantCulture);
-        //                Channels   = Regex.IsMatch(statusitem[3], notNumber) ? 0:int.Parse(statusitem[3], CultureInfo.InvariantCulture);
-                        
-        //                AudioParameters = "Sample rate: " + 
-        //                    SampleRate.ToString(CultureInfo.InvariantCulture) + " kHz, " + 
-        //                    Bits.ToString(CultureInfo.InvariantCulture) + " per sample, channels: " + 
-        //                    Channels.ToString(CultureInfo.InvariantCulture);
-        //                break;
-        //            case "updating_db": UpdatingDbJobId = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;  //updating_db: job id
-        //            case "error": Error = statusvalue; break;                             // error
-        //        }
-        //    }
-        //    ExtendedStatus = GetExtendedStatusValue(_state);
-        //}
-
 
         public void Update(List<string> statusInfo)
         {
-            if (statusInfo == null)
-                throw new BalboaNullValueException(_modName, "Update", "323", "statusInfo");
+            if (statusInfo == null) throw new ArgumentNullException(nameof(statusInfo));
 
             string notNumber = @"\D{1,}";
 

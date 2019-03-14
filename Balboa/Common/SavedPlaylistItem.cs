@@ -15,39 +15,10 @@ using System.Text;
 
 namespace Balboa.Common
 {
-    public class SavedPlaylistItem: INotifyPropertyChanged
+    public class SavedPlaylistItem
     {
-        public event PropertyChangedEventHandler PropertyChanged;
- 
-//        private string _fileName = string.Empty;
         public string FileName { get; set; }
-        //{
-        //    get { return _fileName; }
-        //    set
-        //    {
-        //        if (_fileName != value)
-        //        {
-        //            _fileName = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(FileName)));
-        //        }
-        //    }
-        //}
-
-//        private string _lastModificationDate = string.Empty;
         public string LastModificationDate { get; set; }
-        //{
-        //    get { return _lastModificationDate; }
-        //    set
-        //    {
-        //        if (_lastModificationDate != value)
-        //        {
-        //            _lastModificationDate = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastModificationDate)));
-        //        }
-        //    }
-        //}
-
-
   
         public void Update(List<string> response)
         {
@@ -77,8 +48,6 @@ namespace Balboa.Common
 
             response.RemoveRange(0, i);
         }
-
-
     }
 }
 
