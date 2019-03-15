@@ -41,7 +41,7 @@ namespace Balboa
         Narrow = 8
     }
 
-    public partial class MainPage : Page, INotifyPropertyChanged
+    public partial class MainPage : Page, INotifyPropertyChanged, IDisposable
     {
 
         // Screen width level for switching sreen layouts
@@ -373,6 +373,17 @@ namespace Balboa
             MsgBox.InnerBoxHeight = message.BoxHeight;
             MsgBox.InnerBoxWidth = message.BoxWidth;
             return await MsgBox.Show();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual  void Dispose(bool disposeManaged)
+        {
+            _server.Dispose();
         }
     }
 }

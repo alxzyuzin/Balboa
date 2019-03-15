@@ -366,6 +366,7 @@ namespace Balboa
 
         public void Dispose()
         {
+            _ThreadEvent.Dispose();
             _server.DataReady -= _server_DataReady;
         }
 

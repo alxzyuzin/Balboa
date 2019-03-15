@@ -20,7 +20,7 @@ using Windows.Storage.Streams;
 namespace Balboa.Common
 {
   
-    public sealed class Connection : INotifyPropertyChanged
+    public sealed class Connection : INotifyPropertyChanged, IDisposable
     {
         ResourceLoader _resldr = new ResourceLoader();
 
@@ -208,6 +208,11 @@ namespace Balboa.Common
         {
                 await _datareader.LoadAsync(1000000);
                 return _datareader.ReadString(_datareader.UnconsumedBufferLength);
+        }
+
+        public void Dispose()
+        {
+            Clear();
         }
     }
 }

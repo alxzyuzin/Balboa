@@ -1,16 +1,14 @@
 ﻿/*-----------------------------------------------------------------------
- * Copyright 2017 Alexandr Zyuzin.
+ * Copyright 2019 Alexandr Zyuzin.
  *
  * This file is part of MPD client Balboa.
  *
- * Класс для хранения данных общего элемента списка
- * Элемент списка не требующий специального списка полей
+ * Класс для хранения данных элемента списка сохранённых плэйлистов
  *
   --------------------------------------------------------------------------*/
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Text;
 
 namespace Balboa.Common

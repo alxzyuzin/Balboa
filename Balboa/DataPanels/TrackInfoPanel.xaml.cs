@@ -132,7 +132,7 @@ namespace Balboa
             }
         }
 
-        private async void UpdateSongData(List<string> serverData)
+        private void UpdateSongData(List<string> serverData)
         {
             _song.Update(serverData);
             if (_songId != _song.Id)

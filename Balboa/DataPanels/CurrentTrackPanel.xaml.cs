@@ -240,7 +240,7 @@ namespace Balboa
             }
         }
 
-        private async  void UpdateControlData(List<string> serverData)
+        private void UpdateControlData(List<string> serverData)
         {
             _song.Update(serverData);
             Title       = _song.Title;

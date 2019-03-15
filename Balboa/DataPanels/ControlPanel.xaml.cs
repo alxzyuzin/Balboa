@@ -135,34 +135,10 @@ namespace Balboa
             }
         }
 
-        public string DataPanelInfo
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-        public string DataPanelElementsCount
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public string DataPanelInfo { get; set; }
+        public string DataPanelElementsCount { get; set; }
 
         Orientation IDataPanel.Orientation { get; set; }
-
-      
 
         public ControlPanel()
         {

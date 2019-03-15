@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Balboa;
-using Balboa.Common;
-using System.ComponentModel;
 using Windows.UI.Xaml.Controls;
 
 namespace Balboa
@@ -16,10 +9,10 @@ namespace Balboa
         DisplayMessage = 1,
         ActivateDataPanel = 2,
         DisplayPanel = 4,
-        HidePanel =8
+        HidePanel = 8
     }
 
-    public delegate void ActionRequestedEventHandler(object sender, ActionParams actionParams);
+    public delegate void ActionRequestedEventHandler(object sender, ActionParams e);
 
     public interface IDataPanel
     {
@@ -30,26 +23,19 @@ namespace Balboa
 
     public interface IRequestAction
     {
-        /// <summary>
-        ///    Occurs when a command button pressed.
-        /// </summary>
         event ActionRequestedEventHandler RequestAction;
         void HandleUserResponse(MsgBoxButton pressedButton);
     }
 
     public interface IDataPanelInfo
     {
-        /// <summary>
-        ///    Occurs when a command button pressed.
-        /// </summary>
-
         string DataPanelInfo { get; set; }
         string DataPanelElementsCount { get; set; }
         double TotalButtonWidth { get; }
     }
 
 
-    public class ActionParams
+    public class ActionParams : EventArgs
     {
         public ActionParams(Message message)
         {
@@ -60,7 +46,6 @@ namespace Balboa
         public ActionParams(ActionType action)
         {
             ActionType = action;
-           
         }
 
         public ActionParams SetPanel<T>(T panel) where T : IDataPanel, IRequestAction

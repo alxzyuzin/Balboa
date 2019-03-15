@@ -17,7 +17,7 @@
     <PackageCertificateKeyFile>Balboa_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>BD5700DEFF6C58034319E09794089BA503A7692E</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>170E1607BEFCC1C4145A4D6F85BC8610E1ED0E1E</PackageCertificateThumbprint>
     <AppxBundle>Always</AppxBundle>
     <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
@@ -319,6 +319,8 @@
     <Content Include="Assets\Wide310x150Logo.scale-140.png" />
     <Content Include="Assets\Wide310x150Logo.scale-180.png" />
     <Content Include="Assets\Wide310x150Logo.scale-80.png" />
+    <None Include="Balboa_StoreKey.pfx" />
+    <None Include="Balboa_TemporaryKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <ItemGroup>

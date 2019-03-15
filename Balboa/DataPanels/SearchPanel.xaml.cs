@@ -174,12 +174,10 @@ namespace Balboa
             // _listViewItemGotFocus = e.OriginalSource as ListViewItem;
         }
 
-        private bool playlastaddedtrack = false;
         private void listview_Search_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             //Track track = _listViewItemGotFocus.Content as Track;
             //_server.Add(track.File);
-            playlastaddedtrack = true;
         }
 
         private void SearchItemMenu_Tapped(object sender, TappedRoutedEventArgs e)

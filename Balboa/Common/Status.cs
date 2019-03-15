@@ -26,21 +26,21 @@ namespace Balboa.Common
         }
 
         #region Properties
-        public int  Volume { get; private set; }      // volume: 0-100 
-        public bool Repeat { get; private set; }      // repeat: 0 or 1 
-        public bool Random { get; private set; }          // random: 0 or 1 
-        public bool Single { get; private set; }           // single:  0 or 1
-        public bool Consume { get; private set; }          // consume: 0 or 1
-        public int  PlaylistId { get; private set; }      // playlist: 31-bit unsigned integer, the playlist version number
-        public int  PlaylistLength { get; private set; }    // playlistlength: integer, the length of the playlist
+        public int    Volume { get; private set; }      // volume: 0-100 
+        public bool   Repeat { get; private set; }      // repeat: 0 or 1 
+        public bool   Random { get; private set; }          // random: 0 or 1 
+        public bool   Single { get; private set; }           // single:  0 or 1
+        public bool   Consume { get; private set; }          // consume: 0 or 1
+        public int    PlaylistId { get; private set; }      // playlist: 31-bit unsigned integer, the playlist version number
+        public int    PlaylistLength { get; private set; }    // playlistlength: integer, the length of the playlist
         public string State { get; private set; }        // state: play, stop, or pause
 
 
-        public int Song { get; private set; }              // song: playlist song number of the current song stopped on or playing
-        public int SongId { get; private set; }            // songid: playlist songid of the current song stopped on or playing
-        public int NextSong { get; private set; }       // nextsong:   playlist song number of the next song to be played
-        public int NextSongId { get; private set; }     // nextsongid: playlist songid of the next song to be played
-        public float Time { get; private set; }        // time: total time elapsed(of current playing/paused song)
+        public int    Song { get; private set; }              // song: playlist song number of the current song stopped on or playing
+        public int    SongId { get; private set; }            // songid: playlist songid of the current song stopped on or playing
+        public int    NextSong { get; private set; }       // nextsong:   playlist song number of the next song to be played
+        public int    NextSongId { get; private set; }     // nextsongid: playlist songid of the next song to be played
+        public float  Time { get; private set; }        // time: total time elapsed(of current playing/paused song)
 
         public double Duration { get; private set; }  // duration: Duration of the current song in seconds.
         public double TimeLeft { get; private set; }        
@@ -55,8 +55,8 @@ namespace Balboa.Common
         public int    SampleRate { get; private set; }     // audio: sampleRate:bits:channels
         public int    Bits { get; private set; }
         public int    Channels { get; private set; }// audio: sampleRate:bits:channels
-        public int      UpdatingDbJobId { get; set; }
-        public string   Error { get; set; }
+        public int    UpdatingDbJobId { get; set; }
+        public string Error { get; set; }
 
         #endregion
 
@@ -82,7 +82,7 @@ namespace Balboa.Common
                     case "random": Random = (statusvalue == "1") ? true : false; break;   // random: 0 or 1 
                     case "single": Single = (statusvalue == "1") ? true : false; break;   // single:  0 or 1 
                     case "consume": Consume = (statusvalue == "1") ? true : false; break;  // consume: 0 or 1 
- //                   case "playlist": PlaylistId = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;          // playlist: 31-bit unsigned integer, the playlist version number
+                    case "playlist": PlaylistId = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;          // playlist: 31-bit unsigned integer, the playlist version number
                     case "playlistlength": PlaylistLength = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;// playlistlength: integer, the length of the playlist
                     case "state": State = statusvalue; break;                             // state: play, stop, or pause
                     case "song": Song = int.Parse(statusvalue, CultureInfo.InvariantCulture); break;                    // song: playlist song number of the current song stopped on or playing

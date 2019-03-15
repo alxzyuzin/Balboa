@@ -1,5 +1,5 @@
 ﻿/*-----------------------------------------------------------------------
- * Copyright 2017 Alexandr Zyuzin.
+ * Copyright 2019 Alexandr Zyuzin.
  *
  * This file is part of MPD client Balboa.
  *
@@ -37,10 +37,10 @@ namespace Balboa
         ACK_ERROR_EXIST = 56,
     };
 
-    public delegate void ConnectionStatusChangedEventHandler(object sender, string connectionStatus);
-    public delegate void DataReadyEventHandler<MpdResponse>(object sender, MpdResponse eventArgs);
+    public delegate void ConnectionStatusChangedEventHandler(object sender, string e);
+    public delegate void DataReadyEventHandler<MpdResponse>(object sender, MpdResponse e);
 
-    public class Server :  IDisposable
+    public sealed class Server : IDisposable
     {
         #region Events
         public event DataReadyEventHandler<MpdResponse> DataReady;
@@ -794,11 +794,8 @@ namespace Balboa
 
         public void Dispose()
         {
-        
-            // dispose managed resources
-        
-            // free native resources
             _ThreadEvent.Dispose();
+            _Connection.Dispose();
             GC.SuppressFinalize(this);
         }
 
