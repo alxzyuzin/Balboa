@@ -200,6 +200,9 @@
     <value>Server connection responce is not valid.
 </value>
   </data>
+  <data name="MusicCollectionFolderNotDefined" xml:space="preserve">
+    <value>Define 'Path to music collection' parameter before check 'Display pictures for folder' CheckBox.</value>
+  </data>
   <data name="NewPlaylist" xml:space="preserve">
     <value>New playlist</value>
   </data>

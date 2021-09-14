@@ -16,8 +16,18 @@ namespace Balboa
 
     public sealed partial class MainMenu : UserControl,  IRequestAction
     {
-        
-
+        enum ActivePanel
+        {
+            PlaylistPanel,
+            CurrentTrackPanel,
+            TrackDirectoryPanel,
+            SavedPlaylistsPanel,
+            SearchPanel,
+            StatisticPanel,
+            OutputsPanel,
+            SettingsPanel
+        }
+        private ActivePanel _currentPanel;
         public bool _displayButtonsOnly;
         public bool DisplayButtonsOnly
         {
@@ -69,29 +79,35 @@ namespace Balboa
 
         private void SwitchToCurrentTrackPanel(object sender, TappedRoutedEventArgs e)
         {
+            _currentPanel = ActivePanel.CurrentTrackPanel;
+
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new CurrentTrackPanel(_server));
             RequestAction.Invoke(this, actionParams);
         }
         private void SwitchToPlaylistPanel(object sender, TappedRoutedEventArgs e)
         {
+            _currentPanel = ActivePanel.PlaylistPanel;
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new PlaylistPanel(_server));
             RequestAction.Invoke(this, actionParams);
         }
 
         private void SwitchToTrackDirectoryPanel(object sender, TappedRoutedEventArgs e)
         {
+            _currentPanel = ActivePanel.TrackDirectoryPanel;
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new TrackDirectoryPanel(_server));
             RequestAction.Invoke(this, actionParams);
         }
 
         private void SwitchToSavedPlaylistsPanel(object sender, TappedRoutedEventArgs e)
         {
+            _currentPanel = ActivePanel.SavedPlaylistsPanel;
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new SavedPlaylistsPanel(_server));
             RequestAction.Invoke(this, actionParams);
         }
 
         private void SwitchToSearchPanel(object sender, TappedRoutedEventArgs e)
         {
+            _currentPanel = ActivePanel.SearchPanel;
             var actionParams = new ActionParams(ActionType.ActivateDataPanel).SetPanel(new SearchPanel(_server));
             RequestAction.Invoke(this, actionParams);
         }

@@ -127,7 +127,7 @@ namespace Balboa
             DependencyProperty.Register("BoxHeight", typeof(double), typeof(MessageBox), null);
 
         public static readonly DependencyProperty InnerBoxWidthProperty =
-                    DependencyProperty.Register("BoxHeight", typeof(double), typeof(MessageBox), null);
+                    DependencyProperty.Register("BoxWidth", typeof(double), typeof(MessageBox), null);
 
 
         public async Task<MsgBoxButton> Show()
@@ -141,7 +141,8 @@ namespace Balboa
 
             ShowControl.Begin();
             _stopWating = false;
-            do        // В цикле с интервалом 100 миллисекунд проверяем статус процесса поиска пока он не закончится
+            do        // В цикле с интервалом 100 миллисекунд проверяем статус процесса
+                //поиска пока он не закончится
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(100));
             }

@@ -20,12 +20,12 @@ namespace Balboa
         public event PropertyChangedEventHandler PropertyChanged;
         public event ActionRequestedEventHandler RequestAction;
 
-        private AppSettings _appSettings = new AppSettings();
-        private Server _server;
+        private AppSettings    _appSettings = new AppSettings();
+        private Server         _server;
         private ResourceLoader _resldr = new ResourceLoader();
-        private string _musicCollectionFolderToken;
-
-        private string _serverName;
+        private string         _musicCollectionFolderToken;
+        #region Properties
+        private string         _serverName;
         public string ServerName
         {
             get { return _serverName; }
@@ -103,8 +103,8 @@ namespace Balboa
                 }
             }
         }
-        private bool? _displayFolderPictures;
-        public bool? DisplayFolderPictures
+        private bool _displayFolderPictures;
+        public bool DisplayFolderPictures
         {
             get { return _displayFolderPictures; }
             private set
@@ -148,7 +148,9 @@ namespace Balboa
                 }
             }
         }
+        #endregion Properties
 
+        #region Constuctors
         public SettingsPanel()
         {
             this.InitializeComponent();
@@ -168,6 +170,8 @@ namespace Balboa
 
             _musicCollectionFolderToken = _appSettings.MusicCollectionFolderToken;
         }
+
+        #endregion
 
         public void Init(Server server)
         {
@@ -215,6 +219,14 @@ namespace Balboa
                 }
             }
 
+            if ( (MusicCollectionFolder.Length==0) && (bool)(cbx_DisplayFolderPictures.IsChecked))
+            {
+                var message = new Message(MsgBoxType.Error, _resldr.GetString("MusicCollectionFolderNotDefined"));
+                RequestAction?.Invoke(this, new ActionParams(message));
+                return;
+            }
+            
+
             // Проверим возможность соединения с новыми параметрами перед их сохранением
             Connection connection = new Connection();
             await connection.Open(ServerName, Port, Password);
@@ -243,6 +255,7 @@ namespace Balboa
             _appSettings.MusicCollectionFolder = MusicCollectionFolder;
             _appSettings.AlbumCoverFileNames = AlbumCoverFileNames;
             _appSettings.DisplayFolderPictures = DisplayFolderPictures;
+            _appSettings.DisplayFolderPictures = cbx_DisplayFolderPictures.IsChecked ?? false;
             _appSettings.MusicCollectionFolderToken = _musicCollectionFolderToken;
 
             _appSettings.Save();
@@ -292,7 +305,7 @@ namespace Balboa
 
         private void appbtn_StartSession_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            _server.Init(_appSettings);
+//            _server.Init(_appSettings);
             _server.Restart();
         }
 

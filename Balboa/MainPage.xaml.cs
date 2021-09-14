@@ -129,10 +129,15 @@ namespace Balboa
             BottomTrackInfoPanel.Init(_server);
             PlayControlPanel.Init(_server);
 
+            // Запускаем сеанс взаимодействия с MPD
             if (_server.Initialized)
-                _server.Start();         // Запускаем сеанс взаимодействия с MPD
-
-            ActivatePanel(new PlaylistPanel(_server));
+            {
+                _server.Start();
+                ActivatePanel(new PlaylistPanel(_server));
+            }
+            else
+                ActivatePanel(new SettingsPanel(_server));
+           
         }
 
         private async void OnServerDataReady(object sender, MpdResponse data)

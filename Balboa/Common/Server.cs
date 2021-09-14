@@ -11,6 +11,7 @@ using Balboa.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
@@ -267,65 +268,91 @@ namespace Balboa
         {
             ResponseKeyword keyword = ResponseKeyword.Empty;
             string currentresponse = string.Empty;
-
-            /*  Oтвет при ошибке начинается с ASC и заканчивается \n
-                Ответ при нормальном завершении заканчивается OK\n
-
-                Проверка 1
-                Строка начинается с символов OK\n - это значит что в начале строки содержится ответ 
-                об успешном выполнении команды не возвращающей данных
-                Просто убираем этот ответ из входной строки */
-            if (response.StartsWith("OK\n", StringComparison.Ordinal))
+            try
             {
-                keyword = ResponseKeyword.OK;
-                
-                currentresponse = response.Substring(0, 3);
-                response = response.Remove(0, 3);
-                MpdCommand command = _SentCommandQueue.Dequeue();
-                MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
-                ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                /*  Oтвет при ошибке начинается с ASC и заканчивается \n
+                    Ответ при нормальном завершении заканчивается OK\n
+
+                    Проверка 1
+                    Строка начинается с символов OK\n - это значит что в начале строки содержится ответ 
+                    об успешном выполнении команды не возвращающей данных
+                    Просто убираем этот ответ из входной строки */
+                if (response.StartsWith("OK\n", StringComparison.Ordinal))
+                {
+                    keyword = ResponseKeyword.OK;
+
+                    currentresponse = response.Substring(0, 3);
+                    response = response.Remove(0, 3);
+                    MpdCommand command = _SentCommandQueue.Dequeue();
+                    MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
+                    ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                }
+
+                // Проверка 2
+                // Строка содержит символы \nOK\n - это значит что строка содержит полный ответ 
+                // об успешном выполнении команды возвращающей данные
+                // Забираем этот ответ из входной строки и разбираем его
+                if (response.Contains("\nOK\n"))
+                {
+                    keyword = ResponseKeyword.OK;
+                    //Забираем из входной строки подстроку от начала до до символов ОК (вместе с ОК)
+                    int nextresponsestart = response.IndexOf("\nOK\n", StringComparison.Ordinal) + 4;
+                    // currentresponce - содержит полный ответ от сервера
+                    currentresponse = response.Substring(0, nextresponsestart);
+                    response = response.Remove(0, nextresponsestart);
+                    MpdCommand command = _SentCommandQueue.Dequeue();
+                    MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
+                    ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                }
+
+                // Проверка 3
+                // Строка содержит символы ACK - это значит что строка содержит ответ с информацией 
+                // об ошибке при выполнении команды  
+                // Забираем этот ответ из входной строки и cообщаем об ошибке
+                if (response.StartsWith("ACK", StringComparison.Ordinal))
+                {
+                    keyword = ResponseKeyword.ACK;
+                    int newresponsestart = response.IndexOf("\n", StringComparison.Ordinal) + 1;
+                    currentresponse = response.Substring(0, newresponsestart);
+                    response = response.Remove(0, newresponsestart);
+                    MpdCommand command = _SentCommandQueue.Dequeue();
+                    MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
+                    ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                }
+                return response;
             }
-
-            // Проверка 2
-            // Строка содержит символы \nOK\n - это значит что строка содержит полный ответ 
-            // об успешном выполнении команды возвращающей данные
-            // Забираем этот ответ из входной строки и разбираем его
-            if (response.Contains("\nOK\n"))
+            
+            catch(Exception ex)
             {
-                keyword = ResponseKeyword.OK;
-                //Забираем из входной строки подстроку от начала до до символов ОК (вместе с ОК)
-                int nextresponsestart = response.IndexOf("\nOK\n", StringComparison.Ordinal) + 4;
-                // currentresponce - содержит полный ответ от сервера
-                currentresponse = response.Substring(0, nextresponsestart);
-                response = response.Remove(0, nextresponsestart);
-                MpdCommand command = _SentCommandQueue.Dequeue();
-                MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
-                ((IProgress<MpdResponse>)_status).Report(mpdresp);
-            }
-
-            // Проверка 3
-            // Строка содержит символы ACK - это значит что строка содержит ответ с информацией 
-            // об ошибке при выполнении команды  
-            // Забираем этот ответ из входной строки и cообщаем об ошибке
-            if (response.StartsWith("ACK", StringComparison.Ordinal))
-            {
-                keyword = ResponseKeyword.ACK;
-                int newresponsestart = response.IndexOf("\n", StringComparison.Ordinal) + 1;
-                currentresponse = response.Substring(0, newresponsestart);
-                response = response.Remove(0, newresponsestart);
-                MpdCommand command = _SentCommandQueue.Dequeue();
-                MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
-                ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                string ExceptionMsg = ex.Message.Contains("\r\n") ? ex.Message.Substring(0, ex.Message.IndexOf("\r\n")) : ex.Message;
+                StringBuilder Exmsg = new StringBuilder().Append("Floating error. ");
+                Exmsg.Append(ExceptionMsg);
+                // Try to catch floating error
+                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.InternalError, null, Exmsg.ToString());
+               ((IProgress<MpdResponse>)_status).Report(mpdresp);
             }
             return response;
         }
 
         public async void UpdateAlbumArt(string file)
         {
-            if (file != null && file != "")
+            try
             {
-                await AlbumArt.LoadImageData(MusicCollectionFolder, file, AlbumCoverFileNames);
-                await AlbumArt.UpdateImage();
+                if (MusicCollectionFolder != null && file != null && file != "" && AlbumCoverFileNames != "")
+                {
+                    bool ImageDataloaded = await AlbumArt.LoadImageData(MusicCollectionFolder, file, AlbumCoverFileNames);
+                    if (ImageDataloaded)
+                        await AlbumArt.UpdateImage();
+                    else
+                    {
+                        MpdResponse mpdresp = new MpdResponse(ResponseKeyword.InternalError, null, AlbumArt.Error);
+                        ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                int i = 0;
             }
         }
 

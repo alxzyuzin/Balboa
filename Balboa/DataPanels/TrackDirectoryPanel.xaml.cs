@@ -118,14 +118,14 @@ namespace Balboa
 
         public double TotalButtonWidth => AppBarButtons.Width;
         public Orientation Orientation { get; set; }
-
+        // Constructor
         public TrackDirectoryPanel()
         {
             InitializeComponent();
             _progress = new Progress<File>(SetFileIcon);
             RestoreStatus();
         }
-
+        // Constructor
         public TrackDirectoryPanel(Server server) : this()
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
@@ -148,50 +148,64 @@ namespace Balboa
             _server = server;
             _server.DataReady += _server_DataReady;
         }
-
+        /// <summary>
+        /// Request directory content from server (send to server command lsifo)
+        /// </summary>
         public void Update()
         {
             _server.LsInfo( _currentPath);
         }
 
+        /// <summary>
+        /// Handle data received from server as command comletion result 
+        /// </summary>
+        /// <param name="sender"> server object</param>
+        /// <param name="e"> server responce </param>
         private async void _server_DataReady(object sender, EventArgs e)
         {
-            var mpdData = e as MpdResponse;
-
-            if (mpdData.Keyword != ResponseKeyword.OK || mpdData.Command.Op != "lsinfo")
-                return;
+            try
             {
-                if (_fileIconsUpdating)
+                var mpdData = e as MpdResponse;
+
+                if (mpdData.Keyword != ResponseKeyword.OK || mpdData.Command.Op != "lsinfo")
+                    return;
                 {
-                    _tokenSource.Cancel();
-                    _ThreadEvent.WaitOne();
-                    while (_fileIconsUpdating){ await Task.Delay(100); }
+                    if (_fileIconsUpdating)
+                    {
+                        _tokenSource.Cancel();
+                        _ThreadEvent.WaitOne();
+                        while (_fileIconsUpdating) { await Task.Delay(500); }
+                    }
+
+                    UpdateControlData(mpdData.Content);
+                    HighLiteLastOpenedFolder();
+                    if (_currentPath.Length > 0 && _newPathChunck.Length > 0) // если переход вниз по дереву
+                        _currentPath += "/";
+                    _currentPath += _newPathChunck; // extend current path with new path part
+                    _newPathChunck = string.Empty;  // and clear new path part
+
+                    DataPanelInfo = $"Folder /{_currentPath}";
+
+                    AppbtnUpIsEnabled = _currentPath.Length > 0 ? true : false;
+                    EmptyDirectoryMessage = (_files.Count == 0)
+                                            ? string.Format(_resldr.GetString("NoAudioFilesInFolder"), "\"" + _currentPath + "\"")
+                                            : string.Empty;
+                    DataPanelElementsCount = $"{_files.Count.ToString()} items.";
+
+                    if (_server.DisplayFolderPictures == true && _server.MusicCollectionFolder.Length > 0)
+                    {
+                        _tokenSource = new CancellationTokenSource();
+                        CancellationToken token = _tokenSource.Token;
+                        WorkItemHandler workhandler = delegate { UpdateFilesIcons(token); };
+
+                        await ThreadPool.RunAsync(workhandler, WorkItemPriority.High, WorkItemOptions.TimeSliced);
+                    }
                 }
-                
-                UpdateControlData(mpdData.Content);
-                HighLiteLastOpenedFolder();
-                if (_currentPath.Length > 0 && _newPathChunck.Length > 0)
-                    _currentPath += "/";
-                _currentPath += _newPathChunck;
-                _newPathChunck = string.Empty;
-
-                DataPanelInfo = $"Folder /{_currentPath}";
-
-                AppbtnUpIsEnabled = _currentPath.Length>0 ? true : false;
-                EmptyDirectoryMessage = ( _files.Count == 0 ) 
-                                        ? string.Format(_resldr.GetString("NoAudioFilesInFolder"), "\""+_currentPath+ "\"") 
-                                        : string.Empty;
-                DataPanelElementsCount = $"{_files.Count.ToString()} items.";
-
-                if (_server.DisplayFolderPictures == true && _server.MusicCollectionFolder.Length > 0)
-                {
-                    _tokenSource = new CancellationTokenSource();
-                    CancellationToken token = _tokenSource.Token;
-                    WorkItemHandler workhandler = delegate { UpdateFilesIcons(token); };
-
-                    await ThreadPool.RunAsync(workhandler, WorkItemPriority.High, WorkItemOptions.TimeSliced);
-                }
-             }
+            }
+            catch(Exception ex)
+            {
+                int i = 0;
+            }
          }
 
         public void UpdateControlData(List<string> serverData)
@@ -319,7 +333,7 @@ namespace Balboa
             try
             {
                 _fileIconsUpdating = true;
-                foreach (File file in _files.Where(f=>f.Nature== FileNature.Directory))
+                foreach (File file in _files.Where(f => f.Nature == FileNature.Directory))
                 {
                     token.ThrowIfCancellationRequested();
                     var PathToAlbumArt = new StringBuilder(_currentPath.Replace('/', '\\'));
@@ -328,12 +342,24 @@ namespace Balboa
                         PathToAlbumArt.Append("\\");
 
                     PathToAlbumArt.Append(file.Name).Append('\\').Append("folder.jpj");
-                    await file.AlbumArt.LoadImageData(_server.MusicCollectionFolder, PathToAlbumArt.ToString(), _server.AlbumCoverFileNames);
-                   ((IProgress<File>)_progress).Report(file);
+                    try
+                    {
+                        await file.AlbumArt.LoadImageData(_server.MusicCollectionFolder, PathToAlbumArt.ToString(), _server.AlbumCoverFileNames);
+                    }
+                    catch(Exception ex)
+                    {
+                        int i = 0;
+                    }
+                        ((IProgress<File>)_progress).Report(file);
                 }
             }
             catch (OperationCanceledException)
             {
+            }
+
+            catch (Exception ex)
+            {
+                int i = 0;
             }
             _fileIconsUpdating = false;
             _ThreadEvent.Set();
@@ -342,8 +368,15 @@ namespace Balboa
 
         private async void SetFileIcon(File file)
         {
-            await file.AlbumArt.UpdateImage();
-            file.AlbumArtWidth = new GridLength(60);
+            try
+            {
+                await file.AlbumArt.UpdateImage();
+                file.AlbumArtWidth = new GridLength(60);
+            }
+            catch
+            {
+                int i = 0;
+            }
         }
 
         private void RestoreStatus()
@@ -364,8 +397,14 @@ namespace Balboa
             //throw new NotImplementedException();
         }
 
-        public void Dispose()
+        public async void Dispose()
         {
+            if (_fileIconsUpdating)
+            {
+                _tokenSource.Cancel();
+                _ThreadEvent.WaitOne();
+                while (_fileIconsUpdating) { await Task.Delay(500); }
+            }
             _ThreadEvent.Dispose();
             _server.DataReady -= _server_DataReady;
         }

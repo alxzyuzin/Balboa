@@ -23,7 +23,7 @@ namespace Balboa
         public string MusicCollectionFolderToken { get; set; } 
         public string ViewUpdateInterval { get; set; } = "500";
         public string Password { get; set; }
-        public bool?  DisplayFolderPictures { get; set; } = false;
+        public bool  DisplayFolderPictures { get; set; } = false;
         public string AlbumCoverFileNames { get; set; } = "folder.jpg;cover.jpg";
                
         public void Restore()

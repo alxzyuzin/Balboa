@@ -128,7 +128,7 @@
             </StackPanel>
             <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
                 <TextBlock Text="Display pictures for folders" Style="{StaticResource SettingsTextBlockStyle}" />
-                <CheckBox  IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"/>
+                <CheckBox x:Name="cbx_DisplayFolderPictures" IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"  IsThreeState="False" />
             </StackPanel>
         </Grid>
 
