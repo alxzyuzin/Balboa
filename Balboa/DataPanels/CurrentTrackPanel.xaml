@@ -51,6 +51,8 @@
                        Style="{StaticResource  CurrentTrackTextBlockStyle}"  FontSize="30" Margin="30,0,10,20" 
                            Height="Auto" TextWrapping="WrapWholeWords" VerticalAlignment="Top" HorizontalAlignment="Center" />
         <Image x:Name="image_AlbumCover" Grid.Row="1" Grid.Column="0" Margin="20" Source="{Binding AlbumArt.Image}" VerticalAlignment="Top"/>
+        <!--Image x:Name="image_AlbumCover" Grid.Row="1" Grid.Column="0" Margin="20" Source="ms-appx:///Assets/DefaultAlbumArt.jpg" VerticalAlignment="Top"/ -->
+        
         <Grid x:Name="RightCurrentTrackData" Grid.Row="1" Grid.Column="1" Margin="10,10,0,0" MaxWidth="400" MinWidth="0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />

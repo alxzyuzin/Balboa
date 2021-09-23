@@ -30,6 +30,7 @@ namespace Balboa
         private Server _server;
         private Song _song = new Song();
 
+        #region Properties
         public AlbumArt AlbumArt => _server.AlbumArt;
 
         private string _title;
@@ -185,7 +186,7 @@ namespace Balboa
                 }
             }
         }
-
+                
         private Orientation _orientation;
         public Orientation Orientation
         {
@@ -203,6 +204,7 @@ namespace Balboa
                 }
             }
         }
+        #endregion Properties
 
         public CurrentTrackPanel()
         {
@@ -221,7 +223,6 @@ namespace Balboa
         {
             if (server == null) throw new ArgumentNullException(nameof(server));
             _server = server;
-            
             _server.DataReady += _server_DataReady;
         }
 

@@ -1,4 +1,14 @@
-﻿using Balboa.Common;
+﻿/*-----------------------------------------------------------------------
+ * Copyright 2019 Alexandr Zyuzin.
+ *
+ * This file is part of MPD client Balboa.
+ *
+ * Control used to display information about current playing track at the
+ * left bottom corner of application
+ *
+  --------------------------------------------------------------------------*/
+
+using Balboa.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -40,19 +50,7 @@ namespace Balboa
         }
         public PanelVisualState VisualState { get; set; }
 
-        //        private AlbumArt _albumArt = new AlbumArt();
         public AlbumArt AlbumArt => _server.AlbumArt;
-        //{
-        //    get { return _albumArt; }
-        //    private set
-        //    {
-        //        if (_albumArt != value)
-        //        {
-        //            _albumArt = value;
-        //            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
-        //        }
-        //    }
-        //}
 
         private string _title;
         public string Title
@@ -115,7 +113,9 @@ namespace Balboa
             _server = server;
             _server.DataReady += ServerDataReady;
         }
-
+        /// <summary>
+        ///  Send command to server
+        /// </summary>
         public void Update()
         {
             _server.CurrentSong();

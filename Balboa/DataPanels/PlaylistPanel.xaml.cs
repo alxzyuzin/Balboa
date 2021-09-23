@@ -1,4 +1,13 @@
-﻿using Balboa.Common;
+﻿/*-----------------------------------------------------------------------
+ * Copyright 2019 Alexandr Zyuzin.
+ *
+ * This file is part of MPD client Balboa.
+ *
+ * Control used to display content of current MPD playlist
+ *
+  --------------------------------------------------------------------------*/
+
+using Balboa.Common;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -249,5 +258,6 @@ namespace Balboa
         {
             _server.DataReady -= _server_DataReady;
         }
+
     } // class PlaylistPanel
 }

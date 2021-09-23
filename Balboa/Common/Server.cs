@@ -336,24 +336,23 @@ namespace Balboa
 
         public async void UpdateAlbumArt(string file)
         {
-            try
+            if (MusicCollectionFolder != null && file != null && file != "" && AlbumCoverFileNames != "")
             {
-                if (MusicCollectionFolder != null && file != null && file != "" && AlbumCoverFileNames != "")
+                ImageLoadResult ImageDataLoadResult = await AlbumArt.LoadImageData(MusicCollectionFolder, file, AlbumCoverFileNames);
+                switch (ImageDataLoadResult)
                 {
-                    bool ImageDataloaded = await AlbumArt.LoadImageData(MusicCollectionFolder, file, AlbumCoverFileNames);
-                    if (ImageDataloaded)
+                    case ImageLoadResult.Loaded:
+                    case ImageLoadResult.NotFound:
                         await AlbumArt.UpdateImage();
-                    else
-                    {
+                        break;
+                    case ImageLoadResult.Error:
+                    case ImageLoadResult.UnauthorizedAccess:
+                    case ImageLoadResult.ZeroFileSize:
                         MpdResponse mpdresp = new MpdResponse(ResponseKeyword.InternalError, null, AlbumArt.Error);
                         ((IProgress<MpdResponse>)_status).Report(mpdresp);
-                    }
+                        break;
                 }
-            }
-            catch(Exception ex)
-            {
-                int i = 0;
-            }
+             }
         }
 
         #endregion
@@ -816,8 +815,6 @@ namespace Balboa
         #endregion
 
         #endregion
-
-
 
         public void Dispose()
         {
