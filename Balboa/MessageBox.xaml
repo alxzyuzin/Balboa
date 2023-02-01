@@ -47,7 +47,7 @@
             <RowDefinition Height="2*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <!-- deem main window -->
+        <!-- Deem main window -->
         <Border  x:Name="PopUpBorder" BorderThickness="1" Background="Black" 
                      Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Opacity="0.7"/>

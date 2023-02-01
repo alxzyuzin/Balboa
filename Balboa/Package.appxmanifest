@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="17505Sirocco.Balboa" Publisher="CN=A5DE46CF-F134-453E-92D1-F8D7D83A2EAD" Version="3.4.0.16" />
+  <Identity Name="17505Sirocco.Balboa" Publisher="CN=A5DE46CF-F134-453E-92D1-F8D7D83A2EAD" Version="4.4.0.20" />
   <Properties>
     <DisplayName>Balboa</DisplayName>
     <PublisherDisplayName>Sirocco</PublisherDisplayName>
@@ -26,7 +26,6 @@
         <m2:SplashScreen Image="Assets\SplashScreen.png" />
         <m2:InitialRotationPreference>
           <m2:Rotation Preference="portrait" />
-          <m2:Rotation Preference="landscape" />
           <m2:Rotation Preference="portraitFlipped" />
           <m2:Rotation Preference="landscapeFlipped" />
         </m2:InitialRotationPreference>

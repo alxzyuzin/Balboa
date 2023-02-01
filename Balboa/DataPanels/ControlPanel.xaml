@@ -123,8 +123,7 @@
                 <Slider Grid.Row="1" Height="23" Foreground="Orange" Margin="0,-10,0,10" 
                         Value="{Binding TimeElapsed, Mode=TwoWay}" 
                         Maximum="{Binding Duration}" Minimum="0"  
-                        TickFrequency="30"
-                        TickPlacement="Inline"
+                        
                         SmallChange="5"
                         ManipulationStarted="pb_Progress_ManipulationStarted"
                         ManipulationCompleted="pb_Progress_ManipulationCompleted" 

@@ -76,7 +76,7 @@ namespace Balboa
             get { return _pressedButton; }
         }
 
-
+        #region Constructors
         public MessageBox()
         {
             this.InitializeComponent();
@@ -99,6 +99,7 @@ namespace Balboa
             GridMain.RowDefinitions[1].Height = new GridLength(_height);
         }
 
+        #endregion
         public string Message
         {
             get { return (string)GetValue(MessageProperty); }
