@@ -1,0 +1,111 @@
+﻿<UserControl
+    x:Class="Balboa.SearchPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Balboa"
+    xmlns:common="using:Balboa.Common"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="800"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+    <UserControl.Resources>
+        <common:TimeConverter  x:Key="TimeConverter"/>
+        <common:SearchItemStyleSelector x:Key="SearchItemStyleSelector"/>
+
+        <!-- ШАБЛОН для элемента результата поиска -->
+        <DataTemplate x:Key="SearchItemTemplate">
+            <Grid Width="500">
+                <Grid.RowDefinitions>
+                    <RowDefinition  Height="Auto"/>
+                    <RowDefinition  Height="Auto"/>
+                    <RowDefinition  Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  Width="*"/>
+                    <ColumnDefinition  Width="25"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Text="{Binding Title}"  FontSize="22" Margin="10,0,0,0" />
+                <StackPanel  Orientation="Horizontal" Grid.Row="1">
+                    <TextBlock Text="Album : "          FontSize="16" Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Album}"   FontSize="16" Margin="5,0,0,0"/>
+                    <TextBlock Text="Year : "           FontSize="16" Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Date}"    FontSize="16" Margin="5,0,0,0"/>
+                </StackPanel>
+                <StackPanel  Orientation="Horizontal" Grid.Row="2" >
+                    <TextBlock Text="Artist :"          FontSize="16" Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Artist}"  FontSize="16" Margin="5,0,0,0"/>
+                    <TextBlock Text="Genre :"           FontSize="16"  Margin="15,0,0,0"/>
+                    <TextBlock Text="{Binding Genre}"   FontSize="16"  Margin="5,0,0,0"/>
+                </StackPanel>
+                <!--TextBlock Grid.Row="0" Grid.Column="0" FontSize="20" Margin="0,0,20,0" TextAlignment="Right"
+                               Text="{Binding Time , Converter={StaticResource TimeConverter}}" /-->
+                <!--
+                    <StackPanel Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        <Button Content="&#xE14C;"   FontSize="30" FontFamily="Segoe UI Symbol" 
+                                BorderThickness="0" Height="46"  Padding="0,0,0,0"
+                                Tapped="SearchItemMenu_Tapped" Width="45" />
+                        <Popup x:Name="popup_SearchItemMenu" VerticalOffset="-155" HorizontalOffset="-150">
+                            <Popup.ChildTransitions>
+                                <TransitionCollection>
+                                    <PaneThemeTransition Edge="Bottom"/>
+                                </TransitionCollection>
+                            </Popup.ChildTransitions>
+                        </Popup>
+                    </StackPanel>
+                    -->
+            </Grid>
+        </DataTemplate>
+
+        <Storyboard x:Name="gr_SearchShowStoryboard">
+            <DoubleAnimation  Storyboard.TargetName="gr_Search"
+                                          Storyboard.TargetProperty="Opacity"
+                                          From="0.0" To="1.0" Duration="0:0:1"/>
+        </Storyboard>
+
+
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="87"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel  Grid.Row="0" HorizontalAlignment="Left" Margin="5,0,5,0" Orientation="Horizontal"
+                     Background="{StaticResource MainBackgroundBrush}" FlowDirection="LeftToRight" >
+            <TextBlock  Text="Tag" FontSize="22" Margin="10,-15,20,0" Height="30" HorizontalAlignment="Left" />
+            <ComboBox FontSize="20" Width="120" Height="40" Margin="0,-15,20,0"
+                        SelectedItem="{Binding WhereToSearch, Mode=TwoWay}">
+                <ComboBoxItem Content="Any" IsSelected="True"/>
+                <ComboBoxItem Content="Artist"/>
+                <ComboBoxItem Content="Album"/>
+                <ComboBoxItem Content="Genre"/>
+                <ComboBoxItem Content="Title"/>
+                <ComboBoxItem Content="Year"/>
+            </ComboBox>
+            <TextBlock Text="Value"  FontSize="22" Margin="10,-15,20,0" Height="30" HorizontalAlignment="Left" />
+            <TextBox    Text="{Binding WhatToSearch, Mode=TwoWay}"
+                       FontSize="20"  Margin="0,-15,0,0" Height="40" Width="150" HorizontalAlignment="Left"/>
+            <AppBarButton Icon="Find"  Margin="0,-6,0,0" Tapped="appbtn_Search_Tapped" />
+        </StackPanel>
+       
+        <GridView x:Name="gridview_Search" Grid.Row="1"
+                  ItemTemplate="{StaticResource SearchItemTemplate}"
+                  ItemsSource="{Binding Tracks}"
+                  ItemContainerStyleSelector="{StaticResource SearchItemStyleSelector}" 
+                  SelectionMode="Multiple" />
+ 
+        <StackPanel x:Name="AppBarButtons" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Width="270">
+            <AppBarButton Icon="ClearSelection" Label="Clear Selection"  Width="90" Tapped="appbtn_Search_DeSelectAll_Tapped"/>
+            <AppBarButton Icon="SelectAll"      Label="Select All"       Width="90" Tapped="appbtn_Search_SelectAll_Tapped"/>
+            <AppBarButton Icon="Add"            Label="Add to playlist"  Width="90" Tapped="appbtn_Search_AddToPaylist_Tapped"/>
+        </StackPanel>
+    </Grid>
+
+</UserControl>

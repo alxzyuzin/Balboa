@@ -9,17 +9,40 @@
  *
  --------------------------------------------------------------------------*/
 
+using System;
 using System.Collections.Generic;
 
 namespace Balboa.Common
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Mpd")]
-    public class MpdResponseCollection : List<string>
-    {
-        public enum ResponseKeyword { Ok, NotOk, [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ack")] Ack }
+    public enum ResponseKeyword { OK, NotOk, ACK, Empty, InternalError, SocketError, ServerHalted, New, ConnectionError }
 
-        public ResponseKeyword Keyword { get; set;}
-        public MpdCommand      Command { get; set; }
-        public string          Error   { get; set; } = "";
+    public class MpdResponse : EventArgs
+    {
+        public ResponseKeyword Keyword { get; private set; }
+        public MpdCommand Command { get; private set; }
+        private List<string> _content = new List<string>();
+        public List<string> Content { get { return _content; }  }
+        private string _rowContent;
+        public string RowContent { get { return _rowContent; } }
+        public string ErrorMessage { get; private set; } = string.Empty;
+
+        public MpdResponse()
+        {
+
+        }
+        public MpdResponse(ResponseKeyword keyword, MpdCommand command, string  content)
+        {
+            Keyword = keyword;
+            Command = command;
+            if (keyword == ResponseKeyword.OK)
+            {
+                _rowContent = content;
+                _content.AddRange(content.Split('\n'));
+                // Уберём из ответа два последних элемента (ОК и \n)
+                _content.RemoveRange(Content.Count - 2, 2);
+            }
+            else
+                ErrorMessage = content;
+        }
     }
 }

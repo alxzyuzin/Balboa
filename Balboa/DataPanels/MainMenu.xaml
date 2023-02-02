@@ -1,0 +1,128 @@
+﻿<UserControl
+    x:Class="Balboa.MainMenu"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Balboa"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="400"
+    d:DesignWidth="254">
+    <UserControl.Resources>
+       <Storyboard x:Name="StoryboardNarrow">
+           <DoubleAnimationUsingKeyFrames Duration="0:0:0.7"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="stp_MenuButtons"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+               <DiscreteDoubleKeyFrame Value="189" KeyTime="0:0:0.1"/>
+               <LinearDoubleKeyFrame Value="0" KeyTime="0:0:0.3" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Name="StoryboardWide">
+            <DoubleAnimationUsingKeyFrames  Duration="0:0:0.7" 
+                                  Storyboard.TargetProperty="(FrameworkElement.Width)"
+                                  Storyboard.TargetName="stp_MenuButtons"
+                                  EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                <DiscreteDoubleKeyFrame Value="1" KeyTime="0:0:0.1"/>
+                <LinearDoubleKeyFrame Value="190" KeyTime="0:0:0.3" />
+             </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Style  x:Key="MainMenuButtonStyle" TargetType ="Button">
+            <Setter Property="Width" Value="190"/>
+            <Setter Property="Height" Value="50" />
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Content" Value=""/>
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+        <Style  x:Key="MainMenuSmallButtonStyle" TargetType ="Button" >
+            <Setter Property="Width" Value="64"/>
+            <Setter Property="Height" Value="50" />
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Light"/>
+        </Style>
+
+    </UserControl.Resources>
+
+
+    <Grid >
+        <StackPanel x:Name="stackPanel" Orientation="Horizontal">
+           <StackPanel x:Name="stp_SmallMenuButtons">
+                <Button Content="&#xE189;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToCurrentTrackPanel"/>
+                <Button Content="&#xE142;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToPlaylistPanel"/>
+                <Button Content="&#xE1D3;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToTrackDirectoryPanel"/>
+                <Button Content="&#xE105;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToSavedPlaylistsPanel" />
+                <Button Content="&#xE11A;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToSearchPanel"/>
+                <Button Content="i"        Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToStatisticPanel" FontWeight="Bold" FontSize="30" Padding="0,0,0,4" />
+                <Button Content="&#xE1D2;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToOutputsPanel" FontSize="25" />
+                <Button Content="&#xE115;" Style="{StaticResource MainMenuSmallButtonStyle}" Tapped="SwitchToSettingsPanel" />
+            </StackPanel>
+            <StackPanel x:Name="stp_MenuButtons">
+                <Button x:Name="CurrentTrackPanel"   Content="Current track"    Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToCurrentTrackPanel"/>
+                <Button x:Name="PlaylistPanel"       Content="Current playlist" Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToPlaylistPanel"/>
+                <Button x:Name="TrackDirectoryPanel" Content="Music Library"    Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToTrackDirectoryPanel"/>
+                <Button x:Name="SavedPlaylistsPanel" Content="Saved Playlists"  Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToSavedPlaylistsPanel"/>
+                <Button x:Name="SearchPanel"         Content="Search"           Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToSearchPanel"/>
+                <Button x:Name="StatisticPanel"      Content="Library info"     Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToStatisticPanel"/>
+                <Button x:Name="OutputsPanel"        Content="Outputs "         Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToOutputsPanel"/>
+                <Button x:Name="SettingsPanel"       Content="Settings"         Style="{StaticResource MainMenuButtonStyle}" Tapped="SwitchToSettingsPanel"/>
+            </StackPanel>
+        </StackPanel>
+    
+
+    <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="MainMenuVisualStates">
+                 <VisualStateGroup.Transitions>
+                    <VisualTransition From="Wide" GeneratedDuration="0:0:0.3" To="Narrow" >
+                        <Storyboard>
+                            <DoubleAnimationUsingKeyFrames Duration="0:0:0.7"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="stp_MenuButtons"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <LinearDoubleKeyFrame Value="0" KeyTime="0:0:0.3" />
+                        </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                    <VisualTransition From="Narrow" GeneratedDuration="0:0:0.3" To="Wide" >
+                        <Storyboard>
+                            <DoubleAnimationUsingKeyFrames Duration="0:0:0.7"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="stp_MenuButtons"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                                <LinearDoubleKeyFrame Value="190" KeyTime="0:0:0.3" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </VisualTransition>
+                </VisualStateGroup.Transitions>
+                 <VisualState x:Name="Wide">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="stp_MenuButtons"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <DiscreteDoubleKeyFrame Value="190" KeyTime="0:0:0.1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Narrow">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Duration="0:0:0.1"  
+                                 Storyboard.TargetProperty="(FrameworkElement.Width)"   
+                                 Storyboard.TargetName="stp_MenuButtons"
+                                 EnableDependentAnimation="True" FillBehavior="HoldEnd">
+                            <DiscreteDoubleKeyFrame Value="0" KeyTime="0:0:0.1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+    </Grid>
+</UserControl>
+
+
+ 

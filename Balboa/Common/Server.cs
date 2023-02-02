@@ -1,5 +1,5 @@
 ﻿/*-----------------------------------------------------------------------
- * Copyright 2017 Alexandr Zyuzin.
+ * Copyright 2019 Alexandr Zyuzin.
  *
  * This file is part of MPD client Balboa.
  *
@@ -7,213 +7,99 @@
  *
   --------------------------------------------------------------------------*/
 
+using Balboa.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Balboa.Common;
-using Windows.Storage.Streams;
-using Windows.System.Threading;
-using Windows.UI.Core;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.ApplicationModel.Resources;
+using Windows.Networking.Sockets;
+using Windows.System.Threading;
+using Windows.UI.Xaml;
 
 namespace Balboa
 {
 
-    public delegate void EventHandler<TServerEventArgs>(object sender, TServerEventArgs eventArgs);
-
-    internal class Server : INotifyPropertyChanged, IDisposable
+    enum ack
     {
-        private const string _modName = "Server.cs";
-        #region Объявление событий
+        ACK_ERROR_NOT_LIST = 1,
+        ACK_ERROR_ARG = 2,
+        ACK_ERROR_PASSWORD = 3,
+        ACK_ERROR_PERMISSION = 4,
+        ACK_ERROR_UNKNOWN = 5,
+        ACK_ERROR_NO_EXIST = 50,
+        ACK_ERROR_PLAYLIST_MAX = 51,
+        ACK_ERROR_SYSTEM = 52,
+        ACK_ERROR_PLAYLIST_LOAD = 53,
+        ACK_ERROR_UPDATE_ALREADY = 54,
+        ACK_ERROR_PLAYER_SYNC = 55,
+        ACK_ERROR_EXIST = 56,
+    };
 
-        /// <summary>
-        /// Уведомление об изменении значения свойства
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+    public delegate void ConnectionStatusChangedEventHandler(object sender, string e);
+    public delegate void DataReadyEventHandler<MpdResponse>(object sender, MpdResponse e);
 
-        private async void NotifyPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); });
-            }
-        }
-        /// <summary>
-        /// Уведомление об ошибке в процессе обмена данными с сервером
-        /// </summary>
-
-
-        public event EventHandler Error;
-
-        private async Task NotifyError(string errormessage)
-        {
-            if (Error != null)
-            {
-                ServerEventArgs args = new ServerEventArgs(EventType.Error,errormessage);
-                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { Error(this, args); });
-            }
-        }
-
-        /// <summary>
-        /// Уведомление о критической ошибке в процессе обмена данными с сервером
-        /// </summary>
-        
-        public event EventHandler CriticalError;
-
-        private async void NotifyCriticalError(string errormessage)
-        {
-            if (CriticalError != null)
-            {
-                ServerEventArgs args = new ServerEventArgs(EventType.CriticalError, errormessage);
-                _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { CriticalError(this, args); });
-            }
-        }
-        /// <summary>
-        /// Уведомление об изменении статуса соединения с сервером
-        /// </summary>
-
-        public event EventHandler ConnectionStatusChanged;
-
-        private async void NotifyConnectionStatusChanged(ConnectionStatus status)
-        {
-            if (ConnectionStatusChanged != null)
-            {
-                ServerEventArgs args = new ServerEventArgs(EventType.ConnectionStatusChanged,status,string.Empty);
-                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { ConnectionStatusChanged(this, args); });;
-            }
-        }
-
-        /// <summary>
-        /// Уведомление об изменении статуса сервера
-        /// </summary>
-//                public event EventHandler StatusChanged;
-
-//        private async void NotifyServerStatusChanged(string status)
-//        {
-//            if (StatusChanged != null)
-//            {
-//                ServerEventArgs args = new ServerEventArgs(EventType.ServerStatusChanged,status);
-//                await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { StatusChanged(this, args); }); ;
-//            }
-//        }
-
-
-        /// <summary>
-        /// Уведомление о завершении выполнения команды
-        /// </summary>
-        public event EventHandler CommandCompleted;
-
-        private async void NotifyCommandCompletion(string command, string result, string message)
-        {
-            if (CommandCompleted != null)
-            {
-                ServerEventArgs args = new ServerEventArgs(EventType.CommandCompleted, command,result,message);
-//                args.Command = command;
-//                args.Result = result;
-//                args.Message = message;
-               await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, delegate { CommandCompleted(this, args); }); ;
-            }
-        }
+    public sealed class Server : IDisposable
+    {
+        #region Events
+        public event DataReadyEventHandler<MpdResponse> DataReady;
+        public event DataReadyEventHandler<MpdResponse> ServerError;
+        public event ConnectionStatusChangedEventHandler ConnectionStatusChanged;
         #endregion
 
-        #region Поля
+        #region Fields
 
-        ResourceLoader _resldr = new ResourceLoader();
+        private CancellationTokenSource _tokenSource;
+        private AppSettings _appSettings = new AppSettings();
+        private Progress<MpdResponse> _status;
+        private Connection _Connection = new Connection();
+        private ManualResetEvent _ThreadEvent = new ManualResetEvent(false);
+        private object _Lock = new object();
+
+        private ResourceLoader _resldr = new ResourceLoader();
         private DispatcherTimer     _timer;
 
-        private MainPage            _mainPage;
-        private bool                _Terminating;
-
-        private Connection          _Connection  = new Connection();
         private Queue<MpdCommand>   _CommandQueue = new Queue<MpdCommand>();
         private Queue<MpdCommand>   _SentCommandQueue = new Queue<MpdCommand>();
 
-        private ManualResetEvent    _ThreadEvent = new ManualResetEvent(false);
-        private object              _Lock = new object();
-
-        private Statistic                                  _Statistics;
-        private Status                                     _Status;
-        private CurrentSong                                _CurrentSong;
-        private ObservableObjectCollection<Track>          _Playlist;
-        private ObservableObjectCollection<File>           _FileList;
-        private ObservableObjectCollection<File>           _SavedPlaylists;
-        private ObservableObjectCollection<Output>         _Outputs;
-        private ObservableObjectCollection<CommonGridItem> _Genres;
-        private ObservableObjectCollection<CommonGridItem> _Artists;
-        private ObservableObjectCollection<CommonGridItem> _Albums;
-        private ObservableObjectCollection<Track>          _Tracks;
-
         private string _Response;
 
-        private bool _filelistCancelUpdate = false;
-        private bool _filelistUpdatInProcess = false;
+        #endregion
+
+        #region Properties
+
+        public Connection Connection => _Connection;
+        public string ConnectionStatus => _Connection.Status;
+        public string MusicCollectionFolder => _appSettings.MusicCollectionFolder;
+        public string AlbumCoverFileNames => _appSettings.AlbumCoverFileNames;
+        public bool?  DisplayFolderPictures => _appSettings.DisplayFolderPictures;
+        public string PlaylistName { get; set; }
+        public bool   Initialized => _appSettings.InitialSetupDone ;
+        public bool   IsConnected         { get { return _Connection.IsActive; } }
+        public bool   IsRunning           { get; private set; }=false;
+        private AlbumArt _albumArt = new AlbumArt();
+        public AlbumArt AlbumArt => _albumArt;
 
         #endregion
 
-        #region Свойства      
-
-        private string      _strConnectionState;
-        public string        ConnectionState
+        public Server()
         {
-            set
-            {
-                if (_strConnectionState != value)
-                {
-                    _strConnectionState = value;
-                    NotifyPropertyChanged("ConnectionState");
-                }
-            }
-            get { return _strConnectionState; }
-            
+            _appSettings = new AppSettings();
+            _appSettings.Restore();
+            _status = new Progress<MpdResponse>(ReportStatus);
+            _Connection.PropertyChanged += (object obj, PropertyChangedEventArgs args )=> 
+                                    {
+                                        if (args.PropertyName == nameof(Connection.Status))
+                                            ConnectionStatusChanged?.Invoke(this, _Connection.Status);
+                                    };
         }
 
-        public bool          IsConnected         { get { return (_Connection.StatusId == ConnectionStatus.Connected)?true:false; } }
-        public string        Host                { get; set; }
-        public string        Port                { get; set; } 
-        public string        Password            { get; set; }
-        public int           ViewUpdateInterval  { get; set; } = 500;
-        public bool          IsRunning           { get; private set; }=false;
-        public Status        StatusData         { get { return _Status; } }
-        public Statistic     StatisticData      { get { return _Statistics; } }
-        public CurrentSong   CurrentSongData { get { return _CurrentSong; } }
-        public string        MusicCollectionFolder { get; set; }
-        public string        CurrentFolder         { get; set; }
-        public string        AlbumCoverFileNames   { get; set; }
-        public bool          DisplayFolderPictures { get; set; }
-
-        public ObservableObjectCollection<Track>  PlaylistData { get { return _Playlist; } }
-        public ObservableObjectCollection<File>   DirectoryData { get { return _FileList; } }
-        public ObservableObjectCollection<File>   SavedPlaylistsData { get { return _SavedPlaylists; } }
-        public ObservableObjectCollection<Output> OutputsData  { get { return _Outputs; } }
-        public ObservableObjectCollection<CommonGridItem> Artists { get { return _Artists; } }
-        public ObservableObjectCollection<CommonGridItem> Genres { get { return _Genres; } }
-        public ObservableObjectCollection<CommonGridItem> Albums { get { return _Albums; } }
-        public ObservableObjectCollection<Track> Tracks { get { return _Tracks; } }
-
-        #endregion
-
-        public Server(MainPage mainPage)
+        public void Init(AppSettings settings)
         {
-            _mainPage = mainPage;
-
-            _Statistics =   new Statistic(_mainPage);
-            _Status =       new Status(_mainPage);
-            _CurrentSong =  new CurrentSong(_mainPage);
-
-            _Playlist =     new ObservableObjectCollection<Track>(_mainPage);
-            _FileList =     new ObservableObjectCollection<File>(_mainPage);
-            _SavedPlaylists = new ObservableObjectCollection<File>(_mainPage);
-            _Outputs =      new ObservableObjectCollection<Output>(_mainPage);
-            _Artists =      new ObservableObjectCollection<CommonGridItem>(_mainPage);
-            _Genres =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
-            _Albums =       new ObservableObjectCollection<CommonGridItem>(_mainPage);
-            _Tracks =       new ObservableObjectCollection<Track>(_mainPage);
-
-            _Connection.PropertyChanged += Connection_PropertyChanged;
+            if (settings == null) throw new ArgumentNullException(nameof(settings));
+            _appSettings = settings;
         }
 
         #region Методы
@@ -223,62 +109,74 @@ namespace Balboa
         public async void Start()
         {
             SetInitialState();
+            if (await _Connection.Open(_appSettings.ServerName, _appSettings.Port, _appSettings.Password))
+            { 
+                _timer = new DispatcherTimer();
+                _timer.Tick += (object sender, object e) => { Status(); };
 
-            _Terminating = false;
-            bool res = await _Connection.Open(Host, Port, Password);
-            if (!res)
-            {
-                await NotifyError(_Connection.Error);
-                return;
+                int interval;
+                if (int.TryParse(_appSettings.ViewUpdateInterval, out interval))
+                {
+                    _timer.Interval = new TimeSpan(0, 0, 0, 0, interval);
+                    _timer.Start();
+
+                    _tokenSource = new CancellationTokenSource();
+                    CancellationToken token = _tokenSource.Token;
+                    WorkItemHandler communicator = delegate { ExecuteCommands(token); };
+                    await ThreadPool.RunAsync(communicator, WorkItemPriority.High, WorkItemOptions.TimeSliced);
+                 }
             }
-            WorkItemHandler communicator = delegate { ExecuteCommands(); };
-            ThreadPool.RunAsync(communicator, WorkItemPriority.High, WorkItemOptions.TimeSliced);
-            CreateTimer(ViewUpdateInterval);
-            _timer.Start();
         }
+
         /// <summary>
         /// Остановка прцесса взаимодествия с сервером
         /// </summary>
         /// <returns></returns>
-        public async Task Halt()
+        public void Halt()
         {
-            if (IsRunning)  // Если процесс не активен то сразу выходим
-            {
-                // иначе
-                _Terminating = true;  // Говорим процессу что пора прекращать работу
-                Status();             // Ставим в очередь на отправку команду статус
-                                      //  Процесс может находиться в состоянии ожидания , в котором не выполняется 
-                                      // цикл обработки команд из очереди и процесс не выполняет проверку 
-                                      // переменной _Terminating
-                                      // Постановкой команды в очередь мы будим процесс и заставляем проверить
-                                      // значение переменной _Terminating
-                // В цикле с интервалом 100 миллисекунд проверяем статус ппроцесса пока он не закончится
-                while (IsRunning) ;   
-                    await Task.Delay(TimeSpan.FromMilliseconds(100));
-             
-                _timer.Stop();        // Останавливаем тамер (прекращаем отправку команд серверу)
-                _Connection.Close();
-                _Status.ExtendedStatus = "";
-            }
+            _timer?.Stop();        // Останавливаем тамер (прекращаем отправку команд серверу)
+            _tokenSource?.Cancel();
+            // Ставим в очередь на отправку команду статус
+            //  Процесс может находиться в состоянии ожидания , в котором не выполняется 
+            // цикл обработки команд из очереди
+            // Постановкой команды в очередь мы будим процесс и заставляем проверить CancellationToken
+
+            Status();
+            _Connection.Close();
         }
+  
         /// <summary>
         /// Перезапуск процесса взаимодествия с сервером
         /// </summary>
         /// <returns></returns>
         public async void Restart()
         {
-            StatusData.State = "restart";
-            await Halt();
+            Halt();
+            while (IsRunning) { await Task.Delay(100); }
             Start();
         }
 
-        private void Connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ReportStatus(MpdResponse response)
         {
-            if (e.PropertyName =="StatusId")
+            switch(response.Keyword)
             {
-                NotifyConnectionStatusChanged(_Connection.StatusId);
-                ConnectionState = _Connection.Status;
+                case ResponseKeyword.OK:
+                case ResponseKeyword.ACK:
+                    DataReady?.Invoke(this, response);
+                    break;
+                case ResponseKeyword.InternalError:
+                    ServerError?.Invoke(this, response);
+                    break;
+                case ResponseKeyword.SocketError:
+                    _Connection.Close();
+                    ServerError?.Invoke(this, response);
+                    break;
+                case ResponseKeyword.ServerHalted:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(response.Keyword), response.Keyword, "");
             }
+            
         }
 
         private void SetInitialState()
@@ -286,64 +184,69 @@ namespace Balboa
             _CommandQueue.Clear();
             _SentCommandQueue.Clear();
             _Response = string.Empty;
-            _Terminating = false;
+        }
 
-            _Playlist.ClearAndNotify();
-            _FileList.ClearAndNotify();
-            _SavedPlaylists.ClearAndNotify();
-            _Outputs.ClearAndNotify();
-            _Artists.ClearAndNotify();
-            _Genres.ClearAndNotify();
-            _Albums.ClearAndNotify();
-            _Tracks.ClearAndNotify();
-         }
         /// <summary>
         ///  Обработчик команд из очери команд
+        ///  Берём очередную команду из очереди
+        ///  Отправляем запрос на сервер
+        ///  Читаем ответ
+        ///  Разбираем ответ и передаём на обработку объектам интерфейса 
         /// </summary>
         /// <returns></returns>
-        private async void ExecuteCommands()
+        private async void ExecuteCommands(CancellationToken token)
         {
-            // Берём очередную команду из очереди
-            // Отправляем запрос на сервер
-            // Читаем ответ
-            // Разбираем ответ и заполняем данными 
-            IsRunning = true;
-            bool terminating = _Terminating;
-            while (!terminating)
-            {
-                MpdCommand command = null;
-                lock (_Lock)
+            try
+            { 
+                while (true)
                 {
-                   terminating = _Terminating;
-                   if (_CommandQueue.Count > 0)
-                   { // Есть команды к выполнению. Забираем команду из очереди  и разморахиваем процесс
-                       command = _CommandQueue.Dequeue();
-                       _ThreadEvent.Reset();
-                   }
-                }
-                if (!terminating)
-                {
+                    token.ThrowIfCancellationRequested();
+                    MpdCommand command = null;
+                    lock (_Lock)
+                    {
+                       if (_CommandQueue.Count > 0)
+                       { // Есть команды к выполнению. Забираем команду из очереди  и разморахиваем процесс
+                           command = _CommandQueue.Dequeue();
+                           _ThreadEvent.Reset();
+                       }
+                    }
                     if (command == null)
                     { // Если нет команд к выполнению замораживаем процесс
                         _ThreadEvent.WaitOne();
                     }
                     else
                     {
-                        try
-                        {
-                            await _Connection.SendCommand(command.FullSyntax);
-                            _SentCommandQueue.Enqueue(command);
-                            _Response += await _Connection.ReadResponse(); ;
-                            _Response = ParceResponse(_Response);
-                        }
-                        catch (Exception e)
-                        {
-                            NotifyCriticalError(_resldr.GetString("CommunicationError") + Utilities.GetExceptionMsg(e));
-                        }
+                        await _Connection.SendCommand(command.FullSyntax);
+                        _Response += await _Connection.ReadResponse(); ;
+                        _Response = ParceResponse(_Response);
                     }
+                } // End while
+            }
+            catch (OperationCanceledException)
+            {
+                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.ServerHalted, null, string.Empty);
+                ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                IsRunning = false;
+            }
+            catch (Exception ex)
+            {
+                string ExceptionMsg = ex.Message.Contains("\r\n") ? ex.Message.Substring(0, ex.Message.IndexOf("\r\n")) : ex.Message;
+
+                // Ошибки которые вызывают Exceptions
+                // "No mapping for the Unicode character exists in the target multi-byte code page.\r\n\
+                MpdResponse mpdresp;
+                if (SocketError.GetStatus(ex.HResult) == SocketErrorStatus.Unknown)
+                {
+                    var er = SocketError.GetStatus(ex.HResult);
+                    mpdresp = new MpdResponse(ResponseKeyword.InternalError, null, _resldr.GetString("CommunicationError") + ExceptionMsg);
                 }
-            } // End while
-            IsRunning = false;
+                else
+                {
+                    mpdresp = new MpdResponse(ResponseKeyword.SocketError, null, _resldr.GetString("SocketError") + ExceptionMsg);
+                }
+               ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                IsRunning = false;
+            }
         }
 
         /// <summary>
@@ -363,227 +266,112 @@ namespace Balboa
         /// <returns></returns>
         private string ParceResponse(string response)
         {
-            MpdResponseCollection mpdresponse = new MpdResponseCollection();
-            // Oтвет при ошибке начинается с ASC и заканчивается \n
-            // Ответ при нормальном завершении заканчивается OK\n
-
-            // Проверка 1
-            // Строка начинается с символов OK\n - это значит что в начале строки содержится ответ 
-            // об успешном выполнении команды не возвращающей данных
-            // Просто убираем этот ответ из входной строки
-            if (response.StartsWith("OK\n",StringComparison.Ordinal))
-                {
-                    response = response.Remove(0, 3);
-                    mpdresponse.Command = _SentCommandQueue.Dequeue();
-                    mpdresponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
-                    Task.Run(()=>HandleResponse(mpdresponse));
-                }
-
-            // Проверка 2
-            // Строка содержит символы \nOK\n - это значит что строка содержит полный ответ 
-            // об успешном выполнении команды возвращающей данные
-            // Забираем этот ответ из входной строки и разбираем его
-            if (response.Contains("\nOK\n"))
-                {
-                     //Забираем из входной строки подстроку от начала до до символов ОК (вместе с ОК)
-                    int nextresponsestart = response.IndexOf("\nOK\n", StringComparison.Ordinal) + 4;
-
-                    string currentresponce = response.Substring(0, nextresponsestart);
-                    response = response.Remove(0, nextresponsestart);
-
-                    string[] lines = currentresponce.Split('\n');
-                    for (int i = 0; i < lines.Length - 2; i++)
-                    {
-                        mpdresponse.Add(lines[i]);
-                    }
-                    mpdresponse.Keyword = MpdResponseCollection.ResponseKeyword.Ok;
-                    mpdresponse.Command = _SentCommandQueue.Dequeue();
-
-                    Task.Run(() => HandleResponse(mpdresponse));
-                 }
-
-            // Проверка 3
-            // Строка содержит символы ACK - это значит что строка содержит ответ с информацией 
-            // об ошибке при выполнении команды  
-            // Забираем этот ответ из входной строки и cообщаем об ошибке
-            if (response.StartsWith("ACK", StringComparison.Ordinal))
-                {
-                    int newresponsestart = response.IndexOf("\n", StringComparison.Ordinal) + 1;
-                    string currentresponse = response.Substring(0, newresponsestart);
-                    response = response.Remove(0, newresponsestart);
-                    NotifyError("Server return error : \n" + currentresponse);
-                    return response;
-                }
-             return response;
-        }
-
-        /// <summary>
-        /// Read server responces and convert them into data objects
-        /// </summary>
-        private async Task HandleResponse(MpdResponseCollection response)
-        {
-            //bool handleResponseCriticalError = false;
-            string errorMessage = string.Empty;
+            ResponseKeyword keyword = ResponseKeyword.Empty;
+            string currentresponse = string.Empty;
             try
             {
-                switch (response.Command.Op)
-                {
-                    case "update":  // в ответ на команду сервер возвращает" "updating_db: 1\n"  (Реализовано)
-                    case "stats": _Statistics.Update(response); break;
-                    case "status": _Status.Update(response); break;       // Реализовано
-                    case "currentsong": _CurrentSong.Update(response); break;
-                    case "lsinfo":
-                        if (response.Count > 0)
-                        { //  Каталог не пустой 
-                            string currentfolder = string.Empty;
-                            if (CurrentFolder.Length != 0)
-                                currentfolder = CurrentFolder + "\\";
-                            // Создаём временный список файлов и заполняем его данными из ответв сервера
-                            ObservableObjectCollection<File> filelist = new ObservableObjectCollection<File>(_mainPage);
-                            filelist.Update(response);
+                /*  Oтвет при ошибке начинается с ASC и заканчивается \n
+                    Ответ при нормальном завершении заканчивается OK\n
 
-                            if (_filelistUpdatInProcess)
-                            {
-                                _filelistCancelUpdate = true;
-                                while (_filelistUpdatInProcess)
-                                {
-                                    await Task.Delay(TimeSpan.FromMilliseconds(100));
-                                }
-//                                while (_filelistUpdatInProcess);
-                                _filelistCancelUpdate = false;
-                            }
-                            await UpdateFileList(filelist);
-                        }
-                        else
-                        {  // Каталог не содержит файлов
-                            _FileList.ClearAndNotify();
-                        }
-                        break;
-                    case "list":
-                        switch (response.Command.Argument1)
-                        {
-                            case "genre": _Genres.Update(response); break;
-                            case "artist": _Artists.Update(response); break;
-                            case "album": _Albums.Update(response); break;
-                            case "title": _Tracks.Update(response); break;
-                        }
-                        break;
-                    case "search": _Tracks.Update(response); break;
-                    case "playlistinfo": _Playlist.Update(response); break;
-                    case "listplaylists": _SavedPlaylists.Update(response); break;
-                    case "outputs":
-                        if (response.Count > 0)
-                            _Outputs.Update(response);
-                        break;
-                    case "config":
-                        break;
-                    default: break;
-                }
-                if (response.Command.Op != "status")
-                    NotifyCommandCompletion(response.Command.Op, "OK", response.Error);
-            }
-            catch (BalboaNullValueException be)
-            {
-                _Terminating = true;
-                errorMessage = string.Format(_resldr.GetString("NullValueExceptionMsg"),
-                                                be.VariableName, be.MethodName, be.FileName, be.LineNumber);
-            }
-            catch (BalboaException be)
-            {
-                _Terminating = true;
-                errorMessage = string.Format(_resldr.GetString("BalboaExceptionMsg"),
-                                                 be.MethodName, be.FileName, be.LineNumber, be.Message);
-            }
-            catch (Exception e)
-            {
-                _Terminating = true;
-                string exceptionMessage  = e.Message.Contains("\r\n") ? e.Message.Substring(0, e.Message.IndexOf("\r\n")) : e.Message;
-                errorMessage = string.Format(_resldr.GetString("UnexpectedServerError"), exceptionMessage);
-            }
-            finally
-            {
-                if (_Terminating)
+                    Проверка 1
+                    Строка начинается с символов OK\n - это значит что в начале строки содержится ответ 
+                    об успешном выполнении команды не возвращающей данных
+                    Просто убираем этот ответ из входной строки */
+                if (response.StartsWith("OK\n", StringComparison.Ordinal))
                 {
-                    //await Halt();
-                    NotifyCriticalError(errorMessage);
-                }
-            }
+                    keyword = ResponseKeyword.OK;
 
+                    currentresponse = response.Substring(0, 3);
+                    response = response.Remove(0, 3);
+                    MpdCommand command = _SentCommandQueue.Dequeue();
+                    MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
+                    ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                }
+
+                // Проверка 2
+                // Строка содержит символы \nOK\n - это значит что строка содержит полный ответ 
+                // об успешном выполнении команды возвращающей данные
+                // Забираем этот ответ из входной строки и разбираем его
+                if (response.Contains("\nOK\n"))
+                {
+                    keyword = ResponseKeyword.OK;
+                    //Забираем из входной строки подстроку от начала до до символов ОК (вместе с ОК)
+                    int nextresponsestart = response.IndexOf("\nOK\n", StringComparison.Ordinal) + 4;
+                    // currentresponce - содержит полный ответ от сервера
+                    currentresponse = response.Substring(0, nextresponsestart);
+                    response = response.Remove(0, nextresponsestart);
+                    MpdCommand command = _SentCommandQueue.Dequeue();
+                    MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
+                    ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                }
+
+                // Проверка 3
+                // Строка содержит символы ACK - это значит что строка содержит ответ с информацией 
+                // об ошибке при выполнении команды  
+                // Забираем этот ответ из входной строки и cообщаем об ошибке
+                if (response.StartsWith("ACK", StringComparison.Ordinal))
+                {
+                    keyword = ResponseKeyword.ACK;
+                    int newresponsestart = response.IndexOf("\n", StringComparison.Ordinal) + 1;
+                    currentresponse = response.Substring(0, newresponsestart);
+                    response = response.Remove(0, newresponsestart);
+                    MpdCommand command = _SentCommandQueue.Dequeue();
+                    MpdResponse mpdresp = new MpdResponse(keyword, command, currentresponse);
+                    ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                }
+                return response;
+            }
+            
+            catch(Exception ex)
+            {
+                string ExceptionMsg = ex.Message.Contains("\r\n") ? ex.Message.Substring(0, ex.Message.IndexOf("\r\n")) : ex.Message;
+                StringBuilder Exmsg = new StringBuilder().Append("Floating error. ");
+                Exmsg.Append(ExceptionMsg);
+                // Try to catch floating error
+                MpdResponse mpdresp = new MpdResponse(ResponseKeyword.InternalError, null, Exmsg.ToString());
+               ((IProgress<MpdResponse>)_status).Report(mpdresp);
+            }
+            return response;
         }
 
-        private async Task UpdateFileList(ObservableObjectCollection<File> filelist)
+        public async void UpdateAlbumArt(string file)
         {
-            _filelistUpdatInProcess = true;
-             _FileList.Clear();
-            // переносим из временного списка в список файлов отображаемый пользователю только элементы с типом File и Directory
-            foreach (File file in filelist)
-                if (file.Nature != FileNature.Playlist)
-                {
-                    _FileList.Add(file);
-                }
-            // Сортируем элементы списка по типу так чтобы каталоги оказались в начале
-            _FileList.Sort(new GenericComparer<File>("Nature",SortOrder.Desc));
-            // Добавляем картинки каталогов
-            if (DisplayFolderPictures)
+            if (MusicCollectionFolder != null && file != null && file != "" && AlbumCoverFileNames != "")
             {
-                string currentfolder = string.Empty;
-                if (CurrentFolder.Length != 0)
-                    currentfolder = CurrentFolder + "\\";
-
-                foreach (File file in _FileList)
+                ImageLoadResult ImageDataLoadResult = await AlbumArt.LoadImageData(MusicCollectionFolder, file, AlbumCoverFileNames);
+                switch (ImageDataLoadResult)
                 {
-                    if (_filelistCancelUpdate)
+                    case ImageLoadResult.Loaded:
+                    case ImageLoadResult.NotFound:
+                        await AlbumArt.UpdateImage();
                         break;
-                    if (file.Nature == FileNature.Directory)
-                    {
-                        IRandomAccessStream fileStream = await Utilities.GetFolderImageStream(MusicCollectionFolder, currentfolder + file.Name, AlbumCoverFileNames);
-                        if (fileStream != null )
-                        {
-                            await _mainPage.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                                async delegate
-                                {
-                                    BitmapImage bmi = new BitmapImage();
-                                    await bmi.SetSourceAsync(fileStream);
-                                    file.ImageSource = bmi;
-                                });
-                        }
-                    }
+                    case ImageLoadResult.Error:
+                    case ImageLoadResult.UnauthorizedAccess:
+                    case ImageLoadResult.ZeroFileSize:
+                        MpdResponse mpdresp = new MpdResponse(ResponseKeyword.InternalError, null, AlbumArt.Error);
+                        ((IProgress<MpdResponse>)_status).Report(mpdresp);
+                        break;
                 }
-            }
-            _filelistUpdatInProcess = false;
+             }
         }
+
         #endregion
-
-        private void CreateTimer(int interval)
-        {
-            _timer =  new DispatcherTimer();
-            _timer.Tick += OnTimerTick;
-            _timer.Interval = new TimeSpan(0, 0, 0, 0, interval);
-        }
-
-        private void OnTimerTick(object sender, object e)
-        {
-            Status();
-        }
-
-        #region Раздел с утилитами
 
         /// <summary>
         /// Добавляет команду в очередь команд
         /// </summary>
         private void AddCommand(MpdCommand command)
         {
-            if (_Connection.StatusId == ConnectionStatus.Connected)
+            if (_Connection.IsActive)
             { 
                 lock( _Lock)
                 {
                     _CommandQueue.Enqueue(command);
+                    _SentCommandQueue.Enqueue(command);
                     _ThreadEvent.Set();
                 }
             }
         }
-
-        #endregion
 
         #region Protocol commands
 
@@ -629,6 +417,12 @@ namespace Balboa
         #endregion
 
         #region Informational commands
+        public void GetAlbumArt(string uri)
+        {
+           AddCommand(new MpdCommand("albumart"));
+        }
+        
+        
         /// <summary>
         /// Получение статистической информации
         /// </summary>
@@ -751,8 +545,6 @@ namespace Balboa
         /// <summary>
         /// 
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ls")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ls")]
         public void LsInfo()
         {
             AddCommand(new MpdCommand("lsinfo"));
@@ -761,9 +553,6 @@ namespace Balboa
         /// <summary>
         /// 
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Ls")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1054:UriParametersShouldNotBeStrings", MessageId = "0#")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Ls")]
         public void LsInfo(string uri)
         {
             AddCommand(new MpdCommand("lsinfo", uri));
@@ -776,6 +565,11 @@ namespace Balboa
         public void Search(string type, string what)
         {
             AddCommand(new MpdCommand("search", type, what));
+        }
+
+        public void Search(string filter)
+        {
+            AddCommand(new MpdCommand("search", filter));
         }
 
         /// <summary>
@@ -819,8 +613,6 @@ namespace Balboa
         /// Removes the playlist NAME.m3u from the playlist directory. 
         /// </summary>
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Rm")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Rm")]
         public void Rm(string name)
         {
             AddCommand(new MpdCommand("rm", name));
@@ -852,7 +644,6 @@ namespace Balboa
         {
             AddCommand(new MpdCommand("listplaylists"));
         }
-
 
         #endregion
 
@@ -1025,22 +816,12 @@ namespace Balboa
 
         #endregion
 
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                // dispose managed resources
-             }
-            // free native resources
-            _ThreadEvent.Dispose();
-        }
-
         public void Dispose()
         {
-            Dispose(true);
+            _ThreadEvent.Dispose();
+            _Connection.Dispose();
             GC.SuppressFinalize(this);
         }
 
-    }   // Class End
+    }   // Class Server
 }

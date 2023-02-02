@@ -65,25 +65,25 @@ namespace Balboa.Common
 
     }
 
-    public class BalboaNullValueException: BalboaException
-    {
+    //public class BalboaNullValueException: BalboaException
+    //{
 
-        public string VariableName { get; set; } = string.Empty;
+    //    public string VariableName { get; set; } = string.Empty;
 
-        public BalboaNullValueException():base()
-        { }
+    //    public BalboaNullValueException():base()
+    //    { }
 
-        public BalboaNullValueException(string fileName, string methodName, string lineNumber, string variableName)
-            :base(fileName, methodName, lineNumber, string.Empty)
-        {
-            VariableName = variableName;
-        }
+    //    public BalboaNullValueException(string fileName, string methodName, string lineNumber, string variableName)
+    //        :base(fileName, methodName, lineNumber, string.Empty)
+    //    {
+    //        VariableName = variableName;
+    //    }
    
-        public BalboaNullValueException(string description): base(description)
-        { }
+    //    public BalboaNullValueException(string description): base(description)
+    //    { }
 
-        public BalboaNullValueException(string description, Exception exception): base (description, exception)
-        { }
+    //    public BalboaNullValueException(string description, Exception exception): base (description, exception)
+    //    { }
 
-    }
+    //}
 }

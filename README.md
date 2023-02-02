@@ -2,11 +2,14 @@
 
 ## Description
 
-        Balboa is a client for MPD (Music Player Daemon http://www.musicpd.org", designed for use preferably on a tablets.
+        Balboa is a Windows client for MPD (Music Player Daemon http://www.musicpd.org", designed for use preferably on a tablets.
         Balboa provides comfortable playng control options, playlist management, display status
         and statistic information, searching tracks in music collection. While playing tracks, Balboa
         showes album art images from music collection folders. 
         It is only one MPD client for Windows RT 8.1.
+
+## Instalation
+		Download file Balboa_4.4.0.20_AnyCPU.appxbundle and install it.
     
 ## Privacy Policy
 ### Settings

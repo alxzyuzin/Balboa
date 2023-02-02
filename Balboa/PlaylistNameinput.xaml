@@ -1,0 +1,24 @@
+﻿<UserControl
+    x:Class="Balboa.PlaylistNameInput"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Balboa"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="150"
+    d:DesignWidth="400"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}" >
+    
+    <Border BorderThickness="2" BorderBrush="LightGray" >
+            <Grid Height="150" Width="400" Background="{StaticResource MainBackgroundBrush}">
+                <TextBlock Text="Enter playlist name"  Margin="10,10,10,110"   Width="380" Height="30" FontSize="20"/>
+                <TextBox   Text="{Binding TmpPlaylistName, Mode=TwoWay}"   Margin="18,40,23,70" Height="40" FontSize="22"/>
+                <Button    Content="Save"              Margin="166,87,0,16"   Width="98"   
+                               Style="{StaticResource UtilityButtonStyle}"  Tapped="btn_PlaylistNameSave_Tapped"/>
+                <Button    Content="Cancel"            Margin="280,87,0,16"  Width="100" 
+                               Style="{StaticResource UtilityButtonStyle}"  Tapped="btn_PlaylistNameCancel_Tapped"/>
+            </Grid>
+        </Border>
+   
+</UserControl>

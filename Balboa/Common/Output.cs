@@ -7,25 +7,13 @@
  *
  --------------------------------------------------------------------------*/
 using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.ComponentModel;
 
 namespace Balboa.Common
 {
-    public class Output: INotifyPropertyChanged, IUpdatable
+    public class Output 
     {
-        private const string _modName = "Output.cs";
-        //
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        private void NotifyPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-        
         public int    Id { get; set; }
         public string Name { get; set; }
         public bool   Enabled { get; set; }
@@ -35,31 +23,28 @@ namespace Balboa.Common
         /// распределяет их по свойствам экземпляра
         /// Обработанные данные удаляются из ответа
         ///</summary>
-        public void Update(MpdResponseCollection response)
+        public void Update(List<string> responseItems)
         {
-            if (response == null)
-                throw new BalboaNullValueException(_modName, "Update", "40", "responce");
-
             int i = 0;
             do
             {
-                string[] items = response[i].Split(':');
+                string[] items = responseItems[i].Split(':');
                 string tagname = items[0].ToLower();
                 string tagvalue = items[1].Trim();
                 switch (tagname)
-                    {
-                        case "outputid":
-                            Id = int.Parse(tagvalue, NumberStyles.Integer, CultureInfo.InvariantCulture);
-                            break;
-                        case "outputname":
-                            Name = tagvalue;
-                            break;
-                        case "outputenabled": Enabled = (tagvalue == "1") ? true : false; break;
-                    }
-                    i++;
+                {
+                    case "outputid":
+                        Id = int.Parse(tagvalue, NumberStyles.Integer, CultureInfo.InvariantCulture);
+                        break;
+                    case "outputname":
+                        Name = tagvalue;
+                        break;
+                    case "outputenabled": Enabled = (tagvalue == "1") ? true : false; break;
                 }
-                while ((i < response.Count) && (!response[i].StartsWith("outputid", StringComparison.OrdinalIgnoreCase)));
-            response.RemoveRange(0, i);
+                i++;
+            }
+            while ((i < responseItems.Count) && (!responseItems[i].StartsWith("outputid", StringComparison.OrdinalIgnoreCase)));
+            responseItems.RemoveRange(0, i);
         }
     }
 }

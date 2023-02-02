@@ -200,11 +200,14 @@
     <value>Server connection responce is not valid.
 </value>
   </data>
+  <data name="MusicCollectionFolderNotDefined" xml:space="preserve">
+    <value>Define 'Path to music collection' parameter before check 'Display pictures for folder' CheckBox.</value>
+  </data>
   <data name="NewPlaylist" xml:space="preserve">
     <value>New playlist</value>
   </data>
   <data name="NoAudioFilesInFolder" xml:space="preserve">
-    <value>Folder "{0}" doesn't contain audio files.</value>
+    <value>Folder {0} doesn't contain audio files.</value>
   </data>
   <data name="NoSelectedItemsToAdd" xml:space="preserve">
     <value>No selected items to add.</value>
@@ -286,6 +289,9 @@ Nothing found.</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
+  </data>
+  <data name="SocketError" xml:space="preserve">
+    <value>Socket error.</value>
   </data>
   <data name="Statistic" xml:space="preserve">
     <value>Statistic</value>

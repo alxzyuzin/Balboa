@@ -8,23 +8,47 @@
   --------------------------------------------------------------------------*/
 using System.Globalization;
 using System.ComponentModel;
+using System.Collections.Generic;
+using System;
 
 namespace Balboa.Common
 {
-    public sealed class Track : INotifyPropertyChanged, IUpdatable
+    public sealed class Track
     {
-        private const string _modName = "Track.cs";
+        public Track()
+        { }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged(string propertyName)
+        public Track(Track track)
         {
-             if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            this.File = track.File;
+            this.LastModified = track.LastModified;
+            this.Time = track.Time;
+            this.Artist = track.Artist;
+            this.Title = track.Title;
+            this.Album = track.Album;
+            this.Date = track.Date;
+            this.TrackNo = track.TrackNo;
+            this.Genre = track.Genre;
+            this.Composer = track.Composer;
+            this.AlbumArtist = track.AlbumArtist;
+            this.Disc = track.Disc;
+            this.Position = track.Position;
+            this.Id = track.Id;
+            this.IsPlaying = track.IsPlaying;
+            this.IsSelected = track.IsSelected;
+            this.ArtistSort = track.ArtistSort;
+            this.AlbumSort = track.AlbumSort;
+            this.AlbumArtistSort = track.AlbumArtistSort;
+            this.Name = track.Name;
+            this.Performer = track.Performer;
+            this.Comment = track.Comment;
+            this.MusicBrainzArtistId = track.MusicBrainzArtistId;
+            this.MusicBrainzAlbumId = track.MusicBrainzAlbumId;
+            this.MusicBrainzAlbumArtistId = track.MusicBrainzAlbumArtistId;
+            this.MusicBrainzTrackId = track.MusicBrainzTrackId;
+            this.MusicBrainzReleaseTrackId = track.MusicBrainzReleaseTrackId;
         }
- 
+
         // Playlistitem properties
         public string File { get; set; }
         public string LastModified { get; set; }
@@ -40,61 +64,25 @@ namespace Balboa.Common
         public string Disc { get; set; }                // the disc number in a multi-disc album.
         public string Position { get; set; }
         public int    Id { get; set; }
-
-        private bool _isPlaying = false;
-        public bool   IsPlaying
-        {
-            get { return _isPlaying; }
-            set
-            {
-                if (_isPlaying!=value)
-                {
-                    _isPlaying = value;
-                   NotifyPropertyChanged("IsPlaying");
-                }
-            }
-        }
-
-        private bool _isSelected = false;
-        public bool  IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                if (_isSelected != value)
-                {
-                    _isSelected = value;
-                    NotifyPropertyChanged("IsSelected");
-                }
-            }
-        }
+        public bool   IsPlaying { get; set; }
+        public bool  IsSelected { get; set; }
 
         // Database properties
-
         public string ArtistSort { get; set; }          // same as artist, but for sorting.This usually omits prefixes such as "The". 
         public string AlbumSort { get; set; }           // same as album, but for sorting.
         public string AlbumArtistSort { get; set; }     // same as albumartist, but for sorting.
         public string Name { get; set; }                // a name for this song.This is not the song title. The exact meaning of this tag is not well-defined.It is often used by badly configured internet radio stations with broken tags to squeeze both the artist name and the song title in one tag. 
         public string Performer { get; set; }           // the artist who performed the song. 
         public string Comment { get; set; }             // a human-readable comment about this song.The exact meaning of this tag is not well-defined.
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Brainz")]
         public string MusicBrainzArtistId { get; set; } //  the artist id in the MusicBrainz database.
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Brainz")]
         public string MusicBrainzAlbumId { get; set; }  //  the album id in the MusicBrainz database.
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Brainz")]
         public string MusicBrainzAlbumArtistId { get; set; } //  the album artist id in the MusicBrainz database.
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Brainz")]
         public string MusicBrainzTrackId { get; set; }  //  the track id in the MusicBrainz database.
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Brainz")]
         public string MusicBrainzReleaseTrackId { get; set; } //  the release track id in the MusicBrainz database.
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-        public void Update(MpdResponseCollection response)
+        public void Update(List<string> response)
         {
-//            response = null;
-            if (response == null)
-                throw new BalboaNullValueException(_modName, "Update", "95","response");
+            if (response == null) throw new ArgumentNullException(nameof(response));
 
             int i = 0;
             do
@@ -117,7 +105,7 @@ namespace Balboa.Common
                     case "albumartist": AlbumArtist = tagvalue; break;
                     case "disc": Disc = tagvalue; break;
                     case "pos": Position = tagvalue; break;
-                    case "id": Id = int.Parse(tagvalue,NumberStyles.Integer, CultureInfo.InvariantCulture); break;
+                    case "id": Id = int.Parse(tagvalue, NumberStyles.Integer, CultureInfo.InvariantCulture); break;
                     // Database properties
                     case "artistsort": ArtistSort = tagvalue; break;         // same as artist, but for sorting.This usually omits prefixes such as "The". 
                     case "albumsort": AlbumSort = tagvalue; break;          // same as album, but for sorting.
@@ -133,15 +121,25 @@ namespace Balboa.Common
                     case "musicbrainz_releasetrackid": MusicBrainzReleaseTrackId = tagvalue; break; //  the release track id in the MusicBrainz database.
                 }
                 // Заполним пустые параметры значениями по умолчанию
-                if (Title == null) Title = Utilities.ExtractFileName(File ?? "", true);
+                if (Title == null) Title = ExtractFileName(File ?? "");
                 if (Artist == null) Artist = " Unknown artist";
                 if (Album == null) Album = " Unknown album";
                 if (Date == null) Date = " Unknown year";
                 i++;
             }
-            while ((i < response.Count) && (!response[i].StartsWith("file",System.StringComparison.Ordinal)));
+            while ((i < response.Count) && (!response[i].StartsWith("file", System.StringComparison.Ordinal)));
 
             response.RemoveRange(0, i);
         }
+
+        public static string ExtractFileName(string path)
+        {
+            string res = path.Substring(path.LastIndexOf('/') + 1);
+            int i = res.LastIndexOf('.');
+            if (i >= 0)
+                res = res.Substring(0, i);
+            return res.Trim();
+        }
+
     }
 }

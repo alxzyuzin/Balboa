@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="17505Sirocco.Balboa" Publisher="CN=A5DE46CF-F134-453E-92D1-F8D7D83A2EAD" Version="1.4.0.15" />
+  <Identity Name="17505Sirocco.Balboa" Publisher="CN=A5DE46CF-F134-453E-92D1-F8D7D83A2EAD" Version="4.4.0.20" />
   <Properties>
     <DisplayName>Balboa</DisplayName>
     <PublisherDisplayName>Sirocco</PublisherDisplayName>
@@ -16,7 +16,7 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Balboa.App">
       <m2:VisualElements DisplayName="Balboa" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png" Description="MPD (Music player demon) client" ForegroundText="light" BackgroundColor="#464646" ToastCapable="false">
-        <m2:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\Square310x310Logo.png" Square70x70Logo="Assets\Square70x70Logo.png">
+        <m2:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\Square310x310Logo.png" Square70x70Logo="Assets\Square70x70Logo.png" DefaultSize="square150x150Logo">
           <m2:ShowNameOnTiles>
             <m2:ShowOn Tile="square150x150Logo" />
             <m2:ShowOn Tile="wide310x150Logo" />
@@ -26,7 +26,6 @@
         <m2:SplashScreen Image="Assets\SplashScreen.png" />
         <m2:InitialRotationPreference>
           <m2:Rotation Preference="portrait" />
-          <m2:Rotation Preference="landscape" />
           <m2:Rotation Preference="portraitFlipped" />
           <m2:Rotation Preference="landscapeFlipped" />
         </m2:InitialRotationPreference>

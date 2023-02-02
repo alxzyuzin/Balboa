@@ -9,25 +9,35 @@
  --------------------------------------------------------------------------*/
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace Balboa.Common
 {
-    internal enum FileNature { File, Directory, Playlist }
+    public enum FileNature { File, Directory, Playlist }
 
-    internal class File: IComparable, INotifyPropertyChanged, IUpdatable
+    public class File: IComparable, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged(string propertyName)
+       
+        private AlbumArt _albumArt = new AlbumArt();
+        public AlbumArt AlbumArt
         {
-            if (PropertyChanged!=null)
-            PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            get { return _albumArt; }
+            private set
+            {
+                if (_albumArt != value)
+                {
+                    _albumArt = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArt)));
+                }
+            }
         }
 
         private string _name = string.Empty;
-        public string   Name
+        public string Name
         {
             get { return _name; }
             set
@@ -35,7 +45,7 @@ namespace Balboa.Common
                 if (_name != value)
                 {
                     _name = value;
-                    NotifyPropertyChanged("Name");
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
                 }
             }
         }
@@ -49,14 +59,14 @@ namespace Balboa.Common
                 if (_nature != value)
                 {
                     _nature = value;
-                    NotifyPropertyChanged("Nature");
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Nature)));
                 }
             }
 
         }
 
         private string _lastModified = string.Empty;
-        public string   LastModified
+        public string LastModified
         {
             get { return _lastModified; }
             set
@@ -64,13 +74,13 @@ namespace Balboa.Common
                 if (_lastModified != value)
                 {
                     _lastModified = value;
-                    NotifyPropertyChanged("LastModified");
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(LastModified)));
                 }
             }
         }
 
         private string _icon = string.Empty;
-        public string   Icon
+        public string Icon
         {
             get { return _icon; }
             set
@@ -78,13 +88,13 @@ namespace Balboa.Common
                 if (_icon != value)
                 {
                     _icon = value;
-                    NotifyPropertyChanged("Icon");
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Icon)));
                 }
             }
         }
 
         private bool _justclosed = false;
-        public bool     JustClosed
+        public bool JustClosed
         {
             get { return _justclosed; }
             set
@@ -92,10 +102,25 @@ namespace Balboa.Common
                 if (_justclosed != value)
                 {
                     _justclosed = value;
-                    NotifyPropertyChanged("JustClosed");
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(JustClosed)));
                 }
             }
         }
+
+        private GridLength _albumArtWidth = new GridLength(1);
+        public GridLength AlbumArtWidth
+        {
+            get { return _albumArtWidth; }
+            set
+            {
+                if (_albumArtWidth != value)
+                {
+                    _albumArtWidth = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AlbumArtWidth)));
+                }
+            }
+        }
+
 
         private BitmapImage _imagesource = null;
         public BitmapImage ImageSource
@@ -106,45 +131,47 @@ namespace Balboa.Common
                 if (_imagesource != value)
                 {
                     _imagesource = value;
-                    NotifyPropertyChanged("ImageSource");
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageSource)));
                 }
             }
         }
-
-        public void Update(MpdResponseCollection response)
+        
+        public void Update(List<string> response)
         {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+
             int i = 0;
-            if (response == null)
-                return;
             do
             {
                 string[] items = response[i].Split(':');
                 string tagname = items[0].ToLower();
                 string tagvalue = items[1].Trim();
-               
+
                 switch (tagname)
                 {
-                   case "file":
-                       Name = Utilities.ExtractFileName(tagvalue, false);
-                       Nature = FileNature.File;
-                       Icon += '\xE189';
-                       break;           // 57737     // E189
-                   case "directory":
-                        Name = Utilities.ExtractFileName(tagvalue, false);
+                    case "file":
+                        Name = tagvalue.Substring(tagvalue.LastIndexOf('/') + 1);
+                        Nature = FileNature.File;
+                        Icon += '\xE189';
+                        break;           // 57737     // E189
+                    case "directory":
+                        Name = tagvalue.Substring(tagvalue.LastIndexOf('/') + 1);
                         Nature = FileNature.Directory;
                         Icon += '\xE188';
                         break; // 57736    // E188
-                   case "playlist": Name = tagvalue; Nature = FileNature.Playlist; break;
-                   case "Last-Modified": LastModified = tagvalue; break;
-                 }
-                    i++;
-             }
-             while ((i < response.Count) && (!response[i].StartsWith("file",StringComparison.OrdinalIgnoreCase)) && 
-                (!response[i].StartsWith("playlist", StringComparison.OrdinalIgnoreCase)) &&
-                (!response[i].StartsWith("directory", StringComparison.OrdinalIgnoreCase)));
-             response.RemoveRange(0, i);
+                    case "playlist": Name = tagvalue; Nature = FileNature.Playlist; break;
+                    case "Last-Modified": LastModified = tagvalue; break;
+                }
+                i++;
+            }
+            while ((i < response.Count) &&
+                            (!response[i].StartsWith("file", StringComparison.OrdinalIgnoreCase)) &&
+                            (!response[i].StartsWith("playlist", StringComparison.OrdinalIgnoreCase)) &&
+                            (!response[i].StartsWith("directory", StringComparison.OrdinalIgnoreCase)));
+
+            response.RemoveRange(0, i);
         }
- 
+
         /// <summary>
         /// Реализует интерфейс IComparable
         /// Сравнивает текущий объект с объектом переданным в качестве входного параметра
@@ -197,7 +224,6 @@ namespace Balboa.Common
             char[] c = this.Name.ToCharArray();
             return (int) c[0];
         }
-
 
         public static bool operator ==(File left, File right)
         {

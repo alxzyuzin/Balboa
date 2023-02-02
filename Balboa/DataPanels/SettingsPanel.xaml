@@ -1,0 +1,144 @@
+﻿<UserControl
+    x:Class="Balboa.SettingsPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Balboa"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="600"
+    d:DesignWidth="800"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+    <UserControl.Resources>
+
+        <Style x:Key="InformationGridStyle" TargetType="Grid">
+            <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="Background" Value="{StaticResource MainBackgroundBrush}"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+
+        <Style x:Key="SettingsTextBlockStyle" TargetType="TextBlock" >
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="ExtraLight"/>
+            <Setter Property="Height" Value="Auto" />
+            <Setter Property="Margin" Value="20,4,10,0" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+
+        <Style x:Key="SettingsTextBoxStyle" TargetType="TextBox" >
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Margin" Value="0,2,0,2" />
+            <Setter Property="Padding" Value="0,0,0,0"/>
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="SettingsButtonStyle" TargetType="Button" >
+            <Setter Property="Margin" Value="20,3,0,0"/>
+            <Setter Property="Height" Value="40" />
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+    </UserControl.Resources>
+    <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="87"/>
+            </Grid.RowDefinitions>
+        <Grid x:Name="ServerParams"  MaxHeight="800"  VerticalAlignment="Stretch"  >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" MinWidth="180"/>
+                <ColumnDefinition Width="3*" MinWidth="100"/>
+                <ColumnDefinition Width="3*" MinWidth="125"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="1.1*"/>
+                <RowDefinition Height="1.1*"/>
+                <RowDefinition Height="1.1*"/>
+                <RowDefinition Height="1.1*"/>
+                <RowDefinition Height="1.1*"/>
+                <RowDefinition Height="1.2*"/>
+                <RowDefinition Height="1.3*"/>
+                <RowDefinition Height="1.7*"/>
+                <RowDefinition Height="0.8*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="10"/>
+
+        </Grid.RowDefinitions>
+            <Grid.Resources>
+            <Storyboard x:Name="gr_SettingsShowStoryboard">
+                <DoubleAnimation  Storyboard.TargetName="gr_Settings"
+                                          Storyboard.TargetProperty="Opacity"
+                                          From="0.0" To="1.0" Duration="0:0:1"/>
+            </Storyboard>
+        </Grid.Resources>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Server" Style="{StaticResource  SettingsTextBlockStyle}"/>
+            <TextBox   Grid.Row="1" Grid.Column="1" Style="{StaticResource  SettingsTextBoxStyle }"
+                           Text="{Binding ServerName, Mode=TwoWay}" HorizontalAlignment="Stretch"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Port"   Style="{StaticResource SettingsTextBlockStyle}"/>
+            <TextBox   Grid.Row="2" Grid.Column="1" Text="{Binding Port, Mode=TwoWay}"   HorizontalAlignment="Stretch" Style="{StaticResource  SettingsTextBoxStyle }"/>
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="(1 - 6553)"   Grid.ColumnSpan="2" Margin="10,10,10,0"
+                           Style="{StaticResource  SettingsTextBlockStyle}"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0"  Text="Password"     Style="{StaticResource SettingsTextBlockStyle}"/>
+            <TextBox   Grid.Row="3" Grid.Column="1"  Text="{Binding Password, Mode=TwoWay}"
+                           Style="{StaticResource  SettingsTextBoxStyle }" HorizontalAlignment="Stretch" />
+            <TextBlock Grid.Row="3" Grid.Column="2" Text="(optional)" 
+                       Style="{StaticResource SettingsTextBlockStyle}" Margin="10,7"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Grid.RowSpan="2" Text="View update interval"  
+                       Style="{StaticResource SettingsTextBlockStyle}" TextWrapping="WrapWholeWords"/>
+            <TextBox   Grid.Row="4" Grid.Column="1"   Width="80"    
+                       Style="{StaticResource  SettingsTextBoxStyle }" Text="{Binding ViewUpdateInterval, Mode=TwoWay}" />
+            <TextBlock Grid.Row="4" Grid.Column="2"  Text="(milliseconds)" MinWidth="122"
+                       Style="{StaticResource SettingsTextBlockStyle}" Margin="10,7"/>
+
+            <TextBlock  Grid.Row="6" Grid.Column="0" TextWrapping="WrapWholeWords" Height="70"
+                        Style="{StaticResource SettingsTextBlockStyle}" Text="Path to music collection" Grid.RowSpan="2"/>
+            <TextBox    Grid.Row="6" Grid.Column="1" HorizontalAlignment="Stretch" 
+                        Background="#FFF4F4F4" IsEnabled="False"
+                        Grid.RowSpan="2" Grid.ColumnSpan="2"
+                        VerticalAlignment="Top" Margin="0,3,0,0" Height="40"
+                        Style="{StaticResource  SettingsTextBoxStyle }"          
+                        Text="{Binding MusicCollectionFolder, Mode=TwoWay}" />
+            <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal" Grid.ColumnSpan="2" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top" >
+                <Button Content="Select" Style="{StaticResource  SettingsButtonStyle}"  Tapped="btn_SelectMusicCollectionPath_Tapped" />
+                <Button Content="Clear"  Style="{StaticResource  SettingsButtonStyle}" Tapped="btn_ClearMusicCollectionPath_Tapped" />
+            </StackPanel>
+            <TextBlock  Text="Album cover file name" Grid.Row="8" Grid.Column="0"  Grid.RowSpan="2" 
+                        Style="{StaticResource SettingsTextBlockStyle}" Height="Auto" VerticalAlignment="Top" TextWrapping="WrapWholeWords"/>
+            <StackPanel Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" Height="60" VerticalAlignment="Top">
+                <TextBox  VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="35"
+                          Text="{Binding AlbumCoverFileNames, Mode=TwoWay}" Style="{StaticResource  SettingsTextBoxStyle }"/>
+                <TextBlock Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" VerticalAlignment="Top"  Margin="20,0,0,0" Height="40"
+                           Style="{StaticResource SettingsTextBlockStyle}" FontSize="18" HorizontalAlignment="Stretch"
+                           Text="(File names separated with semicolon)"  TextWrapping="WrapWholeWords" />
+            </StackPanel>
+            <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock Text="Display pictures for folders" Style="{StaticResource SettingsTextBlockStyle}" />
+                <CheckBox x:Name="cbx_DisplayFolderPictures" IsChecked="{Binding DisplayFolderPictures, Mode=TwoWay}"  IsThreeState="False" />
+            </StackPanel>
+        </Grid>
+
+            <StackPanel  x:Name="AppBarButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Width="420">
+            <AppBarButton Icon="Preview" Label="Start session" Width="90" Tapped="appbtn_StartSession_Tapped"/>
+            <AppBarButton Icon="Preview" Label="Stop session"  Width="90" Tapped="appbtn_StopSession_Tapped"/>
+            <AppBarButton Icon="Preview" Label="Test connection"  Width="90" Tapped="appbtn_TestConnection_Tapped"/>
+            <AppBarSeparator Width="60"/>
+            <AppBarButton Icon="Save" Label="Save" Width="80" Tapped="appbtn_SaveSettings_Tapped" />
+        </StackPanel>
+    </Grid>
+
+</UserControl>
